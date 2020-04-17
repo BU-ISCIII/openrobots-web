@@ -1,0 +1,30 @@
+{% extends 'opentrons/base.html' %}
+{% load static %}
+{% block content %}
+<div class="row row-space-4 margin-b-4">
+    <div class="col-sm-12" >
+        <div class="col-sm-5 col-sm-offset-1" >
+            <div class="panel panel-default">
+                <div class="panel-heading"><h3 class="text-center" >OpentronsWeb</h3></div>
+                <div class="panel-body">
+
+                    <BR><BR>
+                        <h5>OpentronsWeb</h5>
+                    <p>Helps you with the configuration files that OT-2 needs for the laboratory automatization</p>
+                </div>  <!--  end of panel body  -->
+            </div> <!--// end panel -->
+        </div> <!--// end col-sm-5  -->
+        <div class="col-sm-5 col-sm-offset-1" >
+            <div class="panel panel-default">
+                <div class="panel-heading"><h3 class="text-center">Opentrons OT-2</h3></div>
+                <div class="panel-body">
+                    <img class="promo-block-img img-responsive" src="{% static "img/opentrons/ot2_image.jpg" %}" align="Avatar">
+
+                </div>  <!--  end of panel body  -->
+            </div> <!--// end panel -->
+        </div> <!--// end col-sm-5  -->
+
+    </div> <!--// end col-sm-12  -->
+</div> <!--// end row -->
+
+{% endblock %}

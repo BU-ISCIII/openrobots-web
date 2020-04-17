@@ -1,0 +1,137 @@
+{% extends 'opentrons/base.html' %}
+{% load static %}
+{% block content %}
+{% csrf_token %}
+
+{% if error_message %}
+    <div class="row row-space-2 margin-b-4">
+        <div class="col-sm-7 col-sm-offset-3">
+            <div class="panel panel-danger">
+                <div class="panel-heading"><h3 style="text-align:center">Not matches</h3> </div>
+                <div class="panel-body">
+                    {% for values in error_message %}
+                        <h4>{{values}}</h4>
+                    {% endfor %}
+                </div> <!--  end of panel body -->
+            </div> <!--  end of panel  -->
+        </div> <!--  end of col-sm-7 -->
+    </div> <!--  end of row -->
+{% endif %}
+
+
+{%if display_result %}
+
+
+{% else %}
+
+<!-- FORM for searching  Project Information -->
+    <div class="row row-space-4 margin-b-4">
+      <div class="col-sm-7 col-sm-offset-1" >
+        <div class="panel panel-default">
+          <div class="panel-heading"><h3>Form to create input file for Opentrons OT-2</h3></div>
+          <div class="panel-body">
+            <form method="post" enctype="multipart/form-data" name="createfile" id="createfile" class="form-horizontal well">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="createfile"/>
+            <div class="form-group required">
+                    <label class="col-sm-5  control-label" for="station" >Station Name </label>
+                    <div class="col-sm-5"><input class="form-control" type="text" name="station" id="station" size="100" maxlength="100"></div>
+                    <BR><br>
+                    <label class="col-sm-5  control-label" for="samples" >Number of Samples </label>
+                    <div class="col-sm-5"><input class="form-control" type="text" name="samples" id="samples" size="100" maxlength="100"></div>
+                    <BR><br>
+                    <label class="col-sm-5 control-label" for="mmlabware" >Master Mix labware</label>
+                    <div class="col-sm-4"><select class="form-control"  required = "required" name="mmlabware" id="mmlabware">
+                               				<option value="">Choose a value</option>
+                                            {% for value in form_data.mm_labware_data %}
+                                                <option value="{{value}}">{{value}}</option>
+                                            {% endfor %}
+
+                                      </select>
+                    </div>  <!-- end select input -->
+                    <BR><br>
+
+                    <label class="col-sm-5 control-label" for="mmtube" >Master Mix Tube</label>
+                    <div class="col-sm-4"><select class="form-control"  required = "required" name="mmtube" id="mmtube">
+                               				<option value="">Choose a value</option>
+                                            {% for value in form_data.mm_tube_labware_data %}
+                                                <option value="{{value}}">{{value}}</option>
+                                            {% endfor %}
+
+                                      </select>
+                    </div>  <!-- end select input -->
+                    <br><br>
+                    <label class="col-sm-5 control-label" for="mmtype" >Master Mix Type</label>
+                    <div class="col-sm-4"><select class="form-control"  required = "required" name="mmtype" id="mmtype">
+                               				<option value="">Choose a value</option>
+                                            {% for value in form_data.master_mix_type_data %}
+                                                <option value="{{value}}">{{value}}</option>
+                                            {% endfor %}
+
+                                      </select>
+                    </div>  <!-- end select input -->
+                    <BR><br>
+
+                    <label class="col-sm-5 control-label" for="pcrplate" >PCR plate labware </label>
+                    <div class="col-sm-4"><select class="form-control"  required = "required" name="pcrplate" id="pcrplate">
+                               				<option value="">Choose a value</option>
+                                            {% for value in form_data.pcr_labware_data %}
+                                                <option value="{{value}}">{{value}}</option>
+                                            {% endfor %}
+
+                                      </select>
+                    </div>  <!-- end select input -->
+                    <br><br>
+                    <label class="col-sm-5 control-label" for="elution" >Elution labware</label>
+                    <div class="col-sm-4"><select class="form-control"  required = "required" name="elution" id="elution">
+                               				<option value="">Choose a value</option>
+                                            {% for value in form_data.elution_labware_data %}
+                                                <option value="{{value}}">{{value}}</option>
+                                            {% endfor %}
+
+                                      </select>
+                    </div>  <!-- end select input -->
+
+                    <br><br>
+                    <label class="col-sm-5 control-label" for="mmlabware" >Prepare Mastermix</label>
+                    <div class="col-sm-4">
+                        <label class="radio-inline"><input type="radio" name="preparemaxtermix" required = "required" checked>YES</label>
+                        <label class="radio-inline"><input type="radio" name="preparemaxtermix" required = "required">NO</label>
+                    </div>  <!-- end  radio -->
+                    <br><br>
+                    <label class="col-sm-5 control-label" for="mmlabware" >Transfer Mastermix</label>
+                    <div class="col-sm-4">
+                        <label class="radio-inline"><input type="radio" name="transfermaxtermix" required = "required" checked>YES</label>
+                        <label class="radio-inline"><input type="radio" name="transfermaxtermix" required = "required">NO</label>
+                    </div>  <!-- end  radio -->
+                    <br><br>
+                    <label class="col-sm-5 control-label" for="mmlabware" >Transfer Samples</label>
+                    <div class="col-sm-4">
+                        <label class="radio-inline"><input type="radio" name="transfersamples" required = "required" checked>YES</label>
+                        <label class="radio-inline"><input type="radio" name="transfersamples" required = "required">NO</label>
+                    </div>  <!-- end  radio -->
+            </div>  <!-- end from-group   -->
+            <div class="form-group">
+                <label class="col-sm-5 control-label" for="notes" >User Notes</label>
+                <div class="col-sm-6">
+                    <textarea class="form-control" name="usernotes" value="" id="usernotes" rows="4" cols="60" maxlength="220"></textarea>
+                </div>  <!-- end textarea input -->
+                <br>
+             </div>  <!-- end from-group   -->
+
+            <br>
+            <br>
+                <input class="btn pull-left btn-primary" type="reset" value="Reset Fields">
+                <input class="btn pull-right btn-primary" type="submit" value="Submit">
+            </form>
+         </div>  <!--  end of panel body  -->
+        </div> <!--// end panel -->
+        </div> <!--// end col-sm-7  -->
+        <!-- Insert the help panel -->
+        <BR><BR>
+
+    </div> <!--// end row -->
+    <!-- End of FORM for searching Project information -->
+
+{% endif %}
+{% endblock %}
