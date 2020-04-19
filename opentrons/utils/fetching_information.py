@@ -61,6 +61,22 @@ def get_protocol_types():
     return protocol_types
 
 
+def get_protocol_template_information(p_template_id):
+    '''
+    Description:
+        The function will fetch the information for protocol template
+    Return:
+        protocol_data
+    '''
+    protocol_data = {}
+    if ProtocolTemplateFiles.objects.filter(pk__exact = p_template_id).exists():
+        p_template = ProtocolTemplateFiles.objects.get(pk__exact = p_template_id)
+        protocol_data['basic_data'] = [p_template.get_main_data()]
+        protocol_data['metadata'] = p_template.get_metadata()
+        protocol_data['functions'] = p_template.get_functions()
+    return protocol_data
+
+
 def get_stations_names ():
     '''
     Description:

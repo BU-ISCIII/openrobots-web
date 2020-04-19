@@ -71,6 +71,21 @@ class ProtocolTemplateFiles (models.Model):
         data.append(self.protocolTemplateFileName)
         return data
 
+    def get_metadata(self):
+        data = []
+        data.append(self.protocolName)
+        data.append(self.authors)
+        data.append(self.source)
+        data.append(self.apiLevel)
+        return data
+
+    def get_functions(self):
+        data = []
+        data.append(self.prepareMasterMix)
+        data.append(self.transferMasterMix)
+        data.append(self.transferSamples)
+        return data
+
     objects = ProtocolTemplateFilesManager()
 
 class ElutionHardware (models.Model):

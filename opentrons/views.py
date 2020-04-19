@@ -44,8 +44,8 @@ def create_protocol_file(request):
 
 def display_template_file(request, p_template_id):
 
-    protocol_template_data = {}
 
+    protocol_template_data = get_protocol_template_information(p_template_id)
 
     return render(request, 'opentrons/displayTemplateFile.html' ,{'protocol_template_data': protocol_template_data})
 
