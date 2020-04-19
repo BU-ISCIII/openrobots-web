@@ -26,7 +26,7 @@
                         <!-- Logo -->
                         <div class="logo">
                             <a class="logo-wrap" href="/">
-                                <img src="{% static "/img/opentronWeb_logo.png" %}" alt="opentronsWeb_Logo">
+                                <img src="{% static "/img/opentronsWeb_logo_220x73.png" %}" alt="opentronsWeb_Logo">
                             </a>
                         </div>
                         <!-- End Logo -->
@@ -39,13 +39,14 @@
                                     {% if user.is_authenticated %}
                     				    <li class=" js_nav-item nav-item dropdown"><a class=" nav-item-child nav-item-hover dropdown-toggle" data-toggle="dropdown" href="#">Request<span class="caret"></span></a>
                     				        <ul class="dropdown-menu">
-                                                <li><a href="/requestFile">Request File</a></li>
+                                                <li><a href="/createProtocolFile">Create Protocol File</a></li>
                                             </ul>
                           				</li>
                                         {% if reques.user == admin %}
                                             <li class=" js_nav-item nav-item dropdown"><a class=" nav-item-child nav-item-hover dropdown-toggle" data-toggle="dropdown" href="#">Admin<span class="caret"></span></a>
                                                 <ul class="dropdown-menu">
-                                                    <li><a href="/RequestedFiles">Requested Files</a></li>
+                                                    <li><a href="/listOfRequests">List of Requests</a></li>
+                                                    <li><a href="/uploadProtocolTemplates">Upload Protocol Templates</a></li>
                                                 </ul>
                                                 </li>
                                         {% endif %}
@@ -78,7 +79,7 @@
                             <div class="col-sm-6">
                                 <div class="text-center"> <!-- Logo -->
                                     <a class="logo-wrap" href="/">
-                                        <img src="{% static "img/opentronWeb_logo.png" %}" alt="opentronsWeb_Logo">
+                                        <img src="{% static "img/opentronsWeb_logo.png" %}" alt="opentronsWeb_Logo">
                                     </a>
                                 </div>  <!-- End Logo -->
                             </div>

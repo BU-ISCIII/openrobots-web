@@ -1,6 +1,17 @@
 from django.contrib import admin
 from opentrons.models import *
 
+class StationsAdmin (admin.ModelAdmin):
+    list_display =['stationName', 'description']
+
+class ProtocolsTypeAdmin (admin.ModelAdmin):
+    list_display =['protocolTypeName', 'description']
+
+class ProtocolTemplateFilesAdmin (admin.ModelAdmin):
+    list_display =['station', 'typeOfProtocol', 'protocolTemplateFileName', 'protocolTemplateFileName',
+                'authors', 'source', 'apiLevel', 'prepareMasterMix', 'transferMasterMix', 'transferSamples']
+
+
 class ElutionHardwareAdmin (admin.ModelAdmin):
     list_display =['hardwareType']
 
@@ -20,6 +31,9 @@ class Elution_LabwareAdmin (admin.ModelAdmin):
     list_display =['elution_LabwareType', 'elutionHW_type', 'description']
 
 
+
+
+
 class RequestOpenTronsFilesAdmin (admin.ModelAdmin):
     list_display =['requestedCodeID','masterMixLabware', 'masterMixTubeLabware','pcrPlateLabware', 'elutionLabware', 'masterMixType', 'numberOfSamples',
                 'prepareMastermix', 'transferMastermix', 'transferSamples', 'usedTemplateFile','userRequestedBy' , 'userNotes']
@@ -30,6 +44,9 @@ class RequestOpenTronsFilesAdmin (admin.ModelAdmin):
 
 
 
+admin.site.register(Stations , StationsAdmin)
+admin.site.register(ProtocolsType , ProtocolsTypeAdmin)
+admin.site.register(ProtocolTemplateFiles , ProtocolTemplateFilesAdmin)
 admin.site.register(ElutionHardware , ElutionHardwareAdmin)
 admin.site.register(MasterMixType , MasterMixTypedmin)
 admin.site.register(MasterMixLabware , MasterMixLabwareAdmin)

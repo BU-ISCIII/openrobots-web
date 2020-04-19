@@ -15,8 +15,13 @@ OPENTRONS_OUTPUT_DIRECTORY = 'ouput_files'
 
 
 OPENTRONS_TEMPLATE_FILE_NAME = 'v1_station_c_S3.ot2.apiv2.py'
-OPENTRONS_FIELD_TO_FETCH_IN_TEMPLATE_FILE = ['NUM_SAMPLES' , 'MM_LABWARE','MMTUBE_LABWARE', 'PCR_LABWARE', 'ELUTION_LABWARE',
+OPENTRONS_FIELD_TO_FETCH_IN_TEMPLATE_FILE_STATION_3 = ['NUM_SAMPLES' , 'MM_LABWARE','MMTUBE_LABWARE', 'PCR_LABWARE', 'ELUTION_LABWARE',
             'PREPARE_MASTERMIX', 'TRANSFER_MASTERMIX', 'TRANSFER_SAMPLES', 'MM_TYPE']
 
-LINE_FROM_PARAMETERS_START = '# Parameters to adapt the protocol'
-LINE_FROM_PARAMETERS_END = '# End Parameters to adapt the protocol'
+OPENTRONS_DELIMITATION_PARAMETERS_TAGS = ['# Parameters to adapt the protocol',
+                    '# End Parameters to adapt the protocol']
+
+INVALID_TEMPLATE_FILE = ['Invalid Protocol File ', 'Delimitation Parameters tags are not included in file']
+METADATA_FIELDS_FOR_PROTOCOL_TEMPLATE = ['protocolName', 'author', 'source','apiLevel']
+PROTOCOL_STEPS_IN_TEMPLATE_FILE = ['prepare_mastermix', 'transfer_mastermix' , 'transfer_samples' ]
+ADMIN_USERS = ['admin']
