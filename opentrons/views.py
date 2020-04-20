@@ -11,6 +11,7 @@ def index(request):
 @login_required
 def create_protocol_file(request):
     # Get data to display in form
+    '''
     parameter = {}
     parameter['NUM_SAMPLES'] = '96'
     parameter['MM_LABWARE'] = '\'opentrons aluminum block\''
@@ -23,22 +24,26 @@ def create_protocol_file(request):
     parameter['TRANSFER_SAMPLES'] = 'True'
     #import pdb; pdb.set_trace()
     #add_parameters_in_file(parameter)
+    '''
     form_data = get_form_data_creation_run_file()
-    if request.method == 'POST' and (request.POST['action']=='createfile'):
+    if request.method == 'POST' and (request.POST['action']=='createprotocolfile'):
+        template = request.POST['template']
+
+        parameters, database = extract_form_data(request)
+        protocol_type = get_protocol_type_from_template(template)
+        protocol_file = build_protocol_file_name(request.user.username,template)
+
+        add_result = add_parameters_in_file (template, protocol_file,  parameters)
+        if add_result != 'True':
+            return render(request, 'opentrons/createProtocolFile.html' ,{'form_data': form_data, 'error': add_result})
+        database['generatedFile'] = protocol_file
+        database['requestedCodeID'] = build_request_codeID (request.user, protocol_type, request.POST['station'] )
+        new_create_protocol = RequestOpenTronsFiles.objects.create_new_request(database)
         import pdb; pdb.set_trace()
-        '''
-        transfersamples
-        transfermaxtermix
-        preparemaxtermix
-        elution
-        pcrplate
-        mmtype
-        mmtube
-        mmlabware
-        samples
-        station
-        '''
-        return render(request, 'opentrons/createProtocolFile.html' ,{'form_data': form_data})
+        display_result = new_create_protocol.get_result_data()
+
+
+        return render(request, 'opentrons/createProtocolFile.html' ,{'display_result': display_result})
     else:
         return render(request, 'opentrons/createProtocolFile.html' ,{'form_data': form_data})
 

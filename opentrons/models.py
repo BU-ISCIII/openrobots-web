@@ -2,7 +2,7 @@ from django.db import models
 
 from django.contrib.auth.models import User
 from . import opentrons_config #OPENTRONS_TEMPLATE_DIRECTORY, OPENTRONS_OUTPUT_DIRECTORY
-
+import distutils
 
 class Stations (models.Model):
     stationName = models.CharField(max_length = 80)
@@ -15,6 +15,46 @@ class Stations (models.Model):
         return '%s' %(self.stationName)
 
 
+class ModuleType (models.Model):
+    moduleType = models.CharField(max_length = 20)
+    description = models.CharField(max_length = 255, null = True, blank = True)
+
+    def __str__ (self):
+        return '%s' %(self.moduleType)
+'''
+class Robots (models.Model):
+    userName = models.ForeignKey (
+                        User,
+                        on_delete=models.CASCADE, null = True, blank = True )
+    configuration = models.ForeignKey(
+                        Stations,
+                        on_delete=models.CASCADE)
+    module1Type = models.ForeignKey(
+                        ModuleType,
+                        on_delete=models.CASCADE)
+
+    module2Type = models.ForeignKey(
+                        ModuleType,
+                        on_delete=models.CASCADE, null = True, blank = True)
+
+    location = models.CharField(max_length = 255)
+    robots = models.CharField(max_length = 255)
+    serialNumber = models.CharField(max_length = 255)
+    IP_address = models.CharField(max_length = 50)
+    hostName = models.CharField(max_length = 50)
+    computer_mac = models.CharField(max_length = 50)
+    rightPipette = models.CharField(max_length = 20, null = True, blank = True)
+    leftPipette = models.CharField(max_length = 20, null = True, blank = True)
+    RP_ID = models.CharField(max_length = 20, null = True, blank = True)
+    LP_ID = models.CharField(max_length = 255, null = True, blank = True)
+    Module_1_ID = models.CharField(max_length = 255, null = True, blank = True)
+    Module_2_ID = models.CharField(max_length = 255, null = True, blank = True)
+    neededPlugs  = models.CharField(max_length = 255, null = True, blank = True)
+    observations = models.CharField(max_length = 255, null = True, blank = True)
+
+    def __str__ (self):
+        return '%s' %(self.robots)
+'''
 class ProtocolsType (models.Model):
     protocolTypeName = models.CharField(max_length = 255)
     description = models.CharField(max_length = 255, null = True, blank = True )
@@ -61,6 +101,12 @@ class ProtocolTemplateFiles (models.Model):
 
     def get_protocol_file_name(self):
         return '%s' %(self.protocolTemplateFileName)
+
+    def get_protocol_type(self):
+        return '%s' %(self.typeOfProtocol.get_name())
+
+    def get_station(self):
+        return '%s' %(self.station.get_station_name())
 
     def get_main_data(self):
         data = []
@@ -151,7 +197,21 @@ class RequestOpenTronsFilesManager(models.Manager):
 
     def create_new_request (self, request_data):
 
-        new_request = self.create()
+        masterMixLabware = MasterMixLabware.objects.get(MasterMixLabwareType__exact = request_data['masterMixLabware'])
+        masterMixTubeLabware = MasterMixTube.objects.get(MasterMixTube__exact = request_data['masterMixTubeLabware'])
+        pcrPlateLabware = PCR_plateLabware.objects.get(PCR_plateLabwareType__exact = request_data['pcrPlateLabware'])
+        masterMixType = MasterMixType.objects.get(MasterMixType__exact = request_data['masterMixType'])
+        elutionLabware = Elution_Labware.objects.get(elution_LabwareType__exact = request_data['elutionLabware'])
+        station = Stations.objects.get(stationName__exact = request_data['station'])
+        usedTemplateFile = ProtocolTemplateFiles.objects.get(protocolTemplateFileName__exact = request_data['usedTemplateFile'])
+        import pdb; pdb.set_trace()
+        new_request = self.create(userRequestedBy = request_data['userRequestedBy'], masterMixLabware = masterMixLabware , masterMixTubeLabware = masterMixTubeLabware,
+                    pcrPlateLabware = pcrPlateLabware, elutionLabware = elutionLabware, masterMixType = masterMixType, station = station,
+                    usedTemplateFile = usedTemplateFile, requestedCodeID = request_data['requestedCodeID'], numberOfSamples = request_data['numberOfSamples'],
+                    prepareMastermix = distutils.util.strtobool(request_data['prepareMastermix']),
+                    transferMastermix = distutils.util.strtobool(request_data['transferMastermix']),
+                    transferSamples = distutils.util.strtobool(request_data['transferSamples']),
+                    generatedFile = request_data['generatedFile'] , userNotes = request_data['userNotes'])
 
         return new_request
 
@@ -181,7 +241,7 @@ class RequestOpenTronsFiles (models.Model):
     usedTemplateFile = models.ForeignKey(
                         ProtocolTemplateFiles,
                         on_delete=models.CASCADE)
-    requestedCodeID = models.CharField(max_length = 10)
+    requestedCodeID = models.CharField(max_length = 50)
     numberOfSamples = models.CharField(max_length = 10)
     prepareMastermix = models.BooleanField()
     transferMastermix = models.BooleanField()
@@ -193,5 +253,13 @@ class RequestOpenTronsFiles (models.Model):
 
     def __str__ (self):
         return '%s' %(self.requestedCodeID)
+
+    def get_result_data(self):
+        data = []
+        data.append(self.requestedCodeID)
+        data.append(self.usedTemplateFile.get_protocol_type())
+        data.append(self.station.get_station_name())
+        data.append(self.generatedFile)
+        return data
 
     objects = RequestOpenTronsFilesManager()

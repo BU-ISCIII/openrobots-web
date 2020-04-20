@@ -5,28 +5,34 @@ from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from opentrons.opentrons_config import *
 
-def add_parameters_in_file (in_file, parameters):
+def add_parameters_in_file (in_file, output_file, parameters):
     '''
     Description:
         The function will get protocol template file and add the parameters to create an output file
         that is stored in OPENTRONS_OUTPUT_DIRECTORYthe Labware information used in the form to create the files
-
-    Functions:
-
+    Input:
+        in_file     # template file
+        output_file    # output file name
+        parameters  # dictionnary with the information to include in the file
+    Constans:
+        OPENTRONS_DELIMITATION_PARAMETERS_TAGS
     Return:
         form_data
     '''
     template_dir = os.path.join(settings.MEDIA_ROOT, OPENTRONS_TEMPLATE_DIRECTORY )
-    template_file = os.path.join(template_dir, OPENTRONS_TEMPLATE_FILE_NAME)
+    template_file = os.path.join(template_dir, os.path.basename(in_file))
     if not os.path.exists(template_file):
-        return
+        return 'Protocol Template does not exists'
 
     out_dir = os.path.join(settings.MEDIA_ROOT, OPENTRONS_OUTPUT_DIRECTORY)
-    out_file = os.path.join(out_dir,'pepe.py')
+    out_file = os.path.join(out_dir, output_file )
     if not os.path.exists(out_dir) :
         os.makedirs (out_dir)
+    import pdb; pdb.set_trace()
     with open (template_file, 'r') as in_fh:
         found_start = False
+        delimitation_end_found = False
+        parameters_added = True
         with open(out_file, 'w') as out_fh:
             for line in in_fh:
                 parameter_section =  re.search(rf'^{OPENTRONS_DELIMITATION_PARAMETERS_TAGS[0]}', line)
@@ -35,15 +41,46 @@ def add_parameters_in_file (in_file, parameters):
                     out_fh.write(line)
                 if parameter_section :
                     found_start = True
-                    for param in OPENTRONS_FIELD_TO_FETCH_IN_TEMPLATE_FILE :
 
-                        out_fh.write(param + ' = '+ parameters[param]+ '\n')
+                    for key in sorted(parameters):
+                        type_of_data = get_type_of_data(parameters[key])
+                        if type_of_data == 'boolean' or type_of_data == 'integer':
+
+                            out_fh.write(key + ' = '+ parameters[key]+ '\n')
+                        else:
+                            out_fh.write(key + ' = \''+ parameters[key]+ '\'\n')
+                    parameters_added = True
                     continue
                 if end_parameter_section :
-                    break
-                    #out_fh.write(line)
-                    #found_start = False
-    return out_file
+                    out_fh.write(line)
+                    found_start = False
+                    delimitation_end_found = True
+    import pdb; pdb.set_trace()
+    if parameters_added and delimitation_end_found :
+        return 'True'
+    os.remove(out_file)
+    return 'Unable to write the parameters in the protocol file'
+
+def get_type_of_data (data):
+    '''
+    Description:
+        The function get always as input a string class.
+        By trying to convert the input data to int or bolealn it will decide the type of data
+        If not possible to conver it returns string
+    Return:
+        type_of_data
+    '''
+    boolean_values = ['True', 'False', 'None']
+    if data in boolean_values :
+        return 'boolean'
+    try:
+        integer = int(data)
+        return 'integer'
+    except:
+        return 'string'
+
+
+
 
 def get_metadata_from_file(in_file):
     '''
