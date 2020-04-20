@@ -16,26 +16,24 @@ class Stations (models.Model):
 
 
 class ModuleType (models.Model):
-    moduleType = models.CharField(max_length = 20)
-    description = models.CharField(max_length = 255, null = True, blank = True)
+    moduleType1 = models.CharField(max_length = 20)
+    description1 = models.CharField(max_length = 255, null = True, blank = True)
+    moduleType2 = models.CharField(max_length = 20)
+    description2 = models.CharField(max_length = 255, null = True, blank = True)
 
     def __str__ (self):
         return '%s' %(self.moduleType)
-'''
-class Robots (models.Model):
+
+class RobotsInventory (models.Model):
     userName = models.ForeignKey (
                         User,
                         on_delete=models.CASCADE, null = True, blank = True )
     configuration = models.ForeignKey(
                         Stations,
                         on_delete=models.CASCADE)
-    module1Type = models.ForeignKey(
+    module1ype = models.ForeignKey(
                         ModuleType,
                         on_delete=models.CASCADE)
-
-    module2Type = models.ForeignKey(
-                        ModuleType,
-                        on_delete=models.CASCADE, null = True, blank = True)
 
     location = models.CharField(max_length = 255)
     robots = models.CharField(max_length = 255)
@@ -54,7 +52,7 @@ class Robots (models.Model):
 
     def __str__ (self):
         return '%s' %(self.robots)
-'''
+
 class ProtocolsType (models.Model):
     protocolTypeName = models.CharField(max_length = 255)
     description = models.CharField(max_length = 255, null = True, blank = True )
