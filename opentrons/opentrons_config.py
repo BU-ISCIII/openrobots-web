@@ -10,8 +10,8 @@ sys.path.append('../')
 ## Relative path from settings.BASE_DIR
 
 ## Relative path from settings.MEDIA_ROOT
-OPENTRONS_TEMPLATE_DIRECTORY = 'template'
-OPENTRONS_OUTPUT_DIRECTORY = 'ouput_files'
+OPENTRONS_TEMPLATE_DIRECTORY = 'templates'
+OPENTRONS_OUTPUT_DIRECTORY = 'protocol_files'
 
 
 #OPENTRONS_TEMPLATE_FILE_NAME = 'v1_station_c_S3.ot2.apiv2.py'

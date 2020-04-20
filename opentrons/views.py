@@ -39,7 +39,7 @@ def create_protocol_file(request):
         database['generatedFile'] = protocol_file
         database['requestedCodeID'] = build_request_codeID (request.user, protocol_type, request.POST['station'] )
         new_create_protocol = RequestOpenTronsFiles.objects.create_new_request(database)
-        import pdb; pdb.set_trace()
+        
         display_result = new_create_protocol.get_result_data()
 
 

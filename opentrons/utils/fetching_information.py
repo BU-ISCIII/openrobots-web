@@ -196,7 +196,6 @@ def extract_form_data (request) :
     data_for_database['userNotes'] = request.POST['usernotes']
     data_for_database['userRequestedBy'] = request.user
 
-    import pdb; pdb.set_trace()
     return data_for_file , data_for_database
 
 

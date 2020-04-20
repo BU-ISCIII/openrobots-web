@@ -28,7 +28,7 @@ def add_parameters_in_file (in_file, output_file, parameters):
     out_file = os.path.join(out_dir, output_file )
     if not os.path.exists(out_dir) :
         os.makedirs (out_dir)
-    import pdb; pdb.set_trace()
+
     with open (template_file, 'r') as in_fh:
         found_start = False
         delimitation_end_found = False
@@ -55,7 +55,7 @@ def add_parameters_in_file (in_file, output_file, parameters):
                     out_fh.write(line)
                     found_start = False
                     delimitation_end_found = True
-    import pdb; pdb.set_trace()
+    
     if parameters_added and delimitation_end_found :
         return 'True'
     os.remove(out_file)

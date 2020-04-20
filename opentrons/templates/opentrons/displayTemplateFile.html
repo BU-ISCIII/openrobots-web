@@ -23,7 +23,8 @@
                                 <td>{{ protocol }}</td>
                                 <td>{{ station }}</td>
                                 <td>{{ user }}</td>
-                                <td>{{ file }}</td>
+								<td><a href="documents/{{file}}" download>{{file}}<span class="glyphicon glyphicon-download-alt"></span></a></td>
+
                             {% endfor %}
 						</tr>
 					</tbody>

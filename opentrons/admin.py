@@ -36,7 +36,7 @@ class Elution_LabwareAdmin (admin.ModelAdmin):
 
 class RequestOpenTronsFilesAdmin (admin.ModelAdmin):
     list_display =['requestedCodeID','masterMixLabware', 'masterMixTubeLabware','pcrPlateLabware', 'elutionLabware', 'masterMixType', 'numberOfSamples',
-                'prepareMastermix', 'transferMastermix', 'transferSamples', 'usedTemplateFile','userRequestedBy' , 'userNotes']
+                'prepareMastermix', 'transferMastermix', 'transferSamples', 'generatedFile', 'usedTemplateFile','userRequestedBy' , 'userNotes']
 
 
 
