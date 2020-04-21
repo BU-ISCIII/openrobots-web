@@ -14,16 +14,16 @@ class Stations (models.Model):
     def get_station_name(self):
         return '%s' %(self.stationName)
 
-
+'''
 class ModuleType (models.Model):
     moduleType1 = models.CharField(max_length = 20)
     description1 = models.CharField(max_length = 255, null = True, blank = True)
-    moduleType2 = models.CharField(max_length = 20)
+    moduleType2 = models.CharField(max_length = 20,  null = True, blank = True)
     description2 = models.CharField(max_length = 255, null = True, blank = True)
 
     def __str__ (self):
         return '%s' %(self.moduleType)
-
+'''
 class RobotsInventory (models.Model):
     userName = models.ForeignKey (
                         User,
@@ -31,9 +31,9 @@ class RobotsInventory (models.Model):
     configuration = models.ForeignKey(
                         Stations,
                         on_delete=models.CASCADE)
-    module1ype = models.ForeignKey(
-                        ModuleType,
-                        on_delete=models.CASCADE)
+    #module1ype = models.ForeignKey(
+    #                    ModuleType,
+    #                    on_delete=models.CASCADE)
 
     location = models.CharField(max_length = 255)
     robots = models.CharField(max_length = 255)

@@ -35,7 +35,7 @@ class ModuleTypeAdmin (admin.ModelAdmin):
 
 
 class RobotsInventoryAdmin (admin.ModelAdmin):
-    list_display =('userName', 'configuration', 'module1ype', 'location','robots', 'serialNumber','IP_address','hostName',
+    list_display =('userName', 'configuration',  'location','robots', 'serialNumber','IP_address','hostName',
             'computer_mac','rightPipette', 'leftPipette', 'RP_ID', 'LP_ID', 'Module_1_ID', 'Module_2_ID','neededPlugs','observations')
 
 
@@ -58,7 +58,7 @@ admin.site.register(MasterMixLabware , MasterMixLabwareAdmin)
 admin.site.register(MasterMixTube , MasterMixTubeAdmin)
 admin.site.register(PCR_plateLabware , PCR_plateLabwareAdmin)
 admin.site.register(Elution_Labware , Elution_LabwareAdmin)
-admin.site.register(ModuleType , ModuleTypeAdmin)
+#admin.site.register(ModuleType , ModuleTypeAdmin)
 admin.site.register(RobotsInventory , RobotsInventoryAdmin)
 
 admin.site.register(RequestOpenTronsFiles , RequestOpenTronsFilesAdmin)
