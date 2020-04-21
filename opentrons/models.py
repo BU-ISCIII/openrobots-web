@@ -18,6 +18,15 @@ class Stations (models.Model):
 class ModuleType (models.Model):
     moduleType = models.CharField(max_length = 20)
     description = models.CharField(max_length = 255, null = True, blank = True)
+    witePapers = models.FileField(upload_to = opentrons_config.OPENTRONS_MODULE_TYPE_GUIDES_DIRECTORY , null = True , blank = True)
+    manualGuide = models.FileField(upload_to = opentrons_config.OPENTRONS_MODULE_TYPE_GUIDES_DIRECTORY , null = True , blank = True)
+    moduleImage = models.CharField(max_length = 255, null = True, blank = True)
+
+    def __str__ (self):
+        return '%s' %(self.moduleType)
+
+    def get_module_type_name(self):
+        return '%s' %(self.moduleType)
 
 class ModulesInLab (models.Model):
     moduleType = models.ForeignKey(
@@ -45,15 +54,60 @@ class RobotsInventory (models.Model):
     computer_mac = models.CharField(max_length = 50)
     rightPipette = models.CharField(max_length = 20, null = True, blank = True)
     leftPipette = models.CharField(max_length = 20, null = True, blank = True)
-    RP_ID = models.CharField(max_length = 20, null = True, blank = True)
-    LP_ID = models.CharField(max_length = 255, null = True, blank = True)
-    Module_1_ID = models.CharField(max_length = 255, null = True, blank = True)
-    Module_2_ID = models.CharField(max_length = 255, null = True, blank = True)
+    rightPipetteID = models.CharField(max_length = 20, null = True, blank = True)
+    leftPipetteID = models.CharField(max_length = 255, null = True, blank = True)
     neededPlugs  = models.CharField(max_length = 255, null = True, blank = True)
     observations = models.CharField(max_length = 255, null = True, blank = True)
 
     def __str__ (self):
         return '%s' %(self.robots)
+
+    def get_robot_name (self):
+        return '%s' %(self.robots)
+
+    def get_robot_id (self):
+        return '%s'  %(self.pk)
+
+    def get_minimum_robot_data(self):
+        data = []
+        data.append(self.robots)
+        data.append(self.location)
+        data.append(self.configuration.get_station_name())
+        data.append(self.pk)
+        return data
+
+    def get_basic_robot_data(self):
+        data = []
+        data.append(self.robots)
+        data.append(self.location)
+        data.append(self.configuration.get_station_name())
+        data.append(self.serialNumber)
+        data.append(self.observations)
+        return data
+
+    def get_network_data(self):
+        data = []
+        data.append(self.IP_address)
+        data.append(self.hostName)
+        data.append(self.computer_mac)
+        return data
+
+    def get_pipette_data(self):
+        data = []
+        data.append(self.rightPipette)
+        data.append(self.rightPipetteID)
+        data.append(self.leftPipette)
+        data.append(self.leftPipetteID)
+        return data
+
+    def get_modules_obj(self):
+
+        return self.modules
+
+    def get_plugs_data(self):
+        data = []
+        data.append(self.neededPlugs)
+        return data
 
 class ProtocolsType (models.Model):
     protocolTypeName = models.CharField(max_length = 255)

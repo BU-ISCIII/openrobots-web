@@ -89,6 +89,39 @@ def get_form_data_creation_run_file():
 
     return form_data
 
+def get_list_robot_inventory():
+    '''
+    Description:
+        The function will get the robot availables and fetch for each inventory data
+    Return:
+        protocol_types
+    '''
+    robot_data = []
+    if RobotsInventory.objects.all().exists():
+        robots_defined = RobotsInventory.objects.all().order_by('robots')
+        for robot in robots_defined:
+            robot_data.append(robot.get_minimum_robot_data())
+
+    return robot_data
+
+def get_robot_inventory_data(robot_id):
+    '''
+    Description:
+        The function will fetch the robot inventory data
+    Return:
+        protocol_types
+    '''
+    robot_data = {}
+    if RobotsInventory.objects.filter(pk__exact = robot_id).exists():
+        robot_obj = RobotsInventory.objects.get(pk__exact = robot_id)
+        robot_data['main'] = robot_obj.get_basic_robot_data()
+        robot_data['robot_name'] = robot_obj.get_robot_name()
+        robot_data['network'] = robot_obj.get_network_data()
+        robot_data['pipette'] = robot_obj.get_pipette_data()
+        robot_data['plugs'] = robot_obj.get_plugs_data()
+    return robot_data
+
+
 def get_protocol_types():
     '''
     Description:

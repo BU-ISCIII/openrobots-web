@@ -7,6 +7,7 @@ from opentrons.utils.file_utilities import  *
 
 def index(request):
     #
+    return redirect ('/createProtocolFile')
     return render(request, 'opentrons/index.html')
 @login_required
 def create_protocol_file(request):
@@ -39,7 +40,7 @@ def create_protocol_file(request):
         database['generatedFile'] = protocol_file
         database['requestedCodeID'] = build_request_codeID (request.user, protocol_type, request.POST['station'] )
         new_create_protocol = RequestOpenTronsFiles.objects.create_new_request(database)
-        
+
         display_result = new_create_protocol.get_result_data()
 
 
@@ -54,7 +55,16 @@ def display_template_file(request, p_template_id):
 
     return render(request, 'opentrons/displayTemplateFile.html' ,{'protocol_template_data': protocol_template_data})
 
+@login_required
+def detail_robot_inventory(request,robot_id):
+    robot_inventory_data = get_robot_inventory_data(robot_id)
+    return render(request, 'opentrons/detailRobotInventory.html' ,{'robot_inventory_data': robot_inventory_data} )
 
+@login_required
+def robot_inventory(request):
+    robot_list_inventory = get_list_robot_inventory()
+
+    return render(request, 'opentrons/robotInventory.html' ,{'robot_list_inventory': robot_list_inventory} )
 
 @login_required
 def upload_protocol_templates(request):
@@ -90,7 +100,7 @@ def upload_protocol_templates(request):
 
 
 
-        import pdb; pdb.set_trace()
+        #import pdb; pdb.set_trace()
         return render(request, 'opentrons/uploadProtocolTemplates.html' , {'template_data': template_data ,'stored_protocol_file': stored_protocol_file,
                                 'created_new_file': created_new_file  })
     else:

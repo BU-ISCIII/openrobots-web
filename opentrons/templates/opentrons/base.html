@@ -37,7 +37,13 @@
                                 <ul class="nav navbar-nav navbar-nav-right">
                                     <li class="js_nav-item nav-item"><a class="nav-item-child nav-item-hover" href="/">Home</a></li>
                                     {% if user.is_authenticated %}
-                    				    <li class=" js_nav-item nav-item dropdown"><a class=" nav-item-child nav-item-hover dropdown-toggle" data-toggle="dropdown" href="#">Request<span class="caret"></span></a>
+                    				    <li class=" js_nav-item nav-item dropdown"><a class=" nav-item-child nav-item-hover dropdown-toggle" data-toggle="dropdown" href="#">Inventory<span class="caret"></span></a>
+                    				        <ul class="dropdown-menu">
+                                                <li><a href="/modulesInventory">Modules Inventrory</a></li>
+                                                <li><a href="/robotInventory">Robot Inventory</a></li>
+                                            </ul>
+                          				</li>
+                                        <li class=" js_nav-item nav-item dropdown"><a class=" nav-item-child nav-item-hover dropdown-toggle" data-toggle="dropdown" href="#">Request<span class="caret"></span></a>
                     				        <ul class="dropdown-menu">
                                                 <li><a href="/createProtocolFile">Create Protocol File</a></li>
                                             </ul>
