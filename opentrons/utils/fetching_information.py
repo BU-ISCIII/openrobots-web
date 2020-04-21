@@ -39,6 +39,21 @@ def build_request_codeID (user, protocol_type, station ) :
     num_times += 1
     return user.username + protocol_type + station + str(num_times)
 
+def get_form_data_creation_new_robot():
+    '''
+    Description:
+        The function will get the robot inventory information to display in the form
+    Functions:
+        get_stations_names      # located at this file
+        get_defined_modules      # located at this file
+    Return:
+        form_data
+    '''
+    form_data = {}
+    form_data['stations'] = get_stations_names ()
+    form_data['modules'] = get_defined_modules()
+    return form_data
+
 def get_form_data_creation_run_file():
     '''
     Description:
@@ -104,6 +119,26 @@ def get_list_robot_inventory():
 
     return robot_data
 
+def get_defined_modules () :
+    '''
+    Description:
+        The function get the defined module
+    Return:
+
+    '''
+    module_data = []
+    if ModulesInLab.objects.all().exists():
+        modules = ModulesInLab.objects.all().order_by('moduleType')
+        for module in modules:
+            module_data.append([module.get_module_id(), module.get_module_type_and_ID()])
+
+    return module_data
+
+def get_module_obj_from_id(module_id):
+    if ModulesInLab.objects.filter(pk__exact = module_id):
+        return ModulesInLab.objects.get(pk__exact = module_id)
+    return None
+
 def get_robot_inventory_data(robot_id):
     '''
     Description:
@@ -119,6 +154,12 @@ def get_robot_inventory_data(robot_id):
         robot_data['network'] = robot_obj.get_network_data()
         robot_data['pipette'] = robot_obj.get_pipette_data()
         robot_data['plugs'] = robot_obj.get_plugs_data()
+
+        modules = robot_obj.modules.all()
+        robot_data['modules'] = []
+        for module in modules :
+            robot_data['modules'].append([module.get_module_type(), module.get_moduleID()])
+
     return robot_data
 
 
@@ -230,6 +271,25 @@ def extract_form_data (request) :
     data_for_database['userRequestedBy'] = request.user
 
     return data_for_file , data_for_database
+
+def extract_define_robot_form_data (request) :
+    '''
+    Description:
+        The function extract the user form data and define a dictionnary with the values
+    Constants:
+        PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_C
+    Return:
+        valid_metadata
+    '''
+    form_field_list = ['configuration','location' ,'robots', 'serialNumber', 'IP_address', 'hostName',
+            'computer_mac', 'rightPipette', 'leftPipette', 'rightPipetteID', 'leftPipetteID', 'neededPlugs', 'observations']
+    robot_data = {}
+    for item in form_field_list :
+        robot_data[item] = request.POST[item]
+    robot_data['modules'] = request.POST.getlist('modules')
+    return robot_data
+
+
 
 
 

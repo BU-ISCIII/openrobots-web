@@ -39,6 +39,9 @@
                                     {% if user.is_authenticated %}
                     				    <li class=" js_nav-item nav-item dropdown"><a class=" nav-item-child nav-item-hover dropdown-toggle" data-toggle="dropdown" href="#">Inventory<span class="caret"></span></a>
                     				        <ul class="dropdown-menu">
+                                                {% if reques.user == admin %}
+                                                    <li><a href="/defineRobot">Define New Robot</a></li>
+                                                {% endif %}
                                                 <li><a href="/modulesInventory">Modules Inventrory</a></li>
                                                 <li><a href="/robotInventory">Robot Inventory</a></li>
                                             </ul>

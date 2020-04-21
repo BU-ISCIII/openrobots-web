@@ -1,7 +1,7 @@
 {% extends 'opentrons/base.html' %}
 {% load static %}
 {% block content %}
-<p>rrere</p>
+
 {% if robot_inventory_data %}
     <div class="row row-space-2 margin-b-4">
         <div class="col-sm-10 col-sm-offset-1">
@@ -112,9 +112,11 @@
 				                            </tr>
 				                        </thead>
 										<tbody>
-				                            {% for value in robot_inventory_data.module %}
+				                            {% for values in robot_inventory_data.modules %}
 				                                <tr>
-				                                    <td>{{value}}</td>
+													{% for value  in values %}
+				                                    	<td>{{value}}</td>
+													{% endfor %}
 				                                </tr>
 				                            {% endfor %}
 				    					</tbody>

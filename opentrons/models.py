@@ -36,7 +36,31 @@ class ModulesInLab (models.Model):
     description = models.CharField(max_length =255, null = True, blank = True)
 
     def __str__ (self):
-        return '%s' %(self.moduleType)
+        return '%s_%s' %(self.moduleType ,self.moduleID)
+
+    def get_module_type (self):
+        return '%s' %(self.moduleType.get_module_type_name())
+
+    def get_module_type_and_ID (self):
+        return '%s_%s' %(self.moduleType ,self.moduleID)
+
+    def get_moduleID (self):
+        return '%s' %(self.moduleID)
+
+    def get_module_id (self):
+        return '%s' %(self.pk)
+
+class RobotsInventoryManager (models.Manager):
+
+    def create_robot(self, robot_data):
+        configuration_obj = Stations.objects.get(stationName__exact = robot_data['configuration'])
+        new_robot = self.create( userName = robot_data['userName'], configuration = configuration_obj, location = robot_data['location'],
+                robots = robot_data['robots'], serialNumber= robot_data['serialNumber'],
+                IP_address = robot_data['IP_address'], hostName= robot_data['hostName'],
+                computer_mac = robot_data['computer_mac'], rightPipette= robot_data['rightPipette'], leftPipette = robot_data['leftPipette'],
+                rightPipetteID = robot_data['rightPipetteID'], leftPipetteID = robot_data['leftPipetteID'],
+                neededPlugs = robot_data['neededPlugs'], observations = robot_data['observations'] )
+        return new_robot
 
 class RobotsInventory (models.Model):
     userName = models.ForeignKey (
@@ -58,6 +82,7 @@ class RobotsInventory (models.Model):
     leftPipetteID = models.CharField(max_length = 255, null = True, blank = True)
     neededPlugs  = models.CharField(max_length = 255, null = True, blank = True)
     observations = models.CharField(max_length = 255, null = True, blank = True)
+    generatedat = models.DateTimeField(auto_now_add=True)
 
     def __str__ (self):
         return '%s' %(self.robots)
@@ -108,6 +133,13 @@ class RobotsInventory (models.Model):
         data = []
         data.append(self.neededPlugs)
         return data
+
+    def set_module(self, module_obj) :
+        self.modules.add(module_obj)
+        self.save()
+        return
+
+    objects = RobotsInventoryManager()
 
 class ProtocolsType (models.Model):
     protocolTypeName = models.CharField(max_length = 255)

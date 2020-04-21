@@ -7,25 +7,11 @@ from opentrons.utils.file_utilities import  *
 
 def index(request):
     #
-    return redirect ('/createProtocolFile')
+    #return redirect ('/createProtocolFile')
     return render(request, 'opentrons/index.html')
 @login_required
 def create_protocol_file(request):
     # Get data to display in form
-    '''
-    parameter = {}
-    parameter['NUM_SAMPLES'] = '96'
-    parameter['MM_LABWARE'] = '\'opentrons aluminum block\''
-    parameter['MMTUBE_LABWARE'] = '\'2ml tubes\''
-    parameter['PCR_LABWARE'] = '\'opentrons aluminum nest plate\''
-    parameter['ELUTION_LABWARE'] = '\'opentrons aluminum nest plate\''
-    parameter['PREPARE_MASTERMIX'] = 'True'
-    parameter['MM_TYPE'] = '\'MM1\''
-    parameter['TRANSFER_MASTERMIX'] = 'True'
-    parameter['TRANSFER_SAMPLES'] = 'True'
-    #import pdb; pdb.set_trace()
-    #add_parameters_in_file(parameter)
-    '''
     form_data = get_form_data_creation_run_file()
     if request.method == 'POST' and (request.POST['action']=='createprotocolfile'):
         template = request.POST['template']
@@ -48,9 +34,28 @@ def create_protocol_file(request):
     else:
         return render(request, 'opentrons/createProtocolFile.html' ,{'form_data': form_data})
 
+@login_required
+def define_robot (request):
+
+    robot_inventory_form_data = get_form_data_creation_new_robot()
+
+    if request.method == 'POST' and (request.POST['action']=='definerobot'):
+
+        robot_data = extract_define_robot_form_data(request)
+        robot_data['userName'] = request.user
+
+        new_robot = RobotsInventory.objects.create_robot(robot_data)
+        for module in robot_data['modules']:
+
+            new_robot.set_module(get_module_obj_from_id (module))
+
+        created_new_robot = new_robot.get_minimum_robot_data()
+        return render(request, 'opentrons/defineRobot.html' ,{'created_new_robot': created_new_robot})
+    return render(request, 'opentrons/defineRobot.html' ,{'robot_inventory_form_data': robot_inventory_form_data})
+
+
+@login_required
 def display_template_file(request, p_template_id):
-
-
     protocol_template_data = get_protocol_template_information(p_template_id)
 
     return render(request, 'opentrons/displayTemplateFile.html' ,{'protocol_template_data': protocol_template_data})
@@ -100,7 +105,7 @@ def upload_protocol_templates(request):
 
 
 
-        #import pdb; pdb.set_trace()
+
         return render(request, 'opentrons/uploadProtocolTemplates.html' , {'template_data': template_data ,'stored_protocol_file': stored_protocol_file,
                                 'created_new_file': created_new_file  })
     else:
