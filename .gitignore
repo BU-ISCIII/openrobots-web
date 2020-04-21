@@ -6,8 +6,7 @@ migrations/
 tmp/
 logs/
 static/
-documents/templates
-documents/output_files
+documents/
 #--- updates introduced for iSkyLIMS in submodules packaging ---
 #virtualenv/
 #opentrons_web/
