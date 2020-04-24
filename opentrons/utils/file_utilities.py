@@ -186,8 +186,6 @@ def json_get_labware_information(in_file ):
     json_data['spacing_col'] = "{:.2f}".format(float(json_dict['wells']['A2']['x']) - float(json_dict['wells']['A1']['x']))
     json_data['spacing_row'] = "{:.2f}".format(float(json_dict['wells']['A1']['y']) - float(json_dict['wells']['B1']['y']))
 
-
-    import pdb; pdb.set_trace()
     return json_data
 
 

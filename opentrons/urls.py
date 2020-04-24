@@ -7,6 +7,7 @@ urlpatterns = [
     path('createProtocolFile', views.create_protocol_file, name = 'create_protocol_file'),
     path('defineLabware', views.define_labware, name = 'define_labware'),
     path('defineRobot', views.define_robot, name = 'define_robot'),
+    path('detailLabwareInventory=<int:labware_id>', views.detail_labware_inventory, name = 'detail_labware_inventory'),
     path('detailRobotInventory=<int:robot_id>', views.detail_robot_inventory, name = 'detail_robot_inventory'),
     path('displayTemplateFile=<int:p_template_id>', views.display_template_file, name = 'display_template_file'),
     path('labwareInventory', views.labware_inventory, name = 'labware_inventory'),

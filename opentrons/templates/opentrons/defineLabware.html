@@ -20,30 +20,30 @@
 
 
 
-{% if created_new_robot %}
+{% if created_new_labware %}
 
     <div class="row row-space-2 margin-b-4">
-        <div class="col-sm-5" >
+        <div class="col-sm-7" >
             <div class="panel panel-default">
                 <div class="panel-heading"><h3>New Labware data has been added to your inventory</h3> </div>
                 <div class="panel-body">
-                    <table class="table ">
-                        <thead>
-                            <tr>
-                                <th>Labware Name</th>
-                                <th>Robot Location</th>
-                                <th>Robot Configuration</th>
+                    <table class="table  table-hover">
+    					<thead>
+    						<tr>
+    							<th>Labware name</th>
+								<th>Brand</th>
+								<th>Category</th>
+                                <th>Number of Wells</th>
                             </tr>
                         </thead>
-                        <tbody>
+						<tbody>
                             <tr>
-                                <td>{{ created_new_robot.0 }}</td>
-                                <td>{{ created_new_robot.1 }}</td>
-                                <td>{{ created_new_robot.2 }}</td>
+                                {% for value in created_new_labware %}
+                                    <td>{{value}}</td>
+                                {% endfor %}
                             </tr>
-                        </tbody>
-                    </table>
-
+    					</tbody>
+    				</table>
                 </div>  <!--  end of panel body  -->
             </div> <!--// end panel -->
         </div> <!--// end col-sm-6  -->

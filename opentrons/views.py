@@ -44,19 +44,36 @@ def define_labware(request) :
 
 
         json_saved_file , json_file_name = store_user_file(request.FILES['jsonfile'], OPENTRONS_LABWARE_JSON_DIRECTORY )
+
         if not json_file_valid_format(json_saved_file):
             error_message = INVALID_JSON_FILE
             os.remove(json_saved_file)
             return render(request, 'opentrons/defineLabware.html' ,{'form_data': form_data, 'error_message': error_message})
+
+
         json_dict = json_get_labware_information(json_saved_file)
         json_dict['elutionhwtype'] = request.POST['elutionhwtype']
         #json_dict['labwarename'] = request.POST['labwarename']
         json_dict['jsonFile'] = json_file_name
-        json_dict['pythonFile'] = ''
-        json_dict['imageFile'] = ''
-        import pdb; pdb.set_trace()
+
+        if 'pythonfile' in request.FILES :
+            python_saved_file , python_file_name = store_user_file(request.FILES['pythonfile'], OPENTRONS_LABWARE_PYTHON_DIRECTORY )
+            json_dict['pythonFile'] = python_file_name
+        else:
+            json_dict['pythonFile'] = ''
+        if 'imagefile' in request.FILES :
+            image_saved_file , image_file_name = store_user_file(request.FILES['imagefile'], OPENTRONS_LABWARE_IMAGE_DIRECTORY )
+            json_dict['imageFile'] = image_file_name
+        else:
+            json_dict['imageFile'] = ''
+
         new_elution_labware = Elution_Labware.objects.create_elution_labware(json_dict)
-    return render(request, 'opentrons/defineLabware.html' ,{'form_data': form_data})
+        ## remove the id value in the data
+        created_new_labware = new_elution_labware.get_minimun_elution_lab_data()
+        del created_new_labware[-1]
+        return render(request, 'opentrons/defineLabware.html' ,{'created_new_labware': created_new_labware})
+    else:
+        return render(request, 'opentrons/defineLabware.html' ,{'form_data': form_data})
 
 @login_required
 def define_robot (request):
@@ -85,6 +102,11 @@ def display_template_file(request, p_template_id):
     return render(request, 'opentrons/displayTemplateFile.html' ,{'protocol_template_data': protocol_template_data})
 
 @login_required
+def detail_labware_inventory(request,labware_id):
+    labware_inventory_data = get_labware_inventory_data(labware_id)
+    return render(request, 'opentrons/detailLabwareInventory.html' ,{'labware_inventory_data': labware_inventory_data} )
+
+@login_required
 def detail_robot_inventory(request,robot_id):
     robot_inventory_data = get_robot_inventory_data(robot_id)
     return render(request, 'opentrons/detailRobotInventory.html' ,{'robot_inventory_data': robot_inventory_data} )
@@ -92,14 +114,12 @@ def detail_robot_inventory(request,robot_id):
 @login_required
 def labware_inventory(request):
     labware_list_inventory = get_list_labware_inventory()
-
     return render(request, 'opentrons/labwareInventory.html', {'labware_list_inventory': labware_list_inventory})
 
 
 @login_required
 def robot_inventory(request):
     robot_list_inventory = get_list_robot_inventory()
-
     return render(request, 'opentrons/robotInventory.html' ,{'robot_list_inventory': robot_list_inventory} )
 
 @login_required

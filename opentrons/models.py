@@ -272,15 +272,12 @@ class PCR_plateLabware (models.Model):
 class Elution_LabwareManager(models.Manager):
     def create_elution_labware(self,data):
         elutionhwtype = ElutionHardware.objects.get(hardwareType__exact = data['elutionhwtype'])
-        import pdb; pdb.set_trace()
         new_elution_labware = self.create( elutionHW_type = elutionhwtype, elution_LabwareType = data['displayName'],
                 valueInCode = data['loadName'], brand = data['brand'], category= data['displayCategory'],
                 x_dimension = data['xDimension'], y_dimension = data['yDimension'], z_dimension = data['zDimension'],
                 num_columns= data['colums'],  num_rows = data['rows'], spacing_col = data['spacing_col'],
                 spacing_row = data['spacing_row'], well_depth = data['depth'], well_shape = data['shape'],
                 well_volume = data['totalLiquidVolume'], well_diameter = data['diameter'], num_wells = data['num_wells'],
-
-
                 jsonFile= data['jsonFile'], pythonFile = data['pythonFile'], imageFile = data['imageFile'] )
 
         return new_elution_labware
@@ -305,9 +302,9 @@ class Elution_Labware (models.Model):
     well_shape = models.CharField(max_length = 20)
     well_volume = models.CharField(max_length = 10)
     well_diameter = models.CharField(max_length = 10)
-    jsonFile = models.FileField(upload_to = opentrons_config.OPENTRONS_LABWARE_JSON_DIRECTORY , null = True, blank = True)
-    pythonFile = models.FileField(upload_to = opentrons_config.OPENTRONS_LABWARE_PYTHON_DIRECTORY, null = True, blank = True )
-    imageFile = models.FileField(upload_to = opentrons_config.OPENTRONS_LABWARE_IMAGE_DIRECTORY, null = True, blank = True )
+    jsonFile = models.FileField(upload_to = opentrons_config.OPENTRONS_LABWARE_JSON_DIRECTORY , null = True, blank = True, max_length=200)
+    pythonFile = models.FileField(upload_to = opentrons_config.OPENTRONS_LABWARE_PYTHON_DIRECTORY, null = True, blank = True ,max_length=200 )
+    imageFile = models.FileField(upload_to = opentrons_config.OPENTRONS_LABWARE_IMAGE_DIRECTORY, null = True, blank = True ,max_length=200)
     generatedat = models.DateTimeField(auto_now_add=True)
 
 
@@ -317,13 +314,49 @@ class Elution_Labware (models.Model):
     def get_elution_labware_type (self):
         return '%s' %(self.elution_LabwareType)
 
-    def get_minimu_elution_lab_data (self):
+    def get_minimun_elution_lab_data (self):
         data = []
         data.append(self.elution_LabwareType)
         data.append(self.brand)
         data.append(self.category)
         data.append(self.num_wells)
         data.append(self.pk)
+        return data
+
+    def get_basic_labware_data(self):
+        data = []
+        data.append(self.elutionHW_type.get_hardware_type())
+        data.append(self.brand)
+        data.append(self.category)
+        return data
+
+    def get_image(self):
+        return '%s' %(self.imageFile)
+
+    def get_files(self):
+        data = []
+        data.append(self.jsonFile)
+        data.append(self.pythonFile)
+        return data
+
+    def get_plate_data(self):
+        data = []
+        data.append(self.num_columns)
+        data.append(self.num_rows)
+        data.append(self.num_columns)
+        data.append(self.x_dimension)
+        data.append(self.y_dimension)
+        data.append(self.z_dimension)
+        return data
+
+    def get_well_data(self):
+        data = []
+        data.append(self.well_volume)
+        data.append(self.well_shape)
+        data.append(self.well_diameter)
+        data.append(self.well_depth)
+        data.append(self.spacing_row)
+        data.append(self.spacing_col)
         return data
 
     objects = Elution_LabwareManager()

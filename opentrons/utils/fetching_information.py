@@ -115,7 +115,7 @@ def get_list_labware_inventory():
     if Elution_Labware.objects.all().exists():
         elutions = Elution_Labware.objects.all().order_by('brand')
         for elution in elutions:
-            labware_data.append(elution.get_minimu_elution_lab_data())
+            labware_data.append(elution.get_minimun_elution_lab_data())
     return labware_data
 
 
@@ -164,6 +164,26 @@ def get_elution_hw_types():
     return elution_hw_types
 
 
+def get_labware_inventory_data(labware_id):
+    '''
+    Description:
+        The function will fetch the labware inventory data
+    Return:
+        labware_data
+    '''
+    labware_data = {}
+    if Elution_Labware.objects.filter(pk__exact = labware_id).exists():
+        labware_obj = Elution_Labware.objects.get(pk__exact = labware_id)
+        labware_data['main'] = labware_obj.get_basic_labware_data()
+        labware_data['labware_name'] = labware_obj.get_elution_labware_type()
+        labware_data['plate'] = labware_obj.get_plate_data()
+        labware_data['well'] = labware_obj.get_well_data()
+        labware_data['files'] = labware_obj.get_files()
+        labware_data['image'] = labware_obj.get_image()
+
+
+    return labware_data
+
 
 def get_module_obj_from_id(module_id):
     if ModulesInLab.objects.filter(pk__exact = module_id):
@@ -175,7 +195,7 @@ def get_robot_inventory_data(robot_id):
     Description:
         The function will fetch the robot inventory data
     Return:
-        protocol_types
+        robot_data
     '''
     robot_data = {}
     if RobotsInventory.objects.filter(pk__exact = robot_id).exists():
