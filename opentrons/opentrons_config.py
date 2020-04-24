@@ -13,6 +13,9 @@ sys.path.append('../')
 OPENTRONS_TEMPLATE_DIRECTORY = 'templates'
 OPENTRONS_OUTPUT_DIRECTORY = 'protocol_files'
 OPENTRONS_MODULE_TYPE_GUIDES_DIRECTORY = 'user-guide'
+OPENTRONS_LABWARE_JSON_DIRECTORY = 'labware_inventory/json'
+OPENTRONS_LABWARE_PYTHON_DIRECTORY = 'labware_inventory/python'
+OPENTRONS_LABWARE_IMAGE_DIRECTORY = 'labware_inventory/image'
 
 #OPENTRONS_TEMPLATE_FILE_NAME = 'v1_station_c_S3.ot2.apiv2.py'
 PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_A = ['NUM_SAMPLES' , 'MM_LABWARE','MMTUBE_LABWARE', 'PCR_LABWARE', 'ELUTION_LABWARE',
@@ -28,7 +31,14 @@ MAP_PROTOCOL_PARAMETER_TO_DATABASE_STATION_C = [('NUM_SAMPLES','numberOfSamples'
 OPENTRONS_DELIMITATION_PARAMETERS_TAGS = ['# Parameters to adapt the protocol',
                     '# End Parameters to adapt the protocol']
 
+JSON_LABWARE_ROOT_FIELDS_TO_CHECK = ['metadata', 'dimensions','wells','parameters','brand']
+JSON_LABWARE_FIELDS_TO_GET = {'brand':['brand'],'metadata':['displayName','displayCategory'],'dimensions':['xDimension',
+        'yDimension', 'zDimension'],'parameters':['isMagneticModuleCompatible', 'loadName']}
+JSON_LABWARE_WELL_TO_GET ={'wells':{'A1':['depth','totalLiquidVolume','shape', 'diameter','x','y','z']}}
+
 INVALID_TEMPLATE_FILE = ['Invalid Protocol File ', 'Delimitation Parameters tags are not included in file']
+INVALID_JSON_FILE = ['Invalid json File', 'File does not contains all requested information']
+
 METADATA_FIELDS_FOR_PROTOCOL_TEMPLATE = ['protocolName', 'author', 'source','apiLevel']
 PROTOCOL_STEPS_IN_TEMPLATE_FILE = ['prepare_mastermix', 'transfer_mastermix' , 'transfer_samples' ]
 ADMIN_USERS = ['admin']

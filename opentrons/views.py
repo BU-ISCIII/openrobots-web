@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from opentrons.utils.fetching_information import  *
 from opentrons.utils.file_utilities import  *
+from opentrons.opentrons_config import *
 
 def index(request):
     #
@@ -33,6 +34,29 @@ def create_protocol_file(request):
         return render(request, 'opentrons/createProtocolFile.html' ,{'display_result': display_result})
     else:
         return render(request, 'opentrons/createProtocolFile.html' ,{'form_data': form_data})
+
+
+@login_required
+def define_labware(request) :
+    form_data = get_elution_hw_types()
+
+    if request.method == 'POST' and (request.POST['action']=='definelabware'):
+
+
+        json_saved_file , json_file_name = store_user_file(request.FILES['jsonfile'], OPENTRONS_LABWARE_JSON_DIRECTORY )
+        if not json_file_valid_format(json_saved_file):
+            error_message = INVALID_JSON_FILE
+            os.remove(json_saved_file)
+            return render(request, 'opentrons/defineLabware.html' ,{'form_data': form_data, 'error_message': error_message})
+        json_dict = json_get_labware_information(json_saved_file)
+        json_dict['elutionhwtype'] = request.POST['elutionhwtype']
+        #json_dict['labwarename'] = request.POST['labwarename']
+        json_dict['jsonFile'] = json_file_name
+        json_dict['pythonFile'] = ''
+        json_dict['imageFile'] = ''
+        import pdb; pdb.set_trace()
+        new_elution_labware = Elution_Labware.objects.create_elution_labware(json_dict)
+    return render(request, 'opentrons/defineLabware.html' ,{'form_data': form_data})
 
 @login_required
 def define_robot (request):
@@ -66,6 +90,13 @@ def detail_robot_inventory(request,robot_id):
     return render(request, 'opentrons/detailRobotInventory.html' ,{'robot_inventory_data': robot_inventory_data} )
 
 @login_required
+def labware_inventory(request):
+    labware_list_inventory = get_list_labware_inventory()
+
+    return render(request, 'opentrons/labwareInventory.html', {'labware_list_inventory': labware_list_inventory})
+
+
+@login_required
 def robot_inventory(request):
     robot_list_inventory = get_list_robot_inventory()
 
@@ -83,7 +114,7 @@ def upload_protocol_templates(request):
         ## fetch the file from user form and  build the file name  including
         ## the date and time on now to store in database
         file_name = request.FILES['newtemplatefile'].name
-        saved_file , file_name = store_protocol_template_file(request.FILES['newtemplatefile'])
+        saved_file , file_name = store_user_file(request.FILES['newtemplatefile'],OPENTRONS_TEMPLATE_DIRECTORY )
 
         ## get the libary name to check if it is already defined
         if not template_file_valid_format(saved_file):

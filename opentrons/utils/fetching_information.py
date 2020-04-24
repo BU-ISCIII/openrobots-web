@@ -104,12 +104,27 @@ def get_form_data_creation_run_file():
 
     return form_data
 
+def get_list_labware_inventory():
+    '''
+    Description:
+        The function will get the robot availables and fetch for each inventory data
+    Return:
+        labware_data
+    '''
+    labware_data = []
+    if Elution_Labware.objects.all().exists():
+        elutions = Elution_Labware.objects.all().order_by('brand')
+        for elution in elutions:
+            labware_data.append(elution.get_minimu_elution_lab_data())
+    return labware_data
+
+
 def get_list_robot_inventory():
     '''
     Description:
         The function will get the robot availables and fetch for each inventory data
     Return:
-        protocol_types
+        robot_data
     '''
     robot_data = []
     if RobotsInventory.objects.all().exists():
@@ -133,6 +148,22 @@ def get_defined_modules () :
             module_data.append([module.get_module_id(), module.get_module_type_and_ID()])
 
     return module_data
+
+def get_elution_hw_types():
+    '''
+    Description:
+        The function get the elution HW types defined
+    Return:
+        elution_hw_types
+    '''
+    elution_hw_types = []
+    if ElutionHardware.objects.all().exists():
+        elutions = ElutionHardware.objects.all().order_by('hardwareType')
+        for elution in elutions:
+            elution_hw_types.append(elution.get_hardware_type())
+    return elution_hw_types
+
+
 
 def get_module_obj_from_id(module_id):
     if ModulesInLab.objects.filter(pk__exact = module_id):
@@ -272,14 +303,14 @@ def extract_form_data (request) :
 
     return data_for_file , data_for_database
 
+
+
 def extract_define_robot_form_data (request) :
     '''
     Description:
         The function extract the user form data and define a dictionnary with the values
-    Constants:
-        PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_C
     Return:
-        valid_metadata
+        robot_data
     '''
     form_field_list = ['configuration','location' ,'robots', 'serialNumber', 'IP_address', 'hostName',
             'computer_mac', 'rightPipette', 'leftPipette', 'rightPipetteID', 'leftPipetteID', 'neededPlugs', 'observations']
@@ -288,7 +319,6 @@ def extract_define_robot_form_data (request) :
         robot_data[item] = request.POST[item]
     robot_data['modules'] = request.POST.getlist('modules')
     return robot_data
-
 
 
 

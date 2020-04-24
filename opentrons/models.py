@@ -16,7 +16,8 @@ class Stations (models.Model):
 
 
 class ModuleType (models.Model):
-    moduleType = models.CharField(max_length = 20)
+    moduleType = models.CharField(max_length = 30)
+    vendor = models.CharField(max_length = 30)
     description = models.CharField(max_length = 255, null = True, blank = True)
     witePapers = models.FileField(upload_to = opentrons_config.OPENTRONS_MODULE_TYPE_GUIDES_DIRECTORY , null = True , blank = True)
     manualGuide = models.FileField(upload_to = opentrons_config.OPENTRONS_MODULE_TYPE_GUIDES_DIRECTORY , null = True , blank = True)
@@ -226,6 +227,9 @@ class ElutionHardware (models.Model):
     def __str__ (self):
         return '%s' %(self.hardwareType)
 
+    def get_hardware_type(self):
+        return '%s' %(self.hardwareType)
+
 class MasterMixType (models.Model):
     MasterMixType = models.CharField(max_length = 255)
     description = models.CharField(max_length = 255, null = True, blank = True )
@@ -265,12 +269,46 @@ class PCR_plateLabware (models.Model):
     def get_pcr_plate_labware_type (self):
         return '%s' %(self.PCR_plateLabwareType)
 
+class Elution_LabwareManager(models.Manager):
+    def create_elution_labware(self,data):
+        elutionhwtype = ElutionHardware.objects.get(hardwareType__exact = data['elutionhwtype'])
+        import pdb; pdb.set_trace()
+        new_elution_labware = self.create( elutionHW_type = elutionhwtype, elution_LabwareType = data['displayName'],
+                valueInCode = data['loadName'], brand = data['brand'], category= data['displayCategory'],
+                x_dimension = data['xDimension'], y_dimension = data['yDimension'], z_dimension = data['zDimension'],
+                num_columns= data['colums'],  num_rows = data['rows'], spacing_col = data['spacing_col'],
+                spacing_row = data['spacing_row'], well_depth = data['depth'], well_shape = data['shape'],
+                well_volume = data['totalLiquidVolume'], well_diameter = data['diameter'], num_wells = data['num_wells'],
+
+
+                jsonFile= data['jsonFile'], pythonFile = data['pythonFile'], imageFile = data['imageFile'] )
+
+        return new_elution_labware
+
 class Elution_Labware (models.Model):
     elutionHW_type =  models.ForeignKey (
                         ElutionHardware,
                         on_delete=models.CASCADE, max_length = 80, null = True, blank = True )
     elution_LabwareType = models.CharField(max_length = 80)
-    description = models.CharField(max_length = 255)
+    valueInCode = models.CharField(max_length = 255)
+    brand = models.CharField(max_length = 80)
+    category = models.CharField(max_length = 80)
+    x_dimension = models.CharField(max_length = 10)
+    y_dimension = models.CharField(max_length = 10)
+    z_dimension = models.CharField(max_length = 10)
+    num_columns = models.CharField(max_length = 5)
+    num_rows = models.CharField(max_length = 5)
+    num_wells = models.CharField(max_length = 5)
+    spacing_col = models.CharField(max_length = 10)
+    spacing_row = models.CharField(max_length = 10)
+    well_depth = models.CharField(max_length = 5)
+    well_shape = models.CharField(max_length = 20)
+    well_volume = models.CharField(max_length = 10)
+    well_diameter = models.CharField(max_length = 10)
+    jsonFile = models.FileField(upload_to = opentrons_config.OPENTRONS_LABWARE_JSON_DIRECTORY , null = True, blank = True)
+    pythonFile = models.FileField(upload_to = opentrons_config.OPENTRONS_LABWARE_PYTHON_DIRECTORY, null = True, blank = True )
+    imageFile = models.FileField(upload_to = opentrons_config.OPENTRONS_LABWARE_IMAGE_DIRECTORY, null = True, blank = True )
+    generatedat = models.DateTimeField(auto_now_add=True)
 
 
     def __str__ (self):
@@ -278,6 +316,17 @@ class Elution_Labware (models.Model):
 
     def get_elution_labware_type (self):
         return '%s' %(self.elution_LabwareType)
+
+    def get_minimu_elution_lab_data (self):
+        data = []
+        data.append(self.elution_LabwareType)
+        data.append(self.brand)
+        data.append(self.category)
+        data.append(self.num_wells)
+        data.append(self.pk)
+        return data
+
+    objects = Elution_LabwareManager()
 
 class RequestOpenTronsFilesManager(models.Manager):
 

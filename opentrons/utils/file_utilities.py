@@ -1,9 +1,10 @@
-import os, re
+import os, re, json
 import sys, codecs
 import datetime, time
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from opentrons.opentrons_config import *
+
 
 def add_parameters_in_file (in_file, output_file, parameters):
     '''
@@ -55,7 +56,7 @@ def add_parameters_in_file (in_file, output_file, parameters):
                     out_fh.write(line)
                     found_start = False
                     delimitation_end_found = True
-    
+
     if parameters_added and delimitation_end_found :
         return 'True'
     os.remove(out_file)
@@ -134,8 +135,63 @@ def get_steps_used_in_protocol(in_file):
 
     return steps_in_file
 
+def json_file_valid_format(in_file):
+    '''
+    Description:
+        The function check if file contains the lines included in OPENTRONS_DELIMITATION_PARAMETERS_TAGS
+    Input:
+        in_file     # input file name
+    Constants:
+        OPENTRONS_DELIMITATION_PARAMETERS_TAGS
+    Return:
+        True or False
+    '''
+    try:
+        with open (in_file, 'r') as fh:
+            json_dict = json.load(fh)
+        for item in JSON_LABWARE_ROOT_FIELDS_TO_CHECK:
+            if item not in json_dict:
+                return False
+    except:
+        return False
+    return True
 
-def store_protocol_template_file(in_file):
+def json_get_labware_information(in_file ):
+    '''
+    Description:
+        The function fetch the labware information from json file
+    Input:
+        in_file     # input file name
+
+    Constants:
+        JSON_LABWARE_FIELDS_TO_GET
+        JSON_LABWARE_WELL_TO_GET
+    Return:
+        json_data
+    '''
+    json_data = {}
+    with open (in_file, 'r') as fh:
+        json_dict = json.load(fh)
+    for key in JSON_LABWARE_FIELDS_TO_GET.keys():
+        for values in JSON_LABWARE_FIELDS_TO_GET[key]:
+            json_data[values] = json_dict[key][values]
+    for key in JSON_LABWARE_WELL_TO_GET.keys():
+        for well in JSON_LABWARE_WELL_TO_GET[key].keys():
+            for value in JSON_LABWARE_WELL_TO_GET[key][well] :
+                json_data[value] = json_dict[key][well][value]
+
+    json_data['colums'] = len(json_dict['ordering'])
+    json_data['rows'] = len(json_dict['ordering'][0])
+    json_data['num_wells'] = str(json_data['colums'] * json_data['rows'])
+    json_data['spacing_col'] = "{:.2f}".format(float(json_dict['wells']['A2']['x']) - float(json_dict['wells']['A1']['x']))
+    json_data['spacing_row'] = "{:.2f}".format(float(json_dict['wells']['A1']['y']) - float(json_dict['wells']['B1']['y']))
+
+
+    import pdb; pdb.set_trace()
+    return json_data
+
+
+def store_user_file(in_file, store_folder):
     '''
     Description:
         The function gets the protocol template file. Add time stamp to the file name
@@ -152,11 +208,11 @@ def store_protocol_template_file(in_file):
     f_extension = split_filename[2]
     fs_template = FileSystemStorage()
     timestr = time.strftime("%Y%m%d-%H%M%S")
-    if not os.path.exists(OPENTRONS_TEMPLATE_DIRECTORY):
-        os.makedirs(OPENTRONS_TEMPLATE_DIRECTORY)
+    if not os.path.exists(store_folder):
+        os.makedirs(store_folder)
 
     ## using the MEDIA_ROOT variable defined on settings to upload the file
-    file_name=os.path.join(OPENTRONS_TEMPLATE_DIRECTORY,  str(f_name + '_' +timestr + f_extension))
+    file_name=os.path.join(store_folder,  str(f_name + '_' +timestr + f_extension))
     filename = fs_template.save(file_name,  in_file)
     saved_file = os.path.join(settings.MEDIA_ROOT, file_name)
     return saved_file, file_name

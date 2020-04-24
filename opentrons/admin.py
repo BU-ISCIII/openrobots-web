@@ -28,7 +28,7 @@ class PCR_plateLabwareAdmin (admin.ModelAdmin):
     list_display =['PCR_plateLabwareType', 'description']
 
 class Elution_LabwareAdmin (admin.ModelAdmin):
-    list_display =['elution_LabwareType', 'elutionHW_type', 'description']
+    list_display =['elution_LabwareType', 'elutionHW_type', 'valueInCode']
 
 class ModuleTypeAdmin (admin.ModelAdmin):
     list_display =('moduleType', 'description')
