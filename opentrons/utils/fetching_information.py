@@ -107,7 +107,7 @@ def get_form_data_creation_run_file():
 def get_list_labware_inventory():
     '''
     Description:
-        The function will get the robot availables and fetch for each inventory data
+        The function will get the labware availables and fetch for each inventory data
     Return:
         labware_data
     '''
@@ -118,6 +118,19 @@ def get_list_labware_inventory():
             labware_data.append(elution.get_minimun_elution_lab_data())
     return labware_data
 
+def get_list_module_inventory():
+    '''
+    Description:
+        The function will get the module availables and fetch for each inventory data
+    Return:
+        labware_data
+    '''
+    module_data = []
+    if ModuleType.objects.all().exists():
+        modules = ModuleType.objects.all().order_by('vendor')
+        for module in modules:
+            module_data.append(module.get_minimum_module_data())
+    return module_data
 
 def get_list_robot_inventory():
     '''
@@ -184,6 +197,21 @@ def get_labware_inventory_data(labware_id):
 
     return labware_data
 
+def get_module_inventory_data(module_id):
+    '''
+    Description:
+        The function will fetch the module inventory data
+    Return:
+        module_data
+    '''
+    module_data = {}
+    if ModuleType.objects.filter(pk__exact = module_id).exists():
+        module_obj = ModuleType.objects.get(pk__exact = module_id)
+        module_data['main'] = module_obj.get_main_module_data()
+        module_data['documents'] = module_obj.get_documents()
+        module_data['image'] = module_obj.get_image()
+
+    return module_data
 
 def get_module_obj_from_id(module_id):
     if ModulesInLab.objects.filter(pk__exact = module_id):

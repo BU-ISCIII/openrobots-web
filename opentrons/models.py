@@ -21,13 +21,39 @@ class ModuleType (models.Model):
     description = models.CharField(max_length = 255, null = True, blank = True)
     witePapers = models.FileField(upload_to = opentrons_config.OPENTRONS_MODULE_TYPE_GUIDES_DIRECTORY , null = True , blank = True)
     manualGuide = models.FileField(upload_to = opentrons_config.OPENTRONS_MODULE_TYPE_GUIDES_DIRECTORY , null = True , blank = True)
-    moduleImage = models.CharField(max_length = 255, null = True, blank = True)
+    moduleImage = models.FileField(upload_to = opentrons_config.OPENTRONS_MODULE_TYPE_GUIDES_DIRECTORY , null = True , blank = True)
 
     def __str__ (self):
         return '%s' %(self.moduleType)
 
     def get_module_type_name(self):
         return '%s' %(self.moduleType)
+
+    def get_module_vendor(self):
+        return '%s' %(self.vendor)
+
+    def get_minimum_module_data(self):
+        data = []
+        data.append(self.moduleType)
+        data.append(self.vendor)
+        data.append(self.pk)
+        return data
+
+    def get_main_module_data(self):
+        data = []
+        data.append(self.moduleType)
+        data.append(self.vendor)
+        data.append(self.description)
+        return data
+
+    def get_image(self):
+        return '%s' %(self.moduleImage)
+
+    def get_documents (self):
+        data = []
+        data.append(self.witePapers)
+        data.append(self.manualGuide)
+        return data
 
 class ModulesInLab (models.Model):
     moduleType = models.ForeignKey(

@@ -39,17 +39,13 @@ def create_protocol_file(request):
 @login_required
 def define_labware(request) :
     form_data = get_elution_hw_types()
-
     if request.method == 'POST' and (request.POST['action']=='definelabware'):
-
-
         json_saved_file , json_file_name = store_user_file(request.FILES['jsonfile'], OPENTRONS_LABWARE_JSON_DIRECTORY )
 
         if not json_file_valid_format(json_saved_file):
             error_message = INVALID_JSON_FILE
             os.remove(json_saved_file)
             return render(request, 'opentrons/defineLabware.html' ,{'form_data': form_data, 'error_message': error_message})
-
 
         json_dict = json_get_labware_information(json_saved_file)
         json_dict['elutionhwtype'] = request.POST['elutionhwtype']
@@ -61,6 +57,7 @@ def define_labware(request) :
             json_dict['pythonFile'] = python_file_name
         else:
             json_dict['pythonFile'] = ''
+
         if 'imagefile' in request.FILES :
             image_saved_file , image_file_name = store_user_file(request.FILES['imagefile'], OPENTRONS_LABWARE_IMAGE_DIRECTORY )
             json_dict['imageFile'] = image_file_name
@@ -68,8 +65,8 @@ def define_labware(request) :
             json_dict['imageFile'] = ''
 
         new_elution_labware = Elution_Labware.objects.create_elution_labware(json_dict)
-        ## remove the id value in the data
         created_new_labware = new_elution_labware.get_minimun_elution_lab_data()
+        ## remove the id value in the data
         del created_new_labware[-1]
         return render(request, 'opentrons/defineLabware.html' ,{'created_new_labware': created_new_labware})
     else:
@@ -81,13 +78,10 @@ def define_robot (request):
     robot_inventory_form_data = get_form_data_creation_new_robot()
 
     if request.method == 'POST' and (request.POST['action']=='definerobot'):
-
         robot_data = extract_define_robot_form_data(request)
         robot_data['userName'] = request.user
-
         new_robot = RobotsInventory.objects.create_robot(robot_data)
         for module in robot_data['modules']:
-
             new_robot.set_module(get_module_obj_from_id (module))
 
         created_new_robot = new_robot.get_minimum_robot_data()
@@ -107,6 +101,11 @@ def detail_labware_inventory(request,labware_id):
     return render(request, 'opentrons/detailLabwareInventory.html' ,{'labware_inventory_data': labware_inventory_data} )
 
 @login_required
+def detail_module_inventory(request, module_id):
+    module_inventory_data = get_module_inventory_data(module_id)
+    return render(request, 'opentrons/detailModuleInventory.html' ,{'module_inventory_data': module_inventory_data} )
+
+@login_required
 def detail_robot_inventory(request,robot_id):
     robot_inventory_data = get_robot_inventory_data(robot_id)
     return render(request, 'opentrons/detailRobotInventory.html' ,{'robot_inventory_data': robot_inventory_data} )
@@ -115,6 +114,11 @@ def detail_robot_inventory(request,robot_id):
 def labware_inventory(request):
     labware_list_inventory = get_list_labware_inventory()
     return render(request, 'opentrons/labwareInventory.html', {'labware_list_inventory': labware_list_inventory})
+
+@login_required
+def modules_inventory(request):
+    module_list_inventory = get_list_module_inventory()
+    return render(request, 'opentrons/modulesInventory.html', {'module_list_inventory': module_list_inventory})
 
 
 @login_required
@@ -153,9 +157,6 @@ def upload_protocol_templates(request):
         created_new_file = {}
         created_new_file['protocol_name'] = request.POST['protocoltype']
         created_new_file['file_name'] = request.FILES['newtemplatefile'].name
-
-
-
 
         return render(request, 'opentrons/uploadProtocolTemplates.html' , {'template_data': template_data ,'stored_protocol_file': stored_protocol_file,
                                 'created_new_file': created_new_file  })
