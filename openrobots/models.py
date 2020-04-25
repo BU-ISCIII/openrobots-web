@@ -295,6 +295,15 @@ class PCR_plateLabware (models.Model):
     def get_pcr_plate_labware_type (self):
         return '%s' %(self.PCR_plateLabwareType)
 
+
+class MagPlate_Labware(models.Model):
+    mag_plateLabwareType = models.CharField(max_length = 80)
+    description = models.CharField(max_length = 255)
+
+    def __str__ (self):
+        return '%s' %(self.mag_plateLabwareType)
+
+
 class Elution_LabwareManager(models.Manager):
     def create_elution_labware(self,data):
         elutionhwtype = ElutionHardware.objects.get(hardwareType__exact = data['elutionhwtype'])
@@ -387,6 +396,20 @@ class Elution_Labware (models.Model):
 
     objects = Elution_LabwareManager()
 
+class Reagent_Labware(models.Model):
+    reagentLabwareType = models.CharField(max_length = 80)
+    description = models.CharField(max_length = 255)
+
+    def __str__ (self):
+        return '%s' %(self.reagentLabwareType)
+
+class Waste_Labware(models.Model):
+    wasteLabwareType = models.CharField(max_length = 80)
+    description = models.CharField(max_length = 255)
+
+    def __str__ (self):
+        return '%s' %(self.wasteLabwareType)
+
 class RequestForStationCManager(models.Manager):
 
     def create_new_request (self, request_data):
@@ -408,6 +431,31 @@ class RequestForStationCManager(models.Manager):
                     generatedFile = request_data['generatedFile'] , userNotes = request_data['userNotes'])
 
         return new_request
+
+class RequestForStationB (models.Model):
+    userRequestedBy = models.ForeignKey (
+                        User,
+                        on_delete=models.CASCADE, null = True, blank = True )
+    elutionLabware = models.ForeignKey (
+                        Elution_Labware,
+                        on_delete=models.CASCADE)
+    magPlateLabware = models.ForeignKey (
+                        MagPlate_Labware,
+                        on_delete=models.CASCADE)
+    reagentLabware = models.ForeignKey (
+                        Reagent_Labware,
+                        on_delete=models.CASCADE)
+    wasteLabware = models.ForeignKey (
+                        Waste_Labware,
+                        on_delete=models.CASCADE)
+    requestedCodeID = models.CharField(max_length = 50)
+    numberOfSamples = models.CharField(max_length = 10)
+    tipTrack = models.BooleanField()
+    dispenseBeads = models.BooleanField()
+
+    generatedFile = models.FileField(upload_to = openrobots_config.OPENROBOTS_OUTPUT_DIRECTORY )
+    userNotes = models.CharField(max_length = 255)
+    generatedat = models.DateTimeField(auto_now_add=True)
 
 
 class RequestForStationC (models.Model):
