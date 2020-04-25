@@ -3,7 +3,7 @@ import sys, codecs
 import datetime, time
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
-from opentrons.opentrons_config import *
+from openrobots.openrobots_config import *
 
 
 def add_parameters_in_file (in_file, output_file, parameters):

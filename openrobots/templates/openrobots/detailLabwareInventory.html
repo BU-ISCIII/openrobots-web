@@ -1,26 +1,25 @@
-{% extends 'opentrons/base.html' %}
+{% extends 'openrobots/base.html' %}
 {% load static %}
 {% block content %}
 
-{% if robot_inventory_data %}
+{% if labware_inventory_data %}
     <div class="row row-space-2 margin-b-4">
-        <div class="col-sm-10 col-sm-offset-1">
+        <div class="col-sm-6">
             <div class="panel panel-default">
-                <div class="panel-heading"><h3 style="text-align:center">Detailed information for Robot </h3> </div>
+                <div class="panel-heading"><h3 style="text-align:center">Detail Labware Information </h3> </div>
                 <div class="panel-body">
+                    <h5>{{labware_inventory_data.labware_name}}</h5>
                     <table class="table ">
     					<thead>
     						<tr>
-    							<th>Robot name</th>
-								<th>Location</th>
-								<th>Configuration</th>
-								<th>Serial Number</th>
-								<th>Observations</th>
+    							<th>Hardware Type</th>
+								<th>Brand</th>
+								<th>Category</th>
                             </tr>
                         </thead>
 						<tbody>
 							<tr>
-                            	{% for value in robot_inventory_data.main %}
+                            	{% for value in labware_inventory_data.main %}
                                     <td>{{value}}</td>
                             	{% endfor %}
 							</tr>
@@ -29,35 +28,51 @@
                 </div> <!--  end of panel body -->
             </div> <!--  end of panel  -->
         </div> <!--  end of col-sm-7 -->
+        <div class="col-sm-6">
+            <div class="panel panel-default">
+                <div class="panel-heading"><h3 style="text-align:center">Labware image</h3> </div>
+                <div class="panel-body">
+                    {% if labware_inventory_data.image %}
+                        <img class="promo-block-img img-responsive" src="/documents/{{labware_inventory_data.image}}" align="Avatar">
+                    {% else %}
+                    <br><br><br>
+                        <h5 style="text-align:center"> No Image available</h5>
+                    {% endif%}
+                </div> <!--  end of panel body -->
+            </div> <!--  end of panel  -->
+        </div> <!--  end of col-sm-7 -->
     </div> <!--  end of row -->
 
 	<div class="row row-space-4 margin-b-1">
         <div class="col-sm-12 ">
             <div class="tab">
-                <button class="tablinks" onclick="summaryBin(event, 'network')">Network Data</button>
-				<button class="tablinks" onclick="summaryBin(event, 'pipette')">Pippetes Information</button>
-				<button class="tablinks" onclick="summaryBin(event, 'modules')">Modules Used in Robot</button>
-				<button class="tablinks" onclick="summaryBin(event, 'plugs')">Plugs Installed</button>
+                <button class="tablinks" onclick="summaryBin(event, 'plate')">Plate Information</button>
+				<button class="tablinks" onclick="summaryBin(event, 'well')">Well Information</button>
+				<button class="tablinks" onclick="summaryBin(event, 'calibration')">Calibration Information</button>
+                <button class="tablinks" onclick="summaryBin(event, 'files')">Uploaded Files</button>
 
-				<div id="network" class="tabcontent">
+				<div id="plate" class="tabcontent">
                     <div class="row row-space-4 margin-b-4">
-                        <div class="col-sm-7 col-sm-offset-1" >
+                        <div class="col-sm-10 col-sm-offset-1" >
                             <div class="panel panel-default">
-                                <div class="panel-heading"><h3>Network information</h3></div>
+                                <div class="panel-heading"><h3>Plate information</h3></div>
                                 <div class="panel-body">
 									<table class="table ">
 				    					<thead>
 				    						<tr>
-				    							<th>Robot IP Address</th>
-												<th>Host Name of Location</th>
-												<th>Macbook Air MAC address</th>
+				    							<th>Number of Wells</th>
+                                                <th>Number of Rows</th>
+                                                <th>Number of Columns</th>
+                                                <th>Length (X) in mm</th>
+												<th>Width (Y) in mm</th>
+                                                <th>Height (Z) in mm</th>
 				                            </tr>
 				                        </thead>
 										<tbody>
 											<tr>
-				                            	{% for value in robot_inventory_data.network %}
+				                            	{% for value in labware_inventory_data.plate %}
 
-				                                    <td>{{value}}</td>
+				                                    <td style="text-align:center">{{value}}</td>
 
 				                            	{% endfor %}
 											</tr>
@@ -69,25 +84,28 @@
                     </div> <!--  end of row -->
                 </div><!-- // end of tab network -->
 
-				<div id="pipette" class="tabcontent">
+				<div id="well" class="tabcontent">
                     <div class="row row-space-4 margin-b-4">
-                        <div class="col-sm-7 col-sm-offset-1" >
+                        <div class="col-sm-11 col-sm-offset-1" >
                             <div class="panel panel-default">
-                                <div class="panel-heading"><h3>Pipette information</h3></div>
+                                <div class="panel-heading"><h3>Wells information</h3></div>
                                 <div class="panel-body">
 									<table class="table ">
 				    					<thead>
 				    						<tr>
-				    							<th>Right Pipette</th>
-												<th>Right PipetteID</th>
-												<th>Left Pipette</th>
-												<th>Left PipetteID</th>
+				    							<th>Maximun Volume (uL)</th>
+                                                <th>Shape (mm)</th>
+												<th>Diameter (mm)</th>
+                                                <th>Depth (Z)in mm</th>
+												<th>Well spacing horizontal (mm)</th>
+												<th>Well spacing vertical (mm)</th>
+
 				                            </tr>
 				                        </thead>
 										<tbody>
 											<tr>
-												{% for value in robot_inventory_data.pipette %}
-				                                    <td>{{value}}</td>
+												{% for value in labware_inventory_data.well %}
+				                                    <td style="text-align:center"> {{value}}</td>
 				                            	{% endfor %}
 											</tr
 				    					</tbody>
@@ -98,7 +116,7 @@
                     </div> <!--  end of row -->
                 </div><!-- // end of tab pippetes -->
 
-				<div id="modules" class="tabcontent">
+				<div id="calibration" class="tabcontent">
                     <div class="row row-space-4 margin-b-4">
                         <div class="col-sm-7 col-sm-offset-1" >
                             <div class="panel panel-default">
@@ -107,15 +125,15 @@
 									<table class="table ">
 				    					<thead>
 				    						<tr>
-				    							<th>Module type</th>
-												<th>Module ID</th>
+				    							<th>Offset X</th>
+												<th>Offset Y</th>
 				                            </tr>
 				                        </thead>
 										<tbody>
-				                            {% for values in robot_inventory_data.modules %}
+				                            {% for values in labware_inventory_data.calibration %}
 				                                <tr>
 													{% for value  in values %}
-				                                    	<td>{{value}}</td>
+				                                    	<td style="text-align:center">{{value}}</td>
 													{% endfor %}
 				                                </tr>
 				                            {% endfor %}
@@ -126,25 +144,22 @@
                         </div> <!--// end col-sm-7  -->
                     </div> <!--  end of row -->
                 </div><!-- // end of tab modules -->
-
-				<div id="plugs" class="tabcontent">
+                <div id="files" class="tabcontent">
                     <div class="row row-space-4 margin-b-4">
                         <div class="col-sm-7 col-sm-offset-1" >
                             <div class="panel panel-default">
-                                <div class="panel-heading"><h3>Plugs information</h3></div>
+                                <div class="panel-heading"><h3>Uploaded Files</h3></div>
                                 <div class="panel-body">
 									<table class="table ">
-				    					<thead>
-				    						<tr>
-				    							<th>Plug Information</th>
-				                            </tr>
-				                        </thead>
+
 										<tbody>
-				                            {% for value in robot_inventory_data.plug %}
-				                                <tr>
-				                                    <td>{{value}}</td>
-				                                </tr>
-				                            {% endfor %}
+
+                                            <td>JSON File</td>
+                                            <td><a href="/documents/{{labware_inventory_data.files.0}}" download>Download JSON File<span class="glyphicon glyphicon-download-alt"></span></a></td>
+				                            {% if labware_inventory_data.files.1 %}
+                                                <td>Python File</td>
+                                                <td><a href="/documents/{{labware_inventory_data.files.1}}" download>Download Python File<span class="glyphicon glyphicon-download-alt"></span></a></td>
+                                            {% endif %}
 				    					</tbody>
 				    				</table>
                                 </div>  <!--  end of panel body  -->
@@ -163,10 +178,10 @@
 			<div class="panel panel-danger">
 				<div class="panel-heading"><h3 style="text-align:center">Not available information </h3> </div>
 				<div class="panel-body">
-					<p>There is no available information for the Robot that you request</p>
+					<p>There is no available information for the Labware that you request</p>
 					<br><br>
-					<p>Click on the following link to get the robot list defined in your lab</p>
-					<p><a href="/robotInventory">GET ROBOT INVENTORY LIST</a></p>
+					<p>Click on the following link to get the Labware list defined in your lab</p>
+					<p><a href="/labwareInventory">GET LABWARE INVENTORY LIST</a></p>
 				</div> <!--  end of panel body -->
 			</div> <!--  end of panel  -->
 		</div> <!--  end of col-sm-7 -->

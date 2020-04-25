@@ -2,14 +2,14 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
-from opentrons.utils.fetching_information import  *
-from opentrons.utils.file_utilities import  *
-from opentrons.opentrons_config import *
+from openrobots.utils.fetching_information import  *
+from openrobots.utils.file_utilities import  *
+from openrobots.openrobots_config import *
 
 def index(request):
     #
     #return redirect ('/createProtocolFile')
-    return render(request, 'opentrons/index.html')
+    return render(request, 'openrobots/index.html')
 @login_required
 def create_protocol_file(request):
     # Get data to display in form
@@ -23,7 +23,7 @@ def create_protocol_file(request):
 
         add_result = add_parameters_in_file (template, protocol_file,  parameters)
         if add_result != 'True':
-            return render(request, 'opentrons/createProtocolFile.html' ,{'form_data': form_data, 'error': add_result})
+            return render(request, 'openrobots/createProtocolFile.html' ,{'form_data': form_data, 'error': add_result})
         database['generatedFile'] = protocol_file
         database['requestedCodeID'] = build_request_codeID (request.user, protocol_type, request.POST['station'] )
         new_create_protocol = RequestOpenTronsFiles.objects.create_new_request(database)
@@ -31,9 +31,9 @@ def create_protocol_file(request):
         display_result = new_create_protocol.get_result_data()
 
 
-        return render(request, 'opentrons/createProtocolFile.html' ,{'display_result': display_result})
+        return render(request, 'openrobots/createProtocolFile.html' ,{'display_result': display_result})
     else:
-        return render(request, 'opentrons/createProtocolFile.html' ,{'form_data': form_data})
+        return render(request, 'openrobots/createProtocolFile.html' ,{'form_data': form_data})
 
 
 @login_required
@@ -45,7 +45,7 @@ def define_labware(request) :
         if not json_file_valid_format(json_saved_file):
             error_message = INVALID_JSON_FILE
             os.remove(json_saved_file)
-            return render(request, 'opentrons/defineLabware.html' ,{'form_data': form_data, 'error_message': error_message})
+            return render(request, 'openrobots/defineLabware.html' ,{'form_data': form_data, 'error_message': error_message})
 
         json_dict = json_get_labware_information(json_saved_file)
         json_dict['elutionhwtype'] = request.POST['elutionhwtype']
@@ -68,9 +68,9 @@ def define_labware(request) :
         created_new_labware = new_elution_labware.get_minimun_elution_lab_data()
         ## remove the id value in the data
         del created_new_labware[-1]
-        return render(request, 'opentrons/defineLabware.html' ,{'created_new_labware': created_new_labware})
+        return render(request, 'openrobots/defineLabware.html' ,{'created_new_labware': created_new_labware})
     else:
-        return render(request, 'opentrons/defineLabware.html' ,{'form_data': form_data})
+        return render(request, 'openrobots/defineLabware.html' ,{'form_data': form_data})
 
 @login_required
 def define_robot (request):
@@ -85,51 +85,51 @@ def define_robot (request):
             new_robot.set_module(get_module_obj_from_id (module))
 
         created_new_robot = new_robot.get_minimum_robot_data()
-        return render(request, 'opentrons/defineRobot.html' ,{'created_new_robot': created_new_robot})
-    return render(request, 'opentrons/defineRobot.html' ,{'robot_inventory_form_data': robot_inventory_form_data})
+        return render(request, 'openrobots/defineRobot.html' ,{'created_new_robot': created_new_robot})
+    return render(request, 'openrobots/defineRobot.html' ,{'robot_inventory_form_data': robot_inventory_form_data})
 
 
 @login_required
 def display_template_file(request, p_template_id):
     protocol_template_data = get_protocol_template_information(p_template_id)
 
-    return render(request, 'opentrons/displayTemplateFile.html' ,{'protocol_template_data': protocol_template_data})
+    return render(request, 'openrobots/displayTemplateFile.html' ,{'protocol_template_data': protocol_template_data})
 
 @login_required
 def detail_labware_inventory(request,labware_id):
     labware_inventory_data = get_labware_inventory_data(labware_id)
-    return render(request, 'opentrons/detailLabwareInventory.html' ,{'labware_inventory_data': labware_inventory_data} )
+    return render(request, 'openrobots/detailLabwareInventory.html' ,{'labware_inventory_data': labware_inventory_data} )
 
 @login_required
 def detail_module_inventory(request, module_id):
     module_inventory_data = get_module_inventory_data(module_id)
-    return render(request, 'opentrons/detailModuleInventory.html' ,{'module_inventory_data': module_inventory_data} )
+    return render(request, 'openrobots/detailModuleInventory.html' ,{'module_inventory_data': module_inventory_data} )
 
 @login_required
 def detail_robot_inventory(request,robot_id):
     robot_inventory_data = get_robot_inventory_data(robot_id)
-    return render(request, 'opentrons/detailRobotInventory.html' ,{'robot_inventory_data': robot_inventory_data} )
+    return render(request, 'openrobots/detailRobotInventory.html' ,{'robot_inventory_data': robot_inventory_data} )
 
 @login_required
 def labware_inventory(request):
     labware_list_inventory = get_list_labware_inventory()
-    return render(request, 'opentrons/labwareInventory.html', {'labware_list_inventory': labware_list_inventory})
+    return render(request, 'openrobots/labwareInventory.html', {'labware_list_inventory': labware_list_inventory})
 
 @login_required
 def modules_inventory(request):
     module_list_inventory = get_list_module_inventory()
-    return render(request, 'opentrons/modulesInventory.html', {'module_list_inventory': module_list_inventory})
+    return render(request, 'openrobots/modulesInventory.html', {'module_list_inventory': module_list_inventory})
 
 
 @login_required
 def robot_inventory(request):
     robot_list_inventory = get_list_robot_inventory()
-    return render(request, 'opentrons/robotInventory.html' ,{'robot_list_inventory': robot_list_inventory} )
+    return render(request, 'openrobots/robotInventory.html' ,{'robot_list_inventory': robot_list_inventory} )
 
 @login_required
 def upload_protocol_templates(request):
     if request.user.username not in ADMIN_USERS :
-        return render(request, 'opentrons/index.html')
+        return render(request, 'openrobots/index.html')
     template_data = {}
     template_data['protocol_types'] = get_protocol_types()
     template_data['stations'] = get_stations_names()
@@ -144,7 +144,7 @@ def upload_protocol_templates(request):
         if not template_file_valid_format(saved_file):
             error_message = INVALID_TEMPLATE_FILE
             os.remove(saved_file)
-            return render(request, 'opentrons/uploadProtocolTemplates.html', {'error_message': error_message ,
+            return render(request, 'openrobots/uploadProtocolTemplates.html', {'error_message': error_message ,
                         'stored_protocol_file': stored_protocol_file, 'template_data': template_data} )
         protocol_file_data = {}
         protocol_file_data = get_metadata_from_file(saved_file)
@@ -158,7 +158,7 @@ def upload_protocol_templates(request):
         created_new_file['protocol_name'] = request.POST['protocoltype']
         created_new_file['file_name'] = request.FILES['newtemplatefile'].name
 
-        return render(request, 'opentrons/uploadProtocolTemplates.html' , {'template_data': template_data ,'stored_protocol_file': stored_protocol_file,
+        return render(request, 'openrobots/uploadProtocolTemplates.html' , {'template_data': template_data ,'stored_protocol_file': stored_protocol_file,
                                 'created_new_file': created_new_file  })
     else:
-        return render(request, 'opentrons/uploadProtocolTemplates.html' , {'template_data': template_data, 'stored_protocol_file': stored_protocol_file})
+        return render(request, 'openrobots/uploadProtocolTemplates.html' , {'template_data': template_data, 'stored_protocol_file': stored_protocol_file})

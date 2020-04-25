@@ -1,6 +1,6 @@
 import datetime, time
-from opentrons.models import *
-from opentrons.opentrons_config import *
+from openrobots.models import *
+from openrobots.openrobots_config import *
 
 
 def  build_protocol_file_name(user, template):

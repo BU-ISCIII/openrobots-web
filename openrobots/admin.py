@@ -1,5 +1,5 @@
 from django.contrib import admin
-from opentrons.models import *
+from openrobots.models import *
 
 class StationsAdmin (admin.ModelAdmin):
     list_display =['stationName', 'description']

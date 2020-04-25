@@ -9,7 +9,7 @@ static/
 documents/
 #--- updates introduced for iSkyLIMS in submodules packaging ---
 virtualenv/
-opentrons_web/
+openrobots-web/
 #documents/
 manage.py
 

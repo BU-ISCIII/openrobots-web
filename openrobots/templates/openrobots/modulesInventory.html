@@ -1,29 +1,25 @@
-{% extends 'opentrons/base.html' %}
+{% extends 'openrobots/base.html' %}
 {% load static %}
 {% block content %}
 
-{%if labware_list_inventory %}
+{%if module_list_inventory %}
     <div class="row row-space-2 margin-b-4">
-        <div class="col-sm-10 col-sm-offset-1">
+        <div class="col-sm-7 col-sm-offset-3">
             <div class="panel panel-default">
-                <div class="panel-heading"><h3 style="text-align:center">Labware Inventory List</h3> </div>
+                <div class="panel-heading"><h3 style="text-align:center">Module Inventory List</h3> </div>
                 <div class="panel-body">
                     <table class="table  table-hover">
     					<thead>
     						<tr>
-    							<th>Labware name</th>
-								<th>Brand</th>
-								<th>Category</th>
-                                <th>Number of Wells</th>
+    							<th>Module name</th>
+								<th>Vendor</th>
                             </tr>
                         </thead>
 						<tbody>
-                            {% for labware, brand, category, wells , id in labware_list_inventory %}
+                            {% for module, vendor, id in module_list_inventory %}
                                 <tr>
-                                    <td><a href="/detailLabwareInventory={{id}}">{{labware}}</a></td>
-    							    <td>{{brand}}</td>
-                                    <td>{{category}}</td>
-                                    <td>{{wells}}</td>
+                                    <td><a href="/detailModuleInventory={{id}}">{{module}}</a></td>
+    							    <td>{{vendor}}</td>
                                 </tr>
                             {% endfor %}
     					</tbody>
@@ -37,9 +33,9 @@
     <div class="row row-space-2 margin-b-4">
         <div class="col-sm-7 col-sm-offset-3">
             <div class="panel panel-default">
-                <div class="panel-heading"><h3 style="text-align:center">Labware Inventory List</h3> </div>
+                <div class="panel-heading"><h3 style="text-align:center">Module Inventory List</h3> </div>
                 <div class="panel-body">
-                    <h4>You do not have record any Labware yet</h4>
+                    <h4>You do not have record any Module yet</h4>
                 </div> <!--  end of panel body -->
             </div> <!--  end of panel  -->
         </div> <!--  end of col-sm-7 -->
