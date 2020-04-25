@@ -8,10 +8,10 @@ logs/
 static/
 documents/
 #--- updates introduced for iSkyLIMS in submodules packaging ---
-#virtualenv/
-#opentrons_web/
+virtualenv/
+opentrons_web/
 #documents/
-#manage.py
+manage.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
