@@ -10,14 +10,14 @@ sys.path.append('../')
 ## Relative path from settings.BASE_DIR
 
 ## Relative path from settings.MEDIA_ROOT
-OPENTRONS_TEMPLATE_DIRECTORY = 'templates'
-OPENTRONS_OUTPUT_DIRECTORY = 'protocol_files'
-OPENTRONS_MODULE_TYPE_GUIDES_DIRECTORY = 'user-guide'
-OPENTRONS_LABWARE_JSON_DIRECTORY = 'labware_inventory/json'
-OPENTRONS_LABWARE_PYTHON_DIRECTORY = 'labware_inventory/python'
-OPENTRONS_LABWARE_IMAGE_DIRECTORY = 'labware_inventory/image'
+OPENROBOTS_TEMPLATE_DIRECTORY = 'templates'
+OPENROBOTS_OUTPUT_DIRECTORY = 'protocol_files'
+OPENROBOTS_MODULE_TYPE_GUIDES_DIRECTORY = 'user-guide'
+OPENROBOTS_LABWARE_JSON_DIRECTORY = 'labware_inventory/json'
+OPENROBOTS_LABWARE_PYTHON_DIRECTORY = 'labware_inventory/python'
+OPENROBOTS_LABWARE_IMAGE_DIRECTORY = 'labware_inventory/image'
 
-#OPENTRONS_TEMPLATE_FILE_NAME = 'v1_station_c_S3.ot2.apiv2.py'
+#OPENROBOTS_TEMPLATE_FILE_NAME = 'v1_station_c_S3.ot2.apiv2.py'
 PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_A = ['NUM_SAMPLES' , 'MM_LABWARE','MMTUBE_LABWARE', 'PCR_LABWARE', 'ELUTION_LABWARE',
             'PREPARE_MASTERMIX', 'TRANSFER_MASTERMIX', 'TRANSFER_SAMPLES', 'MM_TYPE']
 PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_B = ['NUM_SAMPLES']
@@ -28,7 +28,7 @@ PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_C = ['NUM_SAMPLES' , 'MM_LABWARE','MMTU
 MAP_PROTOCOL_PARAMETER_TO_DATABASE_STATION_C = [('NUM_SAMPLES','numberOfSamples') , ('MM_LABWARE','masterMixLabware'),('MMTUBE_LABWARE','masterMixTubeLabware'),
         ('PCR_LABWARE','pcrPlateLabware'), ('ELUTION_LABWARE','elutionLabware'), ('PREPARE_MASTERMIX','prepareMastermix'),
         ('TRANSFER_MASTERMIX','transferMastermix'), ('TRANSFER_SAMPLES','transferSamples'), ('MM_TYPE','masterMixType')]
-OPENTRONS_DELIMITATION_PARAMETERS_TAGS = ['# Parameters to adapt the protocol',
+OPENROBOTS_DELIMITATION_PARAMETERS_TAGS = ['# Parameters to adapt the protocol',
                     '# End Parameters to adapt the protocol']
 
 JSON_LABWARE_ROOT_FIELDS_TO_CHECK = ['metadata', 'dimensions','wells','parameters','brand']

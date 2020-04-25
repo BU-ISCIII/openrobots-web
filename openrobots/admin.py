@@ -44,7 +44,7 @@ class RobotsInventoryAdmin (admin.ModelAdmin):
             'computer_mac','rightPipette', 'leftPipette', 'rightPipetteID', 'leftPipetteID', 'neededPlugs','observations')
 
 
-class RequestOpenTronsFilesAdmin (admin.ModelAdmin):
+class RequestForStationCAdmin (admin.ModelAdmin):
     list_display =['requestedCodeID','masterMixLabware', 'masterMixTubeLabware','pcrPlateLabware', 'elutionLabware', 'masterMixType', 'numberOfSamples',
                 'prepareMastermix', 'transferMastermix', 'transferSamples', 'generatedFile', 'usedTemplateFile','userRequestedBy' , 'userNotes']
 
@@ -67,4 +67,4 @@ admin.site.register(ModuleType , ModuleTypeAdmin)
 admin.site.register(ModulesInLab , ModulesInLabAdmin)
 admin.site.register(RobotsInventory , RobotsInventoryAdmin)
 
-admin.site.register(RequestOpenTronsFiles , RequestOpenTronsFilesAdmin)
+admin.site.register(RequestForStationC , RequestForStationCAdmin)

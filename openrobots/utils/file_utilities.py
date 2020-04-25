@@ -10,22 +10,22 @@ def add_parameters_in_file (in_file, output_file, parameters):
     '''
     Description:
         The function will get protocol template file and add the parameters to create an output file
-        that is stored in OPENTRONS_OUTPUT_DIRECTORYthe Labware information used in the form to create the files
+        that is stored in OPENROBOTS_OUTPUT_DIRECTORYthe Labware information used in the form to create the files
     Input:
         in_file     # template file
         output_file    # output file name
         parameters  # dictionnary with the information to include in the file
     Constans:
-        OPENTRONS_DELIMITATION_PARAMETERS_TAGS
+        OPENROBOTS_DELIMITATION_PARAMETERS_TAGS
     Return:
         form_data
     '''
-    template_dir = os.path.join(settings.MEDIA_ROOT, OPENTRONS_TEMPLATE_DIRECTORY )
+    template_dir = os.path.join(settings.MEDIA_ROOT, OPENROBOTS_TEMPLATE_DIRECTORY )
     template_file = os.path.join(template_dir, os.path.basename(in_file))
     if not os.path.exists(template_file):
         return 'Protocol Template does not exists'
 
-    out_dir = os.path.join(settings.MEDIA_ROOT, OPENTRONS_OUTPUT_DIRECTORY)
+    out_dir = os.path.join(settings.MEDIA_ROOT, OPENROBOTS_OUTPUT_DIRECTORY)
     out_file = os.path.join(out_dir, output_file )
     if not os.path.exists(out_dir) :
         os.makedirs (out_dir)
@@ -36,8 +36,8 @@ def add_parameters_in_file (in_file, output_file, parameters):
         parameters_added = True
         with open(out_file, 'w') as out_fh:
             for line in in_fh:
-                parameter_section =  re.search(rf'^{OPENTRONS_DELIMITATION_PARAMETERS_TAGS[0]}', line)
-                end_parameter_section =  re.search(rf'^{OPENTRONS_DELIMITATION_PARAMETERS_TAGS[1]}', line)
+                parameter_section =  re.search(rf'^{OPENROBOTS_DELIMITATION_PARAMETERS_TAGS[0]}', line)
+                end_parameter_section =  re.search(rf'^{OPENROBOTS_DELIMITATION_PARAMETERS_TAGS[1]}', line)
                 if not found_start:
                     out_fh.write(line)
                 if parameter_section :
@@ -138,11 +138,11 @@ def get_steps_used_in_protocol(in_file):
 def json_file_valid_format(in_file):
     '''
     Description:
-        The function check if file contains the lines included in OPENTRONS_DELIMITATION_PARAMETERS_TAGS
+        The function check if file contains the lines included in OPENROBOTS_DELIMITATION_PARAMETERS_TAGS
     Input:
         in_file     # input file name
     Constants:
-        OPENTRONS_DELIMITATION_PARAMETERS_TAGS
+        OPENROBOTS_DELIMITATION_PARAMETERS_TAGS
     Return:
         True or False
     '''
@@ -193,11 +193,11 @@ def store_user_file(in_file, store_folder):
     '''
     Description:
         The function gets the protocol template file. Add time stamp to the file name
-        and stores on OPENTRONS_TEMPLATE_DIRECTORY
+        and stores on OPENROBOTS_TEMPLATE_DIRECTORY
     Input:
         in_file     # input file name
     Constants:
-        OPENTRONS_TEMPLATE_DIRECTORY
+        OPENROBOTS_TEMPLATE_DIRECTORY
     Return:
         saved_file
     '''
@@ -218,11 +218,11 @@ def store_user_file(in_file, store_folder):
 def template_file_valid_format(in_file):
     '''
     Description:
-        The function check if file contains the lines included in OPENTRONS_DELIMITATION_PARAMETERS_TAGS
+        The function check if file contains the lines included in OPENROBOTS_DELIMITATION_PARAMETERS_TAGS
     Input:
         in_file     # input file name
     Constants:
-        OPENTRONS_DELIMITATION_PARAMETERS_TAGS
+        OPENROBOTS_DELIMITATION_PARAMETERS_TAGS
     Return:
         True or False
     '''
@@ -230,7 +230,7 @@ def template_file_valid_format(in_file):
     with open (in_file, 'r') as fh:
         lines = fh.readlines()
 
-    for tag in OPENTRONS_DELIMITATION_PARAMETERS_TAGS:
+    for tag in OPENROBOTS_DELIMITATION_PARAMETERS_TAGS:
         if not any(tag in s for s in lines) :
             return False
     return True

@@ -1,7 +1,7 @@
 from django.db import models
 
 from django.contrib.auth.models import User
-from . import openrobots_config #OPENTRONS_TEMPLATE_DIRECTORY, OPENTRONS_OUTPUT_DIRECTORY
+from . import openrobots_config #OPENROBOTS_TEMPLATE_DIRECTORY, OPENROBOTS_OUTPUT_DIRECTORY
 import distutils
 
 class Stations (models.Model):
@@ -19,9 +19,9 @@ class ModuleType (models.Model):
     moduleType = models.CharField(max_length = 30)
     vendor = models.CharField(max_length = 30)
     description = models.CharField(max_length = 255, null = True, blank = True)
-    witePapers = models.FileField(upload_to = openrobots_config.OPENTRONS_MODULE_TYPE_GUIDES_DIRECTORY , null = True , blank = True)
-    manualGuide = models.FileField(upload_to = openrobots_config.OPENTRONS_MODULE_TYPE_GUIDES_DIRECTORY , null = True , blank = True)
-    moduleImage = models.FileField(upload_to = openrobots_config.OPENTRONS_MODULE_TYPE_GUIDES_DIRECTORY , null = True , blank = True)
+    witePapers = models.FileField(upload_to = openrobots_config.OPENROBOTS_MODULE_TYPE_GUIDES_DIRECTORY , null = True , blank = True)
+    manualGuide = models.FileField(upload_to = openrobots_config.OPENROBOTS_MODULE_TYPE_GUIDES_DIRECTORY , null = True , blank = True)
+    moduleImage = models.FileField(upload_to = openrobots_config.OPENROBOTS_MODULE_TYPE_GUIDES_DIRECTORY , null = True , blank = True)
 
     def __str__ (self):
         return '%s' %(self.moduleType)
@@ -199,7 +199,7 @@ class ProtocolTemplateFiles (models.Model):
     typeOfProtocol = models.ForeignKey(
                         ProtocolsType,
                         on_delete=models.CASCADE)
-    protocolTemplateFileName = models.FileField(upload_to = openrobots_config.OPENTRONS_TEMPLATE_DIRECTORY )
+    protocolTemplateFileName = models.FileField(upload_to = openrobots_config.OPENROBOTS_TEMPLATE_DIRECTORY )
     protocolName = models.CharField(max_length = 255)
     authors = models.CharField(max_length = 255)
     source = models.CharField(max_length = 255)
@@ -328,9 +328,9 @@ class Elution_Labware (models.Model):
     well_shape = models.CharField(max_length = 20)
     well_volume = models.CharField(max_length = 10)
     well_diameter = models.CharField(max_length = 10)
-    jsonFile = models.FileField(upload_to = openrobots_config.OPENTRONS_LABWARE_JSON_DIRECTORY , null = True, blank = True, max_length=200)
-    pythonFile = models.FileField(upload_to = openrobots_config.OPENTRONS_LABWARE_PYTHON_DIRECTORY, null = True, blank = True ,max_length=200 )
-    imageFile = models.FileField(upload_to = openrobots_config.OPENTRONS_LABWARE_IMAGE_DIRECTORY, null = True, blank = True ,max_length=200)
+    jsonFile = models.FileField(upload_to = openrobots_config.OPENROBOTS_LABWARE_JSON_DIRECTORY , null = True, blank = True, max_length=200)
+    pythonFile = models.FileField(upload_to = openrobots_config.OPENROBOTS_LABWARE_PYTHON_DIRECTORY, null = True, blank = True ,max_length=200 )
+    imageFile = models.FileField(upload_to = openrobots_config.OPENROBOTS_LABWARE_IMAGE_DIRECTORY, null = True, blank = True ,max_length=200)
     generatedat = models.DateTimeField(auto_now_add=True)
 
 
@@ -387,7 +387,7 @@ class Elution_Labware (models.Model):
 
     objects = Elution_LabwareManager()
 
-class RequestOpenTronsFilesManager(models.Manager):
+class RequestForStationCManager(models.Manager):
 
     def create_new_request (self, request_data):
 
@@ -410,7 +410,7 @@ class RequestOpenTronsFilesManager(models.Manager):
         return new_request
 
 
-class RequestOpenTronsFiles (models.Model):
+class RequestForStationC (models.Model):
     userRequestedBy = models.ForeignKey (
                         User,
                         on_delete=models.CASCADE, null = True, blank = True )
@@ -441,7 +441,7 @@ class RequestOpenTronsFiles (models.Model):
     transferMastermix = models.BooleanField()
     transferSamples = models.BooleanField()
 
-    generatedFile = models.FileField(upload_to = openrobots_config.OPENTRONS_OUTPUT_DIRECTORY )
+    generatedFile = models.FileField(upload_to = openrobots_config.OPENROBOTS_OUTPUT_DIRECTORY )
     userNotes = models.CharField(max_length = 255)
     generatedat = models.DateTimeField(auto_now_add=True)
 
@@ -456,4 +456,4 @@ class RequestOpenTronsFiles (models.Model):
         data.append(self.generatedFile)
         return data
 
-    objects = RequestOpenTronsFilesManager()
+    objects = RequestForStationCManager()

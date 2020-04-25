@@ -40,7 +40,7 @@ def create_protocol_file(request):
 def define_labware(request) :
     form_data = get_elution_hw_types()
     if request.method == 'POST' and (request.POST['action']=='definelabware'):
-        json_saved_file , json_file_name = store_user_file(request.FILES['jsonfile'], OPENTRONS_LABWARE_JSON_DIRECTORY )
+        json_saved_file , json_file_name = store_user_file(request.FILES['jsonfile'], OPENROBOTS_LABWARE_JSON_DIRECTORY )
 
         if not json_file_valid_format(json_saved_file):
             error_message = INVALID_JSON_FILE
@@ -53,13 +53,13 @@ def define_labware(request) :
         json_dict['jsonFile'] = json_file_name
 
         if 'pythonfile' in request.FILES :
-            python_saved_file , python_file_name = store_user_file(request.FILES['pythonfile'], OPENTRONS_LABWARE_PYTHON_DIRECTORY )
+            python_saved_file , python_file_name = store_user_file(request.FILES['pythonfile'], OPENROBOTS_LABWARE_PYTHON_DIRECTORY )
             json_dict['pythonFile'] = python_file_name
         else:
             json_dict['pythonFile'] = ''
 
         if 'imagefile' in request.FILES :
-            image_saved_file , image_file_name = store_user_file(request.FILES['imagefile'], OPENTRONS_LABWARE_IMAGE_DIRECTORY )
+            image_saved_file , image_file_name = store_user_file(request.FILES['imagefile'], OPENROBOTS_LABWARE_IMAGE_DIRECTORY )
             json_dict['imageFile'] = image_file_name
         else:
             json_dict['imageFile'] = ''
@@ -138,7 +138,7 @@ def upload_protocol_templates(request):
         ## fetch the file from user form and  build the file name  including
         ## the date and time on now to store in database
         file_name = request.FILES['newtemplatefile'].name
-        saved_file , file_name = store_user_file(request.FILES['newtemplatefile'],OPENTRONS_TEMPLATE_DIRECTORY )
+        saved_file , file_name = store_user_file(request.FILES['newtemplatefile'],OPENROBOTS_TEMPLATE_DIRECTORY )
 
         ## get the libary name to check if it is already defined
         if not template_file_valid_format(saved_file):
