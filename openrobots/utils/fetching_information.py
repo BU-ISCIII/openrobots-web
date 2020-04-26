@@ -34,8 +34,8 @@ def build_request_codeID (user, protocol_type, station ) :
         request codeID string
     '''
     num_times = 0
-    if RequestOpenTronsFiles.objects.filter(userRequestedBy = user, usedTemplateFile__typeOfProtocol__protocolTypeName__exact = protocol_type, station__stationName__exact = station).exists():
-        num_times = RequestOpenTronsFiles.objects.filter(userRequestedBy = user, usedTemplateFile__typeOfProtocol__protocolTypeName__exact = protocol_type, station__stationName__exact = station).count()
+    if RequestForStationC.objects.filter(userRequestedBy = user, usedTemplateFile__typeOfProtocol__protocolTypeName__exact = protocol_type, station__stationName__exact = station).exists():
+        num_times = RequestForStationC.objects.filter(userRequestedBy = user, usedTemplateFile__typeOfProtocol__protocolTypeName__exact = protocol_type, station__stationName__exact = station).count()
     num_times += 1
     return user.username + protocol_type + station + str(num_times)
 

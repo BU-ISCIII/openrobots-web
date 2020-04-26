@@ -26,7 +26,7 @@ def create_protocol_file(request):
             return render(request, 'openrobots/createProtocolFile.html' ,{'form_data': form_data, 'error': add_result})
         database['generatedFile'] = protocol_file
         database['requestedCodeID'] = build_request_codeID (request.user, protocol_type, request.POST['station'] )
-        new_create_protocol = RequestOpenTronsFiles.objects.create_new_request(database)
+        new_create_protocol = RequestForStationC.objects.create_new_request(database)
 
         display_result = new_create_protocol.get_result_data()
 
