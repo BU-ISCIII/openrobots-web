@@ -197,7 +197,7 @@ def store_user_file(in_file, store_folder):
     Input:
         in_file     # input file name
     Constants:
-        OPENROBOTS_TEMPLATE_DIRECTORY
+
     Return:
         saved_file
     '''
@@ -206,8 +206,9 @@ def store_user_file(in_file, store_folder):
     f_extension = split_filename[2]
     fs_template = FileSystemStorage()
     timestr = time.strftime("%Y%m%d-%H%M%S")
-    if not os.path.exists(store_folder):
-        os.makedirs(store_folder)
+    system_folder = os.path.join(settings.MEDIA_ROOT,store_folder)
+    if not os.path.exists(system_folder):
+        os.makedirs(system_folder)
 
     ## using the MEDIA_ROOT variable defined on settings to upload the file
     file_name=os.path.join(store_folder,  str(f_name + '_' +timestr + f_extension))
