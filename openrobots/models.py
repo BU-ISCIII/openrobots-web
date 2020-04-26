@@ -2,7 +2,7 @@ from django.db import models
 
 from django.contrib.auth.models import User
 from . import openrobots_config #OPENROBOTS_TEMPLATE_DIRECTORY, OPENROBOTS_OUTPUT_DIRECTORY
-import distutils
+from distutils import util
 
 class Stations (models.Model):
     stationName = models.CharField(max_length = 80)
@@ -425,9 +425,9 @@ class RequestForStationCManager(models.Manager):
         new_request = self.create(userRequestedBy = request_data['userRequestedBy'], masterMixLabware = masterMixLabware , masterMixTubeLabware = masterMixTubeLabware,
                     pcrPlateLabware = pcrPlateLabware, elutionLabware = elutionLabware, masterMixType = masterMixType, station = station,
                     usedTemplateFile = usedTemplateFile, requestedCodeID = request_data['requestedCodeID'], numberOfSamples = request_data['numberOfSamples'],
-                    prepareMastermix = distutils.util.strtobool(request_data['prepareMastermix']),
-                    transferMastermix = distutils.util.strtobool(request_data['transferMastermix']),
-                    transferSamples = distutils.util.strtobool(request_data['transferSamples']),
+                    prepareMastermix = util.strtobool(request_data['prepareMastermix']),
+                    transferMastermix = util.strtobool(request_data['transferMastermix']),
+                    transferSamples = util.strtobool(request_data['transferSamples']),
                     generatedFile = request_data['generatedFile'] , userNotes = request_data['userNotes'])
 
         return new_request
