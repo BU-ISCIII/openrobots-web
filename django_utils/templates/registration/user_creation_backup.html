@@ -1,7 +1,7 @@
-{% extends 'opentrons/base.html' %}             
-{% load crispy_forms_tags %}                 
-                                              
-{% block content %}  
+{% extends 'openrobots/base.html' %}             
+{% load crispy_forms_tags %}
+
+{% block content %}
 <style>
 * {
   .border-radius(0) !important;
@@ -12,14 +12,14 @@
 }
 
 
-</style>                        
-<div class="container-fluid margin-t-40">        
+</style>
+<div class="container-fluid margin-t-40">
         {% csrf_token %}
         <form action="" method="POST" enctype="multipart/form-data">
                 {% crispy form1 %}
                 {% crispy form2 %}
-                
-                
+
+
                 <div class="row row-space-2 margin-b-4">
                         <div class="col-sm-12">
                                 <div class="panel panel-default">
@@ -35,7 +35,7 @@
                                                             <option value="1">Audi</option>
                                                               </select>
                                                         </div>
-                                         </div> <!--// end col-sm-5 --> 
+                                         </div> <!--// end col-sm-5 -->
                                          <div class="col-sm-5 col-sm-offset-2">
                                         {% if sharing_list %}
                                                 <table class="table table-hover">
@@ -45,10 +45,10 @@
                                                                 </tr>
                                                         </thead>
                                                         <tbody>
-                                                                
+
                                                                 {% for user in sharing_list %}
                                                                         <tr>
-                                                                                <td> {{ user }}</td> 
+                                                                                <td> {{ user }}</td>
                                                                                 <td><input type="checkbox" id="deleteuser" name="deleteuser" value="{{user}}">Delete user</td>
                                                                         </tr>
                                                                 {% endfor %}
@@ -57,16 +57,16 @@
                                         {% else %}
                                                 <h3>Your shared project list is empty. </h3>
                                                 <p>Use the left form to add user to your list.</p>
-                                                                
+
                                         {% endif %}
-                                        
+
                                         </div> <!--// end panel body -->
                                 </div> <!--// end panel -->
                         </div> <!--// end col-sm-7  Recorded  pending services  -->
                 </div> <!-- //  end row -->
-        <div>                                                                                                                                   
-                <button type="submit" class="btn btn-primary"> Submit </button>                                                                     
-        </div>                                                                                                                                  
+        <div>
+                <button type="submit" class="btn btn-primary"> Submit </button>
+        </div>
         </form>
 </div>
 <script>
@@ -85,11 +85,11 @@
         $(addto).after(newInput);
         $(addRemove).after(removeButton);
         $("#shared" + next).attr('data-source',$(addto).attr('data-source'));
-        $("#count").val(next);  
-        
-        
+        $("#count").val(next);
+
+
         $('#restaurant_form').append('<input type="hidden" name="shared_users" value=" field'+ next +'" />')
-        
+
             $('.remove-me').click(function(e){
                 e.preventDefault();
                 var fieldNum = this.id.charAt(this.id.length-1);
@@ -98,9 +98,9 @@
                 $(fieldID).remove();
             });
     });
-    
+
 });
 </script>
 
-                                    
-{% endblock %}                               
+
+{% endblock %}

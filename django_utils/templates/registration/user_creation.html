@@ -1,12 +1,12 @@
-{% extends 'opentrons/base.html' %}             
-{% load crispy_forms_tags %} 
-{% load static %}                
-                                              
+{% extends 'openrobots/base.html' %}             
+{% load crispy_forms_tags %}
+{% load static %}
+
 {% block content %}
 <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 
 <link href="{% static "iSkyLIMS_common_static/css/multi_select/multi-select.css" %}" rel="stylesheet" type="text/css"/>
- 
+
 <style>
 * {
   .border-radius(0) !important;
@@ -17,16 +17,16 @@
 }
 
 
-</style>                        
-<div class="container-fluid margin-t-40">    
+</style>
+<div class="container-fluid margin-t-40">
     {% csrf_token %}
     <form action="" method="POST" enctype="multipart/form-data">
         {% crispy form1 %}
         {% crispy form2 %}
 
 
-    
-    
+
+
     <div class="row row-space-2 margin-b-4">
         <div class="col-sm-12">
         <div class="panel panel-default">
@@ -36,7 +36,7 @@
                 <h3>Select the users to share your projects</h3>
                 <!-- start -->
                  <select name="shared_list" id="shared_list" multiple="multiple" >
-                
+
                 {% for userid, username in username_list %}
                     <option value="{{ userid }}">{{username}}</option>
                 {% endfor %}
@@ -60,8 +60,8 @@
                 selectionHeader: "<div class='text-center'>  <div class='text-success' >Your Shared user list</div></div>",
                 });
                 </script>
-    
-    
+
+
             </div> <!--  //end col-sm-5   -->
             <div class="col-sm-5 col-sm-offset-2">
             {% if not sharing_list %}
@@ -73,11 +73,11 @@
         </div> <!--// end panel -->
         </div> <!--// end col-sm-12  -->
     </div> <!-- //  end row -->
- 
 
-    <button type="submit" class="btn btn-primary"> Submit </button>                                                                                                                                                                                                      
+
+    <button type="submit" class="btn btn-primary"> Submit </button>
     </form>
 </div>
 
 
-{% endblock %}                               
+{% endblock %}
