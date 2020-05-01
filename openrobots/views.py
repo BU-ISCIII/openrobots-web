@@ -28,16 +28,14 @@ def create_protocol_file(request):
         database['requestedCodeID'] = build_request_codeID (request.user, protocol_type, request.POST['station'] )
         if request.POST['station'] == 'Station C':
             new_create_protocol = RequestForStationC.objects.create_new_request(database)
-
-            display_result = new_create_protocol.get_result_data()
-
-            return render(request, 'openrobots/createProtocolFile.html' ,{'display_result': display_result})
         elif request.POST['station'] == 'Station B':
-
             new_create_protocol = RequestForStationB.objects.create_new_request(database)
+        elif  request.POST['station'] == 'Station A' and request.POST['protocol'] == '1' :
+            new_create_protocol = RequestForStationA_Prot1.objects.create_new_request(database)
 
-            display_result = new_create_protocol.get_result_data()
-            return render(request, 'openrobots/createProtocolFile.html' ,{'display_result': display_result})
+
+        display_result = new_create_protocol.get_result_data()
+        return render(request, 'openrobots/createProtocolFile.html' ,{'display_result': display_result})
     else:
         return render(request, 'openrobots/createProtocolFile.html' ,{'form_data': form_data})
 

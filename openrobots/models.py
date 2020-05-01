@@ -227,7 +227,7 @@ class ProtocolTemplateFiles (models.Model):
         data.append(self.typeOfProtocol.get_name())
         data.append(self.station.get_station_name())
         data.append(self.userName)
-        data.append(self.protocolTemplateFileName)
+        data.append(self.protocolName)
         return data
 
     def get_metadata(self):
@@ -306,6 +306,70 @@ class MagPlate_Labware(models.Model):
         return '%s' %(self.mag_plateLabwareType)
 
 
+class Buffer_Labware(models.Model):
+    bufferLabwareType = models.CharField(max_length = 80)
+    description = models.CharField(max_length = 255)
+
+    def __str__ (self):
+        return '%s' %(self.bufferLabwareType)
+    def get_buffer_name (self):
+        return '%s' %(self.bufferLabwareType)
+
+
+class Destination_Labware(models.Model):
+    destinationLabwareType = models.CharField(max_length = 80)
+    description = models.CharField(max_length = 255)
+
+    def __str__ (self):
+        return '%s' %(self.destinationLabwareType)
+    def get_destination_labware_name (self):
+        return '%s' %(self.destinationLabwareType)
+
+
+class Destination_Tube_Labware(models.Model):
+    destinationTube = models.CharField(max_length = 80)
+    description = models.CharField(max_length = 255)
+
+    def __str__ (self):
+        return '%s' %(self.destinationTube)
+    def get_destination_tube_name (self):
+        return '%s' %(self.destinationTube)
+
+class Beads_Labware(models.Model):
+    beadsLabwareType = models.CharField(max_length = 80)
+    description = models.CharField(max_length = 255)
+
+    def __str__ (self):
+        return '%s' %(self.beadsLabwareType)
+    def get_beads_labware_name (self):
+        return '%s' %(self.beadsLabwareType)
+
+class Plate_Labware(models.Model):
+    plateLabwareType = models.CharField(max_length = 80)
+    description = models.CharField(max_length = 255)
+
+    def __str__ (self):
+        return '%s' %(self.plateLabwareType)
+    def get_plate_labware_name (self):
+        return '%s' %(self.plateLabwareType)
+
+class Lysate_Labware(models.Model):
+    lysateLabwareType = models.CharField(max_length = 80)
+    description = models.CharField(max_length = 255)
+
+    def __str__ (self):
+        return '%s' %(self.lysateLabwareType)
+    def get_lysate_labware_name (self):
+        return '%s' %(self.lysateLabwareType)
+
+class Lysate_Tube (models.Model):
+    lysateTube = models.CharField(max_length = 80)
+    description = models.CharField(max_length = 255)
+
+    def __str__ (self):
+        return '%s' %(self.lysateTube)
+    def get_lysate_tube (self):
+        return '%s' %(self.lysateTube)
 
 class Elution_LabwareManager(models.Manager):
     def create_elution_labware(self,data):
@@ -420,6 +484,59 @@ class Waste_Labware(models.Model):
     def get_waste_labware_name (self):
         return '%s' %(self.wasteLabwareType)
 
+
+class RequestForStationA_Prot1Manager(models.Manager):
+
+    def create_new_request (self, request_data):
+        bufferLabware =  Buffer_Labware.objects.get(bufferLabwareType__exact = request_data['bufferLabware'])
+        destinationLabware =  Destination_Labware.objects.get(destinationLabwareType__exact = request_data['destinationLabware'])
+        destinationTube =  Destination_Tube_Labware.objects.get(destinationTube__exact = request_data['destinationTube'])
+        usedTemplateFile = ProtocolTemplateFiles.objects.get(protocolTemplateFileName__exact = request_data['usedTemplateFile'])
+
+        new_request = self.create(userRequestedBy = request_data['userRequestedBy'], bufferLabware = bufferLabware,
+                    destinationLabware = destinationLabware, destinationTube = destinationTube,
+                    usedTemplateFile = usedTemplateFile, requestedCodeID = request_data['requestedCodeID'], numberOfSamples = request_data['numberOfSamples'],
+                    volumeBuffer = request_data['volumeBuffer'], generatedFile = request_data['generatedFile'] , userNotes = request_data['userNotes'])
+
+        return new_request
+
+class RequestForStationA_Prot1 (models.Model):
+    userRequestedBy = models.ForeignKey (
+                        User,
+                        on_delete=models.CASCADE, null = True, blank = True )
+    bufferLabware = models.ForeignKey (
+                        Buffer_Labware,
+                        on_delete=models.CASCADE, null = True, blank = True )
+
+    destinationLabware = models.ForeignKey (
+                        Destination_Labware,
+                        on_delete=models.CASCADE, null = True, blank = True )
+    destinationTube = models.ForeignKey (
+                        Destination_Tube_Labware,
+                        on_delete=models.CASCADE, null = True, blank = True )
+
+    usedTemplateFile = models.ForeignKey(
+                        ProtocolTemplateFiles,
+                        on_delete=models.CASCADE)
+    requestedCodeID = models.CharField(max_length = 50)
+    numberOfSamples = models.CharField(max_length = 10)
+    volumeBuffer = models.CharField(max_length = 10)
+    generatedFile = models.FileField(upload_to = openrobots_config.OPENROBOTS_OUTPUT_DIRECTORY )
+    userNotes = models.CharField(max_length = 255)
+    generatedat = models.DateTimeField(auto_now_add=True)
+
+    def __str__ (self):
+        return '%s' %(self.requestedCodeID)
+
+    def get_result_data(self):
+        data = []
+        data.append(self.requestedCodeID)
+        data.append(self.usedTemplateFile.get_protocol_type())
+
+        data.append(self.generatedFile)
+        return data
+        
+    objects = RequestForStationA_Prot1Manager()
 
 class RequestForStationBManager(models.Manager):
 
@@ -547,7 +664,7 @@ class RequestForStationC (models.Model):
         data = []
         data.append(self.requestedCodeID)
         data.append(self.usedTemplateFile.get_protocol_type())
-        
+
         data.append(self.generatedFile)
         return data
 

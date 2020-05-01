@@ -72,58 +72,73 @@ def get_form_data_creation_run_file():
     form_data['mag_plate_data'] = []
     form_data['waste_plate_data'] =[]
     form_data['reagent_labware_data'] = []
-    mm_labware_data = []
-    mm_tube_labware_data = []
-    pcr_labware_data = []
-    elution_labware_data = []
-    master_mix_type_data = []
+    form_data['mm_labware_data'] = []
+    form_data['mm_tube_labware_data']  = []
+    form_data['pcr_labware_data'] = []
+    form_data['elution_labware_data'] = []
+    form_data['master_mix_type_data'] =[]
+    form_data['buffer_labware_data'] = []
+    form_data['destination_labware_data'] = []
+    form_data['dest_tube_labware_data'] = []
 
     if MasterMixLabware.objects.all().exists():
         mm_labwares = MasterMixLabware.objects.all().order_by('MasterMixLabwareType')
         for mm_labware in mm_labwares :
-            mm_labware_data.append(mm_labware.get_mastermix_labware_type())
+            form_data['mm_labware_data'].append(mm_labware.get_mastermix_labware_type())
     if MasterMixTube.objects.all().exists():
         mm_tube_labwares = MasterMixTube.objects.all().order_by('MasterMixTube')
         for mm_tube_labware in mm_tube_labwares :
-            mm_tube_labware_data.append(mm_tube_labware.get_mastermix_tube())
+            form_data['mm_tube_labware_data'] .append(mm_tube_labware.get_mastermix_tube())
     if PCR_plateLabware.objects.all().exists():
         pcr_labwares = PCR_plateLabware.objects.all().order_by('PCR_plateLabwareType')
         for pcr_labware in pcr_labwares :
-            pcr_labware_data.append(pcr_labware.get_pcr_plate_labware_type())
+            form_data['pcr_labware_data'].append(pcr_labware.get_pcr_plate_labware_type())
     if Elution_Labware.objects.all().exists():
         elution_labwares = Elution_Labware.objects.all().order_by('elutionHW_type')
         for elution_labware in elution_labwares :
-            elution_labware_data.append(elution_labware.get_elution_labware_type())
+            form_data['elution_labware_data'].append(elution_labware.get_elution_labware_type())
     if MasterMixType.objects.all().exists():
         master_mix_types = MasterMixType.objects.all().order_by('MasterMixType')
         for master_mix_type in master_mix_types :
-            master_mix_type_data.append(master_mix_type.get_master_mix_type())
+            form_data['master_mix_type_data'].append(master_mix_type.get_master_mix_type())
 
     # values for station B form
     if MagPlate_Labware.objects.all().exists():
         mag_plates = MagPlate_Labware.objects.all()
         for mag_plate in mag_plates:
             form_data['mag_plate_data'].append(mag_plate.get_mag_plate_name())
-
     if Waste_Labware.objects.all().exists():
         wastes_lab = Waste_Labware.objects.all()
         for waste_lab in wastes_lab:
             form_data['waste_plate_data'].append(waste_lab.get_waste_labware_name())
-
     if Reagent_Labware.objects.all().exists():
         reagents_lab = Reagent_Labware.objects.all()
         for reagent_lab in reagents_lab:
             form_data['reagent_labware_data'].append(reagent_lab.get_reagent_labware_name())
 
-    form_data['mm_labware_data'] = mm_labware_data
-    form_data['mm_tube_labware_data'] = mm_tube_labware_data
-    form_data['pcr_labware_data'] = pcr_labware_data
-    form_data['elution_labware_data'] = elution_labware_data
-    form_data['master_mix_type_data'] = master_mix_type_data
+    # values for station A form
+    if Buffer_Labware.objects.all().exists():
+        buffer_types = Buffer_Labware.objects.all()
+        for buffer_type in buffer_types:
+            form_data['buffer_labware_data'].append(buffer_type.get_buffer_name())
+    if Destination_Labware.objects.all().exists():
+        destination_types = Destination_Labware.objects.all()
+        for destination_type in destination_types:
+            form_data['destination_labware_data'].append(destination_type.get_destination_labware_name())
+    if Destination_Tube_Labware.objects.all().exists():
+        destination_tubes = Destination_Tube_Labware.objects.all()
+        for destination_tube in destination_tubes:
+            form_data['dest_tube_labware_data'].append(destination_tube.get_destination_tube_name())
+
+
 
 
     if ProtocolTemplateFiles.objects.filter(station__stationName__iexact = 'Station A').exists():
-        form_data['station_a'] = ProtocolTemplateFiles.objects.get(station__stationName__iexact = 'Station A').get_protocol_file_name()
+        form_data['station_a'] = {}
+        protocol_types = ['Protocol 1', 'Protocol 2', 'Protocol 3']
+        for i in range(len(protocol_types)) :
+            if ProtocolTemplateFiles.objects.filter(station__stationName__iexact = 'Station A', protocolName__icontains = protocol_types[i]).exists():
+                form_data['station_a'] [i+1]= ProtocolTemplateFiles.objects.get(station__stationName__iexact = 'Station A', protocolName__icontains = protocol_types[i]).get_protocol_file_name()
     if ProtocolTemplateFiles.objects.filter(station__stationName__iexact = 'Station B').exists():
         form_data['station_b'] = ProtocolTemplateFiles.objects.get(station__stationName__iexact = 'Station B').get_protocol_file_name()
     if ProtocolTemplateFiles.objects.filter(station__stationName__iexact = 'Station C').exists():
@@ -401,12 +416,19 @@ def extract_form_data_station (request) :
             data_for_database[item[1]] = request.POST[item[0]]
 
         data_for_database['station'] = request.POST['station']
-    if request.POST['station'] == 'Station B':
+    elif request.POST['station'] == 'Station B':
         for item in PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_B:
             data_for_file[item] = request.POST[item]
         #[(data_for_file2[item] = request.POST[item]) for item in PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_C ]
         for item in MAP_PROTOCOL_PARAMETER_TO_DATABASE_STATION_B :
             data_for_database[item[1]] = request.POST[item[0]]
+    elif  request.POST['station'] == 'Station A' and request.POST['protocol'] == '1' :
+        for item in PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_A_PROT_1:
+            data_for_file[item] = request.POST[item]
+        for item in MAP_PROTOCOL_PARAMETER_TO_DATABASE_STATION_A_PROT_1 :
+            data_for_database[item[1]] = request.POST[item[0]]
+
+
     # Add common data to store on database
     data_for_database['usedTemplateFile'] = request.POST['template']
     data_for_database['userNotes'] = request.POST['usernotes']

@@ -47,9 +47,40 @@ class Reagent_LabwareAdmin (admin.ModelAdmin):
 class Waste_LabwareAdmin (admin.ModelAdmin):
     list_display =['wasteLabwareType', 'description']
 
+
+class Buffer_LabwareAdmin (admin.ModelAdmin):
+    list_display =['bufferLabwareType', 'description']
+
+class Destination_LabwareAdmin (admin.ModelAdmin):
+    list_display =['destinationLabwareType', 'description']
+
+class Destination_Tube_LabwareAdmin (admin.ModelAdmin):
+    list_display =['destinationTube', 'description']
+
+class Beads_LabwareAdmin (admin.ModelAdmin):
+    list_display =['beadsLabwareType', 'description']
+
+class Plate_LabwareAdmin (admin.ModelAdmin):
+    list_display =['plateLabwareType', 'description']
+
+class Lysate_LabwareAdmin (admin.ModelAdmin):
+    list_display =['lysateLabwareType', 'description']
+
+class Lysate_TubeAdmin (admin.ModelAdmin):
+    list_display =['lysateTube', 'description']
+
 class RobotsInventoryAdmin (admin.ModelAdmin):
     list_display =('userName', 'configuration',  'location','robots', 'serialNumber','IP_address','hostName',
             'computer_mac','rightPipette', 'leftPipette', 'rightPipetteID', 'leftPipetteID', 'neededPlugs','observations')
+
+
+
+class RequestForStationA_Prot1Admin(admin.ModelAdmin):
+    list_display =['requestedCodeID','bufferLabware', 'destinationLabware','destinationTube','numberOfSamples',
+                'volumeBuffer', 'generatedFile', 'usedTemplateFile','userRequestedBy' , 'userNotes']
+
+
+
 
 
 class RequestForStationBAdmin (admin.ModelAdmin):
@@ -84,10 +115,20 @@ admin.site.register(Elution_Labware , Elution_LabwareAdmin)
 admin.site.register(ModuleType , ModuleTypeAdmin)
 admin.site.register(ModulesInLab , ModulesInLabAdmin)
 
+admin.site.register(Buffer_Labware , Buffer_LabwareAdmin)
+admin.site.register(Destination_Labware , Destination_LabwareAdmin)
+admin.site.register(Destination_Tube_Labware , Destination_Tube_LabwareAdmin)
+admin.site.register(Beads_Labware , Beads_LabwareAdmin)
+admin.site.register(Plate_Labware , Plate_LabwareAdmin)
+admin.site.register(Lysate_Labware , Lysate_LabwareAdmin)
+admin.site.register(Lysate_Tube , Lysate_TubeAdmin)
+
 admin.site.register(Reagent_Labware , Reagent_LabwareAdmin)
 admin.site.register(Waste_Labware , Waste_LabwareAdmin)
 
 admin.site.register(RobotsInventory , RobotsInventoryAdmin)
+
+admin.site.register(RequestForStationA_Prot1 , RequestForStationA_Prot1Admin)
 
 admin.site.register(RequestForStationB , RequestForStationBAdmin)
 admin.site.register(RequestForStationC , RequestForStationCAdmin)
