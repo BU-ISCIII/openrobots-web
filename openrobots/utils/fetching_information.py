@@ -34,8 +34,13 @@ def build_request_codeID (user, protocol_type, station ) :
         request codeID string
     '''
     num_times = 0
-    if RequestForStationC.objects.filter(userRequestedBy = user, usedTemplateFile__typeOfProtocol__protocolTypeName__exact = protocol_type, station__stationName__exact = station).exists():
-        num_times = RequestForStationC.objects.filter(userRequestedBy = user, usedTemplateFile__typeOfProtocol__protocolTypeName__exact = protocol_type, station__stationName__exact = station).count()
+    if station == 'Station C':
+        if RequestForStationC.objects.filter(userRequestedBy = user, usedTemplateFile__typeOfProtocol__protocolTypeName__exact = protocol_type).exists():
+            num_times = RequestForStationC.objects.filter(userRequestedBy = user, usedTemplateFile__typeOfProtocol__protocolTypeName__exact = protocol_type).count()
+    elif station == 'Station B':
+        if RequestForStationB.objects.filter(userRequestedBy = user, usedTemplateFile__typeOfProtocol__protocolTypeName__exact = protocol_type).exists():
+            num_times = RequestForStationB.objects.filter(userRequestedBy = user, usedTemplateFile__typeOfProtocol__protocolTypeName__exact = protocol_type).count()
+
     num_times += 1
     return user.username + protocol_type + station + str(num_times)
 
@@ -64,6 +69,9 @@ def get_form_data_creation_run_file():
         form_data
     '''
     form_data = {}
+    form_data['mag_plate_data'] = []
+    form_data['waste_plate_data'] =[]
+    form_data['reagent_labware_data'] = []
     mm_labware_data = []
     mm_tube_labware_data = []
     pcr_labware_data = []
@@ -90,11 +98,30 @@ def get_form_data_creation_run_file():
         master_mix_types = MasterMixType.objects.all().order_by('MasterMixType')
         for master_mix_type in master_mix_types :
             master_mix_type_data.append(master_mix_type.get_master_mix_type())
+
+    # values for station B form
+    if MagPlate_Labware.objects.all().exists():
+        mag_plates = MagPlate_Labware.objects.all()
+        for mag_plate in mag_plates:
+            form_data['mag_plate_data'].append(mag_plate.get_mag_plate_name())
+
+    if Waste_Labware.objects.all().exists():
+        wastes_lab = Waste_Labware.objects.all()
+        for waste_lab in wastes_lab:
+            form_data['waste_plate_data'].append(waste_lab.get_waste_labware_name())
+
+    if Reagent_Labware.objects.all().exists():
+        reagents_lab = Reagent_Labware.objects.all()
+        for reagent_lab in reagents_lab:
+            form_data['reagent_labware_data'].append(reagent_lab.get_reagent_labware_name())
+
     form_data['mm_labware_data'] = mm_labware_data
     form_data['mm_tube_labware_data'] = mm_tube_labware_data
     form_data['pcr_labware_data'] = pcr_labware_data
     form_data['elution_labware_data'] = elution_labware_data
     form_data['master_mix_type_data'] = master_mix_type_data
+
+
     if ProtocolTemplateFiles.objects.filter(station__stationName__iexact = 'Station A').exists():
         form_data['station_a'] = ProtocolTemplateFiles.objects.get(station__stationName__iexact = 'Station A').get_protocol_file_name()
     if ProtocolTemplateFiles.objects.filter(station__stationName__iexact = 'Station B').exists():
@@ -325,12 +352,12 @@ def get_stored_protocols_files():
     return protocol_file_data
 
 
-def extract_form_data (request) :
+def extract_form_data_station_b (request) :
     '''
     Description:
         The function extract the user form data and define a dictionnary with the values
     Constants:
-        PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_C
+        PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_B
     Return:
         valid_metadata
     '''
@@ -349,6 +376,42 @@ def extract_form_data (request) :
     data_for_database['userNotes'] = request.POST['usernotes']
     data_for_database['userRequestedBy'] = request.user
 
+    return data_for_file , data_for_database
+
+
+
+def extract_form_data_station (request) :
+    '''
+    Description:
+        The function extract the user form data and define a dictionnary with the values
+    Constants:
+        PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_C
+        PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_B
+    Return:
+        valid_metadata
+    '''
+    data_for_file = {}
+    data_for_file2 = {}
+    data_for_database = {}
+    if request.POST['station'] == 'Station C':
+        for item in PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_C:
+            data_for_file[item] = request.POST[item]
+        #[(data_for_file2[item] = request.POST[item]) for item in PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_C ]
+        for item in MAP_PROTOCOL_PARAMETER_TO_DATABASE_STATION_C :
+            data_for_database[item[1]] = request.POST[item[0]]
+
+        data_for_database['station'] = request.POST['station']
+    if request.POST['station'] == 'Station B':
+        for item in PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_B:
+            data_for_file[item] = request.POST[item]
+        #[(data_for_file2[item] = request.POST[item]) for item in PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_C ]
+        for item in MAP_PROTOCOL_PARAMETER_TO_DATABASE_STATION_B :
+            data_for_database[item[1]] = request.POST[item[0]]
+    # Add common data to store on database
+    data_for_database['usedTemplateFile'] = request.POST['template']
+    data_for_database['userNotes'] = request.POST['usernotes']
+    data_for_database['userRequestedBy'] = request.user
+    import pdb; pdb.set_trace()
     return data_for_file , data_for_database
 
 

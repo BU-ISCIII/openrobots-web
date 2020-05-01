@@ -302,6 +302,9 @@ class MagPlate_Labware(models.Model):
 
     def __str__ (self):
         return '%s' %(self.mag_plateLabwareType)
+    def get_mag_plate_name (self):
+        return '%s' %(self.mag_plateLabwareType)
+
 
 
 class Elution_LabwareManager(models.Manager):
@@ -396,11 +399,15 @@ class Elution_Labware (models.Model):
 
     objects = Elution_LabwareManager()
 
+
+
 class Reagent_Labware(models.Model):
     reagentLabwareType = models.CharField(max_length = 80)
     description = models.CharField(max_length = 255)
 
     def __str__ (self):
+        return '%s' %(self.reagentLabwareType)
+    def get_reagent_labware_name (self):
         return '%s' %(self.reagentLabwareType)
 
 class Waste_Labware(models.Model):
@@ -409,6 +416,70 @@ class Waste_Labware(models.Model):
 
     def __str__ (self):
         return '%s' %(self.wasteLabwareType)
+
+    def get_waste_labware_name (self):
+        return '%s' %(self.wasteLabwareType)
+
+
+class RequestForStationBManager(models.Manager):
+
+    def create_new_request (self, request_data):
+        magPlateLabware =  MagPlate_Labware.objects.get(mag_plateLabwareType__exact = request_data['magPlateLabware'])
+        reagentLabware =  Reagent_Labware.objects.get(reagentLabwareType__exact = request_data['reagentLabware'])
+        wasteLabware =  Waste_Labware.objects.get(wasteLabwareType__exact = request_data['wasteLabware'])
+        elutionLabware = Elution_Labware.objects.get(elution_LabwareType__exact = request_data['elutionLabware'])
+        usedTemplateFile = ProtocolTemplateFiles.objects.get(protocolTemplateFileName__exact = request_data['usedTemplateFile'])
+
+        new_request = self.create(userRequestedBy = request_data['userRequestedBy'], magPlateLabware = magPlateLabware,
+                    reagentLabware = reagentLabware, elutionLabware = elutionLabware, wasteLabware = wasteLabware,
+                    usedTemplateFile = usedTemplateFile, requestedCodeID = request_data['requestedCodeID'], numberOfSamples = request_data['numberOfSamples'],
+                    tipTrack = util.strtobool(request_data['tipTrack']),
+                    dispenseBeads = util.strtobool(request_data['dispenseBeads']),
+                    generatedFile = request_data['generatedFile'] , userNotes = request_data['userNotes'])
+
+        return new_request
+
+class RequestForStationB (models.Model):
+    userRequestedBy = models.ForeignKey (
+                        User,
+                        on_delete=models.CASCADE, null = True, blank = True )
+    elutionLabware = models.ForeignKey (
+                        Elution_Labware,
+                        on_delete=models.CASCADE)
+    magPlateLabware = models.ForeignKey (
+                        MagPlate_Labware,
+                        on_delete=models.CASCADE)
+    reagentLabware = models.ForeignKey (
+                        Reagent_Labware,
+                        on_delete=models.CASCADE)
+    wasteLabware = models.ForeignKey (
+                        Waste_Labware,
+                        on_delete=models.CASCADE)
+    usedTemplateFile = models.ForeignKey(
+                        ProtocolTemplateFiles,
+                        on_delete=models.CASCADE)
+    requestedCodeID = models.CharField(max_length = 50)
+    numberOfSamples = models.CharField(max_length = 10)
+    tipTrack = models.BooleanField()
+    dispenseBeads = models.BooleanField()
+
+    generatedFile = models.FileField(upload_to = openrobots_config.OPENROBOTS_OUTPUT_DIRECTORY )
+    userNotes = models.CharField(max_length = 255)
+    generatedat = models.DateTimeField(auto_now_add=True)
+
+    def __str__ (self):
+        return '%s' %(self.requestedCodeID)
+
+    def get_result_data(self):
+        data = []
+        data.append(self.requestedCodeID)
+        data.append(self.usedTemplateFile.get_protocol_type())
+
+        data.append(self.generatedFile)
+        return data
+    objects = RequestForStationBManager()
+
+
 
 class RequestForStationCManager(models.Manager):
 
@@ -432,30 +503,6 @@ class RequestForStationCManager(models.Manager):
 
         return new_request
 
-class RequestForStationB (models.Model):
-    userRequestedBy = models.ForeignKey (
-                        User,
-                        on_delete=models.CASCADE, null = True, blank = True )
-    elutionLabware = models.ForeignKey (
-                        Elution_Labware,
-                        on_delete=models.CASCADE)
-    magPlateLabware = models.ForeignKey (
-                        MagPlate_Labware,
-                        on_delete=models.CASCADE)
-    reagentLabware = models.ForeignKey (
-                        Reagent_Labware,
-                        on_delete=models.CASCADE)
-    wasteLabware = models.ForeignKey (
-                        Waste_Labware,
-                        on_delete=models.CASCADE)
-    requestedCodeID = models.CharField(max_length = 50)
-    numberOfSamples = models.CharField(max_length = 10)
-    tipTrack = models.BooleanField()
-    dispenseBeads = models.BooleanField()
-
-    generatedFile = models.FileField(upload_to = openrobots_config.OPENROBOTS_OUTPUT_DIRECTORY )
-    userNotes = models.CharField(max_length = 255)
-    generatedat = models.DateTimeField(auto_now_add=True)
 
 
 class RequestForStationC (models.Model):
@@ -500,7 +547,7 @@ class RequestForStationC (models.Model):
         data = []
         data.append(self.requestedCodeID)
         data.append(self.usedTemplateFile.get_protocol_type())
-        data.append(self.station.get_station_name())
+        
         data.append(self.generatedFile)
         return data
 

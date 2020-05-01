@@ -36,13 +36,10 @@
     							<td>Protocol Type</td>
                                 <td>{{ display_result.1 }}</td>
                             </tr>
-                            <tr>
-    							<td>Station</td>
-                                <td>{{ display_result.2 }}</td>
-                            </tr>
+
                             <tr>
     							<td>Protocol_file</td>
-                                <td><a href="/documents/protocol_files/{{display_result.3}}" download>Download the Protocol File<span class="glyphicon glyphicon-download-alt"></span></a></td>
+                                <td><a href="/documents/protocol_files/{{display_result.2}}" download>Download the Protocol File<span class="glyphicon glyphicon-download-alt"></span></a></td>
                             </tr>
 
     					</tbody>
@@ -78,7 +75,7 @@
 
                 <div id="stationA" class="tabcontent">
                     <div class="row row-space-4 margin-b-4">
-                        <div class="col-sm-7 col-sm-offset-1" >
+                        <div class="col-sm-10 col-sm-offset-1" >
                             <div class="panel panel-default">
                                 <div class="panel-heading"><h3>Form to create input file for Opentrons OT-2</h3></div>
                                 <div class="panel-body">
@@ -86,14 +83,33 @@
                                     <!-- FORM for Station A -->
 
                                     {% else %}
+                                    <button class="tablinks" onclick="summaryBin(event, 'stationA_prot1')">Form for Station A Protocol 1</button>
+
+                                    <button class="tablinks" onclick="summaryBin(event, 'stationA_prot2')">Form for Station A Protocol 2</button>
+
+                                    <button class="tablinks" onclick="summaryBin(event, 'stationA_prot3')">Form for Station A Protocol 3</button>
                                     <h5>There is no  Protocol template defined for Station A </h5>
+
+
                                     {% endif %}
                                 </div>  <!--  end of panel body  -->
                             </div> <!--// end panel -->
                         </div> <!--// end col-sm-7  -->
                     </div> <!--  end of row -->
                 </div><!-- // end of tab stationA -->
+                <div id="stationA_prot1" class="tabcontent">
+                    <div class="row row-space-4 margin-b-4">
+                        <div class="col-sm-7 col-sm-offset-1" >
+                            <div class="panel panel-default">
+                                <div class="panel-heading"><h3>Form to create input file for Opentrons OT-2</h3></div>
+                                <div class="panel-body">
 
+                                    <p>este es una prueba protocolo 1 </p>
+                                </div>  <!--  end of panel body  -->
+                            </div> <!--// end panel -->
+                        </div> <!--// end col-sm-7  -->
+                    </div> <!--  end of row -->
+                </div><!-- // end of tab stationA protocol 1-->
 
                 <div id="stationB" class="tabcontent">
                     <div class="row row-space-4 margin-b-4">
@@ -103,6 +119,80 @@
                                 <div class="panel-body">
                                     {% if form_data.station_b %}
                                     <!-- FORM for Station B -->
+                                    <!-- FORM for Station C -->
+                                        <form method="post" enctype="multipart/form-data" name="createfile" id="createfile" class="form-horizontal well">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="action" value="createprotocolfile"/>
+                                            <input type="hidden" name="station" value="Station B"/>
+                                            <input type="hidden" name="template" value="{{form_data.station_b}}"/>
+                                            <div class="form-group required">
+                                                <br><br>
+                                                <label class="col-sm-5  control-label" for="NUM_SAMPLES" >Number of Samples </label>
+                                                <div class="col-sm-5"><input class="form-control" type="text" required = "required" name="NUM_SAMPLES" id="NUM_SAMPLES" size="100" maxlength="100"></div>
+                                                <BR><br>
+                                                <label class="col-sm-5 control-label" for="REAGENT_LABWARE" >Reagent labware</label>
+                                                <div class="col-sm-4"><select class="form-control"  required = "required" name="REAGENT_LABWARE" id="REAGENT_LABWARE">
+                                                                        <option value="">Choose a value</option>
+                                                                        {% for value in form_data.reagent_labware_data %}
+                                                                            <option value="{{value}}">{{value}}</option>
+                                                                        {% endfor %}
+                                                               </select>
+                                                </div>  <!-- end select input -->
+                                                <BR><br>
+
+                                                <label class="col-sm-5 control-label" for="MAG_PLATE" >Magnate Plate</label>
+                                                <div class="col-sm-4"><select class="form-control"  required = "required" name="MAG_PLATE" id="MAG_PLATE">
+                                                                        <option value="">Choose a value</option>
+                                                                        {% for value in form_data.mag_plate_data %}
+                                                                            <option value="{{value}}">{{value}}</option>
+                                                                         {% endfor %}
+                                                               </select>
+                                                </div>  <!-- end select input -->
+                                                <br><br>
+                                                <label class="col-sm-5 control-label" for="WASTE_LABWARE" >Waste Plate</label>
+                                                <div class="col-sm-4"><select class="form-control"  required = "required" name="WASTE_LABWARE" id="WASTE_LABWARE">
+                                                                        <option value="">Choose a value</option>
+                                                                        {% for value in form_data.waste_plate_data %}
+                                                                            <option value="{{value}}">{{value}}</option>
+                                                                        {% endfor %}
+                                                               </select>
+                                                </div>  <!-- end select input -->
+                                                <BR><br>
+                                                <label class="col-sm-5 control-label" for="ELUTION_LABWARE" >Elution labware</label>
+                                                <div class="col-sm-4"><select class="form-control"  required = "required" name="ELUTION_LABWARE" id="ELUTION_LABWARE">
+                                                                        <option value="">Choose a value</option>
+                                                                        {% for value in form_data.elution_labware_data %}
+                                                                            <option value="{{value}}">{{value}}</option>
+                                                                        {% endfor %}
+                                                               </select>
+                                                </div>  <!-- end select input -->
+                                                <br><br>
+                                                <label class="col-sm-5 control-label" for="DISPENSE_BEADS" >Dipense beads</label>
+                                                <div class="col-sm-4">
+                                                    <label class="radio-inline"><input type="radio" name="DISPENSE_BEADS" required = "required" value="True">YES</label>
+                                                    <label class="radio-inline"><input type="radio" name="DISPENSE_BEADS" required = "required" value="False" checked>NO</label>
+                                                </div>  <!-- end  radio -->
+                                                <br><br>
+                                                <label class="col-sm-5 control-label" for="TIP_TRACK" >Tip track</label>
+                                                <div class="col-sm-4">
+                                                    <label class="radio-inline"><input type="radio" name="TIP_TRACK" required = "required" value="True" checked>YES</label>
+                                                    <label class="radio-inline"><input type="radio" name="TIP_TRACK" required = "required" value="False">NO</label>
+                                                </div>  <!-- end  radio -->
+                                                <br><br>
+                                            </div>  <!-- end from-group   -->
+                                            <div class="form-group">
+                                                <label class="col-sm-5 control-label" for="notes" >User Notes</label>
+                                                <div class="col-sm-6">
+                                                    <textarea class="form-control" name="usernotes" value="" id="usernotes" rows="4" cols="60" maxlength="220"></textarea>
+                                                </div>  <!-- end textarea input -->
+                                                <br>
+                                            </div>  <!-- end from-group   -->
+                                            <br>
+                                            <br>
+                                            <input class="btn pull-left btn-primary" type="reset" value="Reset Fields">
+                                            <input class="btn pull-right btn-primary" type="submit" value="Submit">
+                                        </form>
+                                        <p> Fields marked with <FONT COLOR="Red">*</FONT> are mandatory</p>
 
                                     {% else %}
                                     <h5>There is no  Protocol template defined for Station B </h5>

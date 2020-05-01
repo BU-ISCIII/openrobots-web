@@ -4,11 +4,11 @@ migrations/
 tmp/
 logs/
 static/
-openrobots-web/documents/
+documents/
 
 #--- updates introduced for openrobots in submodules packaging ---
 virtualenv/
-openrobots-web/
+openrobots_web/
 #documents/
 manage.py
 
