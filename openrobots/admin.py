@@ -79,7 +79,9 @@ class RequestForStationA_Prot1Admin(admin.ModelAdmin):
     list_display =['requestedCodeID','bufferLabware', 'destinationLabware','destinationTube','numberOfSamples',
                 'volumeBuffer', 'generatedFile', 'usedTemplateFile','userRequestedBy' , 'userNotes']
 
-
+class RequestForStationA_Prot2Admin(admin.ModelAdmin):
+    list_display =['requestedCodeID','beadsLabware', 'plateLabware', 'numberOfSamples',
+                'volumeBeads', 'generatedFile', 'usedTemplateFile','userRequestedBy' , 'userNotes']
 
 
 
@@ -129,6 +131,7 @@ admin.site.register(Waste_Labware , Waste_LabwareAdmin)
 admin.site.register(RobotsInventory , RobotsInventoryAdmin)
 
 admin.site.register(RequestForStationA_Prot1 , RequestForStationA_Prot1Admin)
+admin.site.register(RequestForStationA_Prot2 , RequestForStationA_Prot2Admin)
 
 admin.site.register(RequestForStationB , RequestForStationBAdmin)
 admin.site.register(RequestForStationC , RequestForStationCAdmin)

@@ -215,6 +215,9 @@ class ProtocolTemplateFiles (models.Model):
     def get_protocol_file_name(self):
         return '%s' %(self.protocolTemplateFileName)
 
+    def get_protocol_name(self):
+        return '%s' %(self.protocolName)
+
     def get_protocol_type(self):
         return '%s' %(self.typeOfProtocol.get_name())
 
@@ -485,6 +488,8 @@ class Waste_Labware(models.Model):
         return '%s' %(self.wasteLabwareType)
 
 
+
+
 class RequestForStationA_Prot1Manager(models.Manager):
 
     def create_new_request (self, request_data):
@@ -535,8 +540,55 @@ class RequestForStationA_Prot1 (models.Model):
 
         data.append(self.generatedFile)
         return data
-        
+
     objects = RequestForStationA_Prot1Manager()
+
+
+class RequestForStationA_Prot2Manager(models.Manager):
+
+    def create_new_request (self, request_data):
+        beadsLabware =  Beads_Labware.objects.get(beadsLabwareType__exact = request_data['beadsLabware'])
+        plateLabware =  Plate_Labware.objects.get(plateLabwareType__exact = request_data['plateLabware'])
+        usedTemplateFile = ProtocolTemplateFiles.objects.get(protocolTemplateFileName__exact = request_data['usedTemplateFile'])
+
+        new_request = self.create(userRequestedBy = request_data['userRequestedBy'], beadsLabware = beadsLabware,
+                    plateLabware = plateLabware, usedTemplateFile = usedTemplateFile,
+                    requestedCodeID = request_data['requestedCodeID'], numberOfSamples = request_data['numberOfSamples'],
+                    volumeBeads = request_data['volumeBeads'], generatedFile = request_data['generatedFile'] , userNotes = request_data['userNotes'])
+
+        return new_request
+
+class RequestForStationA_Prot2 (models.Model):
+    userRequestedBy = models.ForeignKey (
+                        User,
+                        on_delete=models.CASCADE, null = True, blank = True )
+    beadsLabware = models.ForeignKey (
+                        Beads_Labware,
+                        on_delete=models.CASCADE, null = True, blank = True )
+    plateLabware = models.ForeignKey (
+                        Plate_Labware,
+                        on_delete=models.CASCADE, null = True, blank = True )
+    usedTemplateFile = models.ForeignKey(
+                        ProtocolTemplateFiles,
+                        on_delete=models.CASCADE)
+    requestedCodeID = models.CharField(max_length = 50)
+    numberOfSamples = models.CharField(max_length = 10)
+    volumeBeads = models.CharField(max_length = 10)
+    generatedFile = models.FileField(upload_to = openrobots_config.OPENROBOTS_OUTPUT_DIRECTORY )
+    userNotes = models.CharField(max_length = 255)
+    generatedat = models.DateTimeField(auto_now_add=True)
+
+    def __str__ (self):
+        return '%s' %(self.requestedCodeID)
+
+    def get_result_data(self):
+        data = []
+        data.append(self.requestedCodeID)
+        data.append(self.usedTemplateFile.get_protocol_type())
+        data.append(self.generatedFile)
+        return data
+
+    objects = RequestForStationA_Prot2Manager()
 
 class RequestForStationBManager(models.Manager):
 

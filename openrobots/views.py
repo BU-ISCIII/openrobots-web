@@ -22,6 +22,7 @@ def create_protocol_file(request):
         protocol_file = build_protocol_file_name(request.user.username,template)
 
         add_result = add_parameters_in_file (template, protocol_file,  parameters)
+        import pdb; pdb.set_trace()
         if add_result != 'True':
             return render(request, 'openrobots/createProtocolFile.html' ,{'form_data': form_data, 'error': add_result})
         database['generatedFile'] = protocol_file
@@ -32,7 +33,12 @@ def create_protocol_file(request):
             new_create_protocol = RequestForStationB.objects.create_new_request(database)
         elif  request.POST['station'] == 'Station A' and request.POST['protocol'] == '1' :
             new_create_protocol = RequestForStationA_Prot1.objects.create_new_request(database)
-
+        elif  request.POST['station'] == 'Station A' and request.POST['protocol'] == '2' :
+            new_create_protocol = RequestForStationA_Prot2.objects.create_new_request(database)
+        elif  request.POST['station'] == 'Station A' and request.POST['protocol'] == '3' :
+            new_create_protocol = RequestForStationA_Prot3.objects.create_new_request(database)
+        else:
+            return render(request, 'openrobots/createProtocolFile.html' ,{'form_data': form_data})
 
         display_result = new_create_protocol.get_result_data()
         return render(request, 'openrobots/createProtocolFile.html' ,{'display_result': display_result})

@@ -1,4 +1,4 @@
-import datetime, time
+import datetime, time, re
 from openrobots.models import *
 from openrobots.openrobots_config import *
 
@@ -80,6 +80,8 @@ def get_form_data_creation_run_file():
     form_data['buffer_labware_data'] = []
     form_data['destination_labware_data'] = []
     form_data['dest_tube_labware_data'] = []
+    form_data['beads_labware_data'] = []
+    form_data['plate_labware_data'] =[]
 
     if MasterMixLabware.objects.all().exists():
         mm_labwares = MasterMixLabware.objects.all().order_by('MasterMixLabwareType')
@@ -129,8 +131,14 @@ def get_form_data_creation_run_file():
         destination_tubes = Destination_Tube_Labware.objects.all()
         for destination_tube in destination_tubes:
             form_data['dest_tube_labware_data'].append(destination_tube.get_destination_tube_name())
-
-
+    if Beads_Labware.objects.all().exists():
+        bead_types = Beads_Labware.objects.all()
+        for bead_type in bead_types:
+            form_data['beads_labware_data'].append(bead_type.get_beads_labware_name())
+    if Plate_Labware.objects.all().exists():
+        plate_types = Plate_Labware.objects.all()
+        for plate_type in plate_types:
+            form_data['plate_labware_data'].append(plate_type.get_plate_labware_name())
 
 
     if ProtocolTemplateFiles.objects.filter(station__stationName__iexact = 'Station A').exists():
@@ -334,7 +342,14 @@ def get_station_from_template(template):
         station name
     '''
     if ProtocolTemplateFiles.objects.filter(protocolTemplateFileName__exact = template).exists() :
-        return ProtocolTemplateFiles.objects.get(protocolTemplateFileName__exact = template).get_station()
+        protocol_template_obj = ProtocolTemplateFiles.objects.get(protocolTemplateFileName__exact = template)
+        protocol_name = protocol_template_obj.get_protocol_name()
+        try:
+            prot = re.search(r'.*Station [A|B|C] Protocol (\d).*',protocol_name).group(1)
+        except:
+            prot = '1'
+
+        return protocol_template_obj.get_station() + '_Prot' + prot
     return 'None'
 
 def get_stations_names ():
@@ -367,34 +382,6 @@ def get_stored_protocols_files():
     return protocol_file_data
 
 
-def extract_form_data_station_b (request) :
-    '''
-    Description:
-        The function extract the user form data and define a dictionnary with the values
-    Constants:
-        PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_B
-    Return:
-        valid_metadata
-    '''
-    if request.POST['station'] == 'Station C':
-        data_for_file = {}
-        data_for_file2 = {}
-        data_for_database = {}
-        for item in PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_C:
-            data_for_file[item] = request.POST[item]
-        #[(data_for_file2[item] = request.POST[item]) for item in PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_C ]
-        for item in MAP_PROTOCOL_PARAMETER_TO_DATABASE_STATION_C :
-            data_for_database[item[1]] = request.POST[item[0]]
-    # Add common data to store on database
-    data_for_database['station'] = request.POST['station']
-    data_for_database['usedTemplateFile'] = request.POST['template']
-    data_for_database['userNotes'] = request.POST['usernotes']
-    data_for_database['userRequestedBy'] = request.user
-
-    return data_for_file , data_for_database
-
-
-
 def extract_form_data_station (request) :
     '''
     Description:
@@ -402,6 +389,9 @@ def extract_form_data_station (request) :
     Constants:
         PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_C
         PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_B
+        PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_A_PROT_1
+        PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_A_PROT_2
+        PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_A_PROT_3
     Return:
         valid_metadata
     '''
@@ -427,7 +417,16 @@ def extract_form_data_station (request) :
             data_for_file[item] = request.POST[item]
         for item in MAP_PROTOCOL_PARAMETER_TO_DATABASE_STATION_A_PROT_1 :
             data_for_database[item[1]] = request.POST[item[0]]
-
+    elif  request.POST['station'] == 'Station A' and request.POST['protocol'] == '2' :
+        for item in PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_A_PROT_2:
+            data_for_file[item] = request.POST[item]
+        for item in MAP_PROTOCOL_PARAMETER_TO_DATABASE_STATION_A_PROT_2 :
+            data_for_database[item[1]] = request.POST[item[0]]
+    elif  request.POST['station'] == 'Station A' and request.POST['protocol'] == '3' :
+        for item in PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_A_PROT_3:
+            data_for_file[item] = request.POST[item]
+        for item in MAP_PROTOCOL_PARAMETER_TO_DATABASE_STATION_A_PROT_3 :
+            data_for_database[item[1]] = request.POST[item[0]]
 
     # Add common data to store on database
     data_for_database['usedTemplateFile'] = request.POST['template']
