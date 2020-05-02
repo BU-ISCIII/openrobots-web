@@ -82,6 +82,7 @@ def get_form_data_creation_run_file():
     form_data['dest_tube_labware_data'] = []
     form_data['beads_labware_data'] = []
     form_data['plate_labware_data'] =[]
+    form_data['lysate_labware_data'] = []
 
     if MasterMixLabware.objects.all().exists():
         mm_labwares = MasterMixLabware.objects.all().order_by('MasterMixLabwareType')
@@ -139,6 +140,10 @@ def get_form_data_creation_run_file():
         plate_types = Plate_Labware.objects.all()
         for plate_type in plate_types:
             form_data['plate_labware_data'].append(plate_type.get_plate_labware_name())
+    if Lysate_Labware.objects.all().exists():
+        lysate_types = Lysate_Labware.objects.all()
+        for lysate_type in lysate_types:
+            form_data['lysate_labware_data'].append(lysate_type.get_lysate_labware_name())
 
 
     if ProtocolTemplateFiles.objects.filter(station__stationName__iexact = 'Station A').exists():
@@ -432,7 +437,7 @@ def extract_form_data_station (request) :
     data_for_database['usedTemplateFile'] = request.POST['template']
     data_for_database['userNotes'] = request.POST['usernotes']
     data_for_database['userRequestedBy'] = request.user
-    import pdb; pdb.set_trace()
+
     return data_for_file , data_for_database
 
 

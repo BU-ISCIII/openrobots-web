@@ -22,7 +22,6 @@ def create_protocol_file(request):
         protocol_file = build_protocol_file_name(request.user.username,template)
 
         add_result = add_parameters_in_file (template, protocol_file,  parameters)
-        import pdb; pdb.set_trace()
         if add_result != 'True':
             return render(request, 'openrobots/createProtocolFile.html' ,{'form_data': form_data, 'error': add_result})
         database['generatedFile'] = protocol_file

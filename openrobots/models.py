@@ -590,6 +590,55 @@ class RequestForStationA_Prot2 (models.Model):
 
     objects = RequestForStationA_Prot2Manager()
 
+
+class RequestForStationA_Prot3Manager(models.Manager):
+
+    def create_new_request (self, request_data):
+        lysateLabware =  Lysate_Labware.objects.get(lysateLabwareType__exact = request_data['lysateLabware'])
+        plateLabware =  Plate_Labware.objects.get(plateLabwareType__exact = request_data['plateLabware'])
+        usedTemplateFile = ProtocolTemplateFiles.objects.get(protocolTemplateFileName__exact = request_data['usedTemplateFile'])
+
+        new_request = self.create(userRequestedBy = request_data['userRequestedBy'], lysateLabware = lysateLabware,
+                    plateLabware = plateLabware, usedTemplateFile = usedTemplateFile,
+                    requestedCodeID = request_data['requestedCodeID'], numberOfSamples = request_data['numberOfSamples'],
+                    volumeLysate = request_data['volumeLysate'], beads = util.strtobool(request_data['beads']),
+                    generatedFile = request_data['generatedFile'] , userNotes = request_data['userNotes'])
+
+        return new_request
+
+class RequestForStationA_Prot3 (models.Model):
+    userRequestedBy = models.ForeignKey (
+                        User,
+                        on_delete=models.CASCADE, null = True, blank = True )
+    lysateLabware = models.ForeignKey (
+                        Lysate_Labware,
+                        on_delete=models.CASCADE, null = True, blank = True )
+    plateLabware = models.ForeignKey (
+                        Plate_Labware,
+                        on_delete=models.CASCADE, null = True, blank = True )
+    usedTemplateFile = models.ForeignKey(
+                        ProtocolTemplateFiles,
+                        on_delete=models.CASCADE)
+    requestedCodeID = models.CharField(max_length = 50)
+    numberOfSamples = models.CharField(max_length = 10)
+    volumeLysate = models.CharField(max_length = 10)
+    beads = models.BooleanField()
+    generatedFile = models.FileField(upload_to = openrobots_config.OPENROBOTS_OUTPUT_DIRECTORY )
+    userNotes = models.CharField(max_length = 255)
+    generatedat = models.DateTimeField(auto_now_add=True)
+
+    def __str__ (self):
+        return '%s' %(self.requestedCodeID)
+
+    def get_result_data(self):
+        data = []
+        data.append(self.requestedCodeID)
+        data.append(self.usedTemplateFile.get_protocol_type())
+        data.append(self.generatedFile)
+        return data
+
+    objects = RequestForStationA_Prot3Manager()
+
 class RequestForStationBManager(models.Manager):
 
     def create_new_request (self, request_data):

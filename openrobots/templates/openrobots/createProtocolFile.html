@@ -287,13 +287,7 @@
                                                 </div>  <!-- end select input -->
                                                 <br><br>
                                                 <label class="col-sm-5 control-label" for="VOLUME_LYSATE" >Volume Lysate</label>
-                                                <div class="col-sm-4"><select class="form-control"  required = "required" name="VOLUME_LYSATE" id="VOLUME_LYSATE">
-                                                                        <option value="">Choose a value</option>
-                                                                        {% for value in form_data.volume_lysate_data %}
-                                                                            <option value="{{value}}">{{value}}</option>
-                                                                        {% endfor %}
-                                                               </select>
-                                                </div>  <!-- end select input -->
+                                                <div class="col-sm-5"><input class="form-control" type="text" required = "required" name="VOLUME_LYSATE" id="VOLUME_LYSATE" size="100" maxlength="100"></div>
                                                 <BR><br>
                                                 <label class="col-sm-5  control-label" for="BEADS" >Beads </label>
                                                 <div class="col-sm-4">
