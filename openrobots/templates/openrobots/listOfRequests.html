@@ -1,0 +1,192 @@
+{% extends 'openrobots/base.html' %}
+{% load static %}
+{% block content %}
+
+{% if list_requests_data %}
+    <div class="row row-space-2 margin-b-4">
+        <div class="col-sm-10 col-sm-offset-1">
+            <div class="panel panel-default">
+                <div class="panel-heading"><h3 style="text-align:center">List of Protocol Request Files for OT-2 Robot </h3> </div>
+                <div class="panel-body">
+                    <h5  style="text-align:center">Clcik on the tab below to see the requested protolos</h5>
+                </div> <!--  end of panel body -->
+            </div> <!--  end of panel  -->
+        </div> <!--  end of col-sm-7 -->
+    </div> <!--  end of row -->
+
+	<div class="row row-space-4 margin-b-1">
+        <div class="col-sm-12 ">
+            <div class="tab">
+                <button class="tablinks" onclick="summaryBin(event, 'stationA')">Requested for Station A</button>
+				<button class="tablinks" onclick="summaryBin(event, 'stationB')">Requested for Station B</button>
+				<button class="tablinks" onclick="summaryBin(event, 'stationC')">Requested for Station C</button>
+
+				<div id="stationA" class="tabcontent">
+                    <div class="row row-space-4 margin-b-4">
+                        <div class="col-sm-10 col-sm-offset-1" >
+                            <div class="panel panel-default">
+                                <div class="panel-heading"><h5 style="text-align:center">Requested Protocol File Protocol 1</h5></div>
+                                <div class="panel-body">
+									<table class="table ">
+				    					<thead>
+				    						<tr>
+				    							<th>User Requested</th>
+												<th>Request CodeID</th>
+                                                <th>Date</th>
+												<th>Protocol used file</th>
+				                            </tr>
+				                        </thead>
+										<tbody>
+                                            {% for  user, code, date, file in list_requests_data.station_a_prot1 %}
+											    <tr>
+				                                    <td>{{user}}</td>
+                                                    <td>{{code}}</td>
+                                                    <td>{{date}}</td>
+                                                    <td><a href="documents/{{file}}" download>Download Protocol file</a>{{value}}<span class="glyphicon glyphicon-download-alt"></span></td>
+                                                </tr>
+				                            {% endfor %}
+				    					</tbody>
+				    				</table>
+                                </div>  <!--  end of panel body  -->
+                            </div> <!--// end panel -->
+
+                            <div class="panel panel-default">
+                                <div class="panel-heading"><h5 style="text-align:center">Requested Protocol File Protocol 2</h5></div>
+                                <div class="panel-body">
+									<table class="table ">
+				    					<thead>
+				    						<tr>
+				    							<th>User Requested</th>
+												<th>Request CodeID</th>
+                                                <th>Date</th>
+												<th>Protocol used file</th>
+				                            </tr>
+				                        </thead>
+										<tbody>
+                                            {% for  user, code, date, file in list_requests_data.station_a_prot2 %}
+											    <tr>
+				                                    <td>{{user}}</td>
+                                                    <td>{{code}}</td>
+                                                    <td>{{date}}</td>
+                                                    <td><a href="documents/{{file}}" download>Download Protocol file</a>{{value}}<span class="glyphicon glyphicon-download-alt"></span></td>
+                                                </tr>
+				                            {% endfor %}
+				    					</tbody>
+				    				</table>
+                                </div>  <!--  end of panel body  -->
+                            </div> <!--// end panel -->
+
+                            <div class="panel panel-default">
+                                <div class="panel-heading"><h5 style="text-align:center">Requested Protocol File Protocol 3</h5></div>
+                                <div class="panel-body">
+									<table class="table ">
+				    					<thead>
+				    						<tr>
+				    							<th>User Requested</th>
+												<th>Request CodeID</th>
+                                                <th>Date</th>
+												<th>Protocol used file</th>
+				                            </tr>
+				                        </thead>
+										<tbody>
+                                            {% for  user, code, date, file in list_requests_data.station_a_prot3 %}
+											    <tr>
+				                                    <td>{{user}}</td>
+                                                    <td>{{code}}</td>
+                                                    <td>{{date}}</td>
+                                                    <td><a href="documents/{{file}}" download>Download Protocol file</a>{{value}}<span class="glyphicon glyphicon-download-alt"></span></td>
+                                                </tr>
+				                            {% endfor %}
+				    					</tbody>
+				    				</table>
+                                </div>  <!--  end of panel body  -->
+                            </div> <!--// end panel -->
+                        </div> <!--// end col-sm-7  -->
+                    </div> <!--  end of row -->
+                </div><!-- // end of tab network -->
+
+				<div id="stationB" class="tabcontent">
+                    <div class="row row-space-4 margin-b-4">
+                        <div class="col-sm-10 col-sm-offset-1" >
+                            <div class="panel panel-default">
+                                <div class="panel-heading"><h3>Requested Protocol File</h3></div>
+                                <div class="panel-body">
+                                    <table class="table ">
+				    					<thead>
+				    						<tr>
+				    							<th>User Requested</th>
+												<th>Request CodeID</th>
+                                                <th>Date</th>
+												<th>Protocol used file</th>
+				                            </tr>
+				                        </thead>
+										<tbody>
+                                            {% for  user, code, date, file in list_requests_data.station_b %}
+											    <tr>
+				                                    <td>{{user}}</td>
+                                                    <td>{{code}}</td>
+                                                    <td>{{date}}</td>
+                                                    <td><a href="documents/{{file}}" download>Download Protocol file</a>{{value}}<span class="glyphicon glyphicon-download-alt"></span></td>
+                                                </tr>
+				                            {% endfor %}
+
+				    					</tbody>
+				    				</table>
+                                </div>  <!--  end of panel body  -->
+                            </div> <!--// end panel -->
+                        </div> <!--// end col-sm-7  -->
+                    </div> <!--  end of row -->
+                </div><!-- // end of tab pippetes -->
+
+				<div id="stationC" class="tabcontent">
+                    <div class="row row-space-4 margin-b-4">
+                        <div class="col-sm-10 col-sm-offset-1" >
+                            <div class="panel panel-default">
+                                <div class="panel-heading"><h3>Requested Protocol File</h3></div>
+                                <div class="panel-body">
+                                    <table class="table ">
+				    					<thead>
+				    						<tr>
+				    							<th>User Requested</th>
+												<th>Request CodeID</th>
+                                                <th>Date</th>
+												<th>Protocol used file</th>
+				                            </tr>
+				                        </thead>
+										<tbody>
+                                            {% for  user, code, date, file in list_requests_data.station_c %}
+											    <tr>
+				                                    <td>{{user}}</td>
+                                                    <td>{{code}}</td>
+                                                    <td>{{date}}</td>
+                                                    <td><a href="documents/{{file}}" download>Download Protocol file</a>{{value}}<span class="glyphicon glyphicon-download-alt"></span></td>
+                                                </tr>
+				                            {% endfor %}
+				    					</tbody>
+				    				</table>
+                                </div>  <!--  end of panel body  -->
+                            </div> <!--// end panel -->
+                        </div> <!--// end col-sm-7  -->
+                    </div> <!--  end of row -->
+                </div><!-- // end of tab modules -->
+
+			</div> <!--  end of Tab  -->
+		</div> <!--  end of col-sm-12 -->
+	</div> <!--  end of row -->
+
+
+{% else %}
+	<div class="row row-space-2 margin-b-4">
+		<div class="col-sm-7 col-sm-offset-3">
+			<div class="panel panel-default">
+				<div class="panel-heading"><h3 style="text-align:center">Not available information </h3> </div>
+				<div class="panel-body">
+					<p>There is no available information for User requested Protocol</p>
+					<br><br>
+
+				</div> <!--  end of panel body -->
+			</div> <!--  end of panel  -->
+		</div> <!--  end of col-sm-7 -->
+	</div> <!--  end of row -->
+{% endif %}
+{% endblock %}

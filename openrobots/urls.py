@@ -14,7 +14,7 @@ urlpatterns = [
     path('labwareInventory', views.labware_inventory, name = 'labware_inventory'),
     path('modulesInventory', views.modules_inventory, name = 'modules_inventory'),
     path('uploadProtocolTemplates', views.upload_protocol_templates, name = 'upload_protocol_templates'),
-    path('listOfRequests', views.index, name = 'index'),
+    path('listOfRequests', views.list_of_requests, name = 'list_of_requests'),
     path('robotInventory', views.robot_inventory, name = 'robot_inventory'),
 	]
 if settings.DEBUG:

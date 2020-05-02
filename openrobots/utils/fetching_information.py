@@ -440,8 +440,6 @@ def extract_form_data_station (request) :
 
     return data_for_file , data_for_database
 
-
-
 def extract_define_robot_form_data (request) :
     '''
     Description:
@@ -458,7 +456,44 @@ def extract_define_robot_form_data (request) :
     return robot_data
 
 
+def get_list_of_requests():
+    '''
+    Description:
+        The function get the list of the protocol requested files.
+        They are split by station
+    Return:
+        request_list
+    '''
+    request_list = {}
+    # get request for Station C protocols
+    if RequestForStationC.objects.all().exists():
+        request_list['station_c'] = []
+        c_requests = RequestForStationC.objects.all().order_by('userRequestedBy').order_by('generatedat')
+        for request in c_requests:
+            request_list['station_c'].append(request.get_request_info())
+    if RequestForStationB.objects.all().exists():
+        request_list['station_b'] = []
+        b_requests = RequestForStationB.objects.all().order_by('userRequestedBy').order_by('generatedat')
+        for request in b_requests:
+            request_list['station_b'].append(request.get_request_info())
+    if RequestForStationA_Prot1.objects.all().exists():
+        request_list['station_a_prot1'] = []
+        a_prot1_requests = RequestForStationA_Prot1.objects.all().order_by('userRequestedBy').order_by('generatedat')
+        for request in a_prot1_requests:
+            request_list['station_a_prot1'].append(request.get_request_info())
+    if RequestForStationA_Prot2.objects.all().exists():
+        request_list['station_a_prot2'] = []
+        a_prot1_requests = RequestForStationA_Prot2.objects.all().order_by('userRequestedBy').order_by('generatedat')
+        for request in a_prot1_requests:
+            request_list['station_a_prot2'].append(request.get_request_info())
+    if RequestForStationA_Prot3.objects.all().exists():
+        request_list['station_a_prot3'] = []
+        a_prot1_requests = RequestForStationA_Prot3.objects.all().order_by('userRequestedBy').order_by('generatedat')
+        for request in a_prot1_requests:
+            request_list['station_a_prot3'].append(request.get_request_info())
 
+
+    return request_list
 
 def validate_metadata_for_protocol_template(metadata):
     '''

@@ -1,5 +1,5 @@
 from django.db import models
-
+import time
 from django.contrib.auth.models import User
 from . import openrobots_config #OPENROBOTS_TEMPLATE_DIRECTORY, OPENROBOTS_OUTPUT_DIRECTORY
 from distutils import util
@@ -537,7 +537,14 @@ class RequestForStationA_Prot1 (models.Model):
         data = []
         data.append(self.requestedCodeID)
         data.append(self.usedTemplateFile.get_protocol_type())
+        data.append(self.generatedFile)
+        return data
 
+    def get_request_info(self):
+        data = []
+        data.append(self.userRequestedBy.username)
+        data.append(self.requestedCodeID)
+        data.append(self.generatedat.strftime("%Y-%b-%d"))
         data.append(self.generatedFile)
         return data
 
@@ -588,6 +595,14 @@ class RequestForStationA_Prot2 (models.Model):
         data.append(self.generatedFile)
         return data
 
+    def get_request_info(self):
+        data = []
+        data.append(self.userRequestedBy.username)
+        data.append(self.requestedCodeID)
+        data.append(self.generatedat.strftime("%Y-%b-%d"))
+        data.append(self.generatedFile)
+        return data
+
     objects = RequestForStationA_Prot2Manager()
 
 
@@ -634,6 +649,14 @@ class RequestForStationA_Prot3 (models.Model):
         data = []
         data.append(self.requestedCodeID)
         data.append(self.usedTemplateFile.get_protocol_type())
+        data.append(self.generatedFile)
+        return data
+
+    def get_request_info(self):
+        data = []
+        data.append(self.userRequestedBy.username)
+        data.append(self.requestedCodeID)
+        data.append(self.generatedat.strftime("%Y-%b-%d"))
         data.append(self.generatedFile)
         return data
 
@@ -695,6 +718,14 @@ class RequestForStationB (models.Model):
 
         data.append(self.generatedFile)
         return data
+    def get_request_info(self):
+        data = []
+        data.append(self.userRequestedBy.username)
+        data.append(self.requestedCodeID)
+        data.append(self.generatedat.strftime("%Y-%b-%d"))
+        data.append(self.generatedFile)
+        return data
+
     objects = RequestForStationBManager()
 
 
@@ -768,5 +799,14 @@ class RequestForStationC (models.Model):
 
         data.append(self.generatedFile)
         return data
+
+    def get_request_info(self):
+        data = []
+        data.append(self.userRequestedBy.username)
+        data.append(self.requestedCodeID)
+        data.append(self.generatedat.strftime("%Y-%b-%d"))
+        data.append(self.generatedFile)
+        return data
+
 
     objects = RequestForStationCManager()

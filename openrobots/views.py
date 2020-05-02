@@ -136,6 +136,11 @@ def robot_inventory(request):
     return render(request, 'openrobots/robotInventory.html' ,{'robot_list_inventory': robot_list_inventory} )
 
 @login_required
+def list_of_requests(request):
+    list_requests_data = get_list_of_requests()
+    return render(request, 'openrobots/listOfRequests.html' ,{'list_requests_data': list_requests_data} )
+
+@login_required
 def upload_protocol_templates(request):
     if request.user.username not in ADMIN_USERS :
         return render(request, 'openrobots/index.html')
