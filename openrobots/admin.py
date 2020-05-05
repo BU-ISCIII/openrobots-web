@@ -27,8 +27,8 @@ class MasterMixTubeAdmin (admin.ModelAdmin):
 class PCR_plateLabwareAdmin (admin.ModelAdmin):
     list_display =['PCR_plateLabwareType', 'description']
 
-class Elution_LabwareAdmin (admin.ModelAdmin):
-    list_display =['elution_LabwareType', 'elutionHW_type', 'valueInCode']
+#class Elution_LabwareAdmin (admin.ModelAdmin):
+#    list_display =['elution_LabwareType', 'elutionHW_type', 'valueInCode']
 
 class MagPlate_Labwaredmin (admin.ModelAdmin):
     list_display =('mag_plateLabwareType', 'description', 'default')
@@ -88,7 +88,7 @@ class RequestForStationA_Prot3Admin(admin.ModelAdmin):
                 'volumeLysate' ,'beads', 'generatedFile', 'usedTemplateFile','userRequestedBy' , 'userNotes']
 
 class RequestForStationBAdmin (admin.ModelAdmin):
-    list_display =['requestedCodeID','magPlateLabware', 'reagentLabware','wasteLabware', 'elutionLabware', 'numberOfSamples',
+    list_display =['requestedCodeID','magPlateLabware', 'reagentLabware','wasteLabware',  'numberOfSamples',
                 'tipTrack', 'dispenseBeads', 'generatedFile', 'usedTemplateFile','userRequestedBy' , 'userNotes']
 
 
@@ -97,7 +97,7 @@ class RequestForStationBAdmin (admin.ModelAdmin):
 
 
 class RequestForStationCAdmin (admin.ModelAdmin):
-    list_display =['requestedCodeID','masterMixLabware', 'masterMixTubeLabware','pcrPlateLabware', 'elutionLabware', 'masterMixType', 'numberOfSamples',
+    list_display =['requestedCodeID','masterMixLabware', 'masterMixTubeLabware','pcrPlateLabware', 'masterMixType', 'numberOfSamples',
                 'prepareMastermix', 'transferMastermix', 'transferSamples', 'generatedFile', 'usedTemplateFile','userRequestedBy' , 'userNotes']
 
 
@@ -115,7 +115,7 @@ admin.site.register(MasterMixType , MasterMixTypedmin)
 admin.site.register(MasterMixLabware , MasterMixLabwareAdmin)
 admin.site.register(MasterMixTube , MasterMixTubeAdmin)
 admin.site.register(PCR_plateLabware , PCR_plateLabwareAdmin)
-admin.site.register(Elution_Labware , Elution_LabwareAdmin)
+#admin.site.register(Elution_Labware , Elution_LabwareAdmin)
 admin.site.register(ModuleType , ModuleTypeAdmin)
 admin.site.register(ModulesInLab , ModulesInLabAdmin)
 

@@ -382,7 +382,7 @@ class Lysate_Tube (models.Model):
     def get_lysate_tube (self):
         return '%s' %(self.lysateTube)
 
-class Elution_LabwareManager(models.Manager):
+class InventoryLabwareManager(models.Manager):
     def create_elution_labware(self,data):
         elutionhwtype = ElutionHardware.objects.get(hardwareType__exact = data['elutionhwtype'])
         new_elution_labware = self.create( elutionHW_type = elutionhwtype, elution_LabwareType = data['displayName'],
@@ -395,10 +395,10 @@ class Elution_LabwareManager(models.Manager):
 
         return new_elution_labware
 
-class Elution_Labware (models.Model):
-    elutionHW_type =  models.ForeignKey (
-                        ElutionHardware,
-                        on_delete=models.CASCADE, max_length = 80, null = True, blank = True )
+class InventoryLabware (models.Model):
+    #elutionHW_type =  models.ForeignKey (
+    #                   ElutionHardware,
+    #                    on_delete=models.CASCADE, max_length = 80, null = True, blank = True )
     elution_LabwareType = models.CharField(max_length = 80)
     valueInCode = models.CharField(max_length = 255)
     brand = models.CharField(max_length = 80)
@@ -438,7 +438,7 @@ class Elution_Labware (models.Model):
 
     def get_basic_labware_data(self):
         data = []
-        data.append(self.elutionHW_type.get_hardware_type())
+        #data.append(self.elutionHW_type.get_hardware_type())
         data.append(self.brand)
         data.append(self.category)
         return data
@@ -472,7 +472,7 @@ class Elution_Labware (models.Model):
         data.append(self.spacing_col)
         return data
 
-    objects = Elution_LabwareManager()
+    objects = InventoryLabwareManager()
 
 
 
@@ -694,9 +694,9 @@ class RequestForStationB (models.Model):
     userRequestedBy = models.ForeignKey (
                         User,
                         on_delete=models.CASCADE, null = True, blank = True )
-    elutionLabware = models.ForeignKey (
-                        Elution_Labware,
-                        on_delete=models.CASCADE)
+    #elutionLabware = models.ForeignKey (
+    #                        Elution_Labware,
+    #                    on_delete=models.CASCADE)
     magPlateLabware = models.ForeignKey (
                         MagPlate_Labware,
                         on_delete=models.CASCADE)
@@ -777,9 +777,9 @@ class RequestForStationC (models.Model):
     pcrPlateLabware = models.ForeignKey (
                         PCR_plateLabware,
                         on_delete=models.CASCADE)
-    elutionLabware = models.ForeignKey (
-                        Elution_Labware,
-                        on_delete=models.CASCADE)
+    #elutionLabware = models.ForeignKey (
+    #                    Elution_Labware,
+    #                    on_delete=models.CASCADE)
     masterMixType = models.ForeignKey (
                         MasterMixType,
                         on_delete=models.CASCADE)
