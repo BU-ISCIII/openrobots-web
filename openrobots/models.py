@@ -714,9 +714,9 @@ class RequestForStationB (models.Model):
     userRequestedBy = models.ForeignKey (
                         User,
                         on_delete=models.CASCADE, null = True, blank = True )
-    #elutionB_Labware = models.ForeignKey (
-    #                    ElutionStationB_Labware,
-    #                    on_delete=models.CASCADE)
+    b_elution_Labware = models.ForeignKey (
+                        ElutionStationB_Labware,
+                        on_delete=models.CASCADE, null = True)
     magPlateLabware = models.ForeignKey (
                         MagPlate_Labware,
                         on_delete=models.CASCADE)
