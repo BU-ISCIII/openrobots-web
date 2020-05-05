@@ -698,13 +698,12 @@ class RequestForStationBManager(models.Manager):
         magPlateLabware =  MagPlate_Labware.objects.get(mag_plateLabwareType__exact = request_data['magPlateLabware'])
         reagentLabware =  Reagent_Labware.objects.get(reagentLabwareType__exact = request_data['reagentLabware'])
         wasteLabware =  Waste_Labware.objects.get(wasteLabwareType__exact = request_data['wasteLabware'])
-        elutionB_Labware = ElutionStationB_Labware.objects.get(elution_LabwareType__exact = request_data['elutionLabware'])
+        b_elution_Labware = ElutionStationB_Labware.objects.get(elutionStationB__exact = request_data['elutionLabware'])
         usedTemplateFile = ProtocolTemplateFiles.objects.get(protocolTemplateFileName__exact = request_data['usedTemplateFile'])
 
         new_request = self.create(userRequestedBy = request_data['userRequestedBy'], magPlateLabware = magPlateLabware,
-                    reagentLabware = reagentLabware, elutionB_Labware = elutionB_Labware, wasteLabware = wasteLabware,
+                    reagentLabware = reagentLabware, b_elution_Labware = b_elution_Labware, wasteLabware = wasteLabware,
                     usedTemplateFile = usedTemplateFile, requestedCodeID = request_data['requestedCodeID'], numberOfSamples = request_data['numberOfSamples'],
-                    tipTrack = util.strtobool(request_data['tipTrack']),
                     dispenseBeads = util.strtobool(request_data['dispenseBeads']),
                     generatedFile = request_data['generatedFile'] , userNotes = request_data['userNotes'])
 
@@ -731,7 +730,6 @@ class RequestForStationB (models.Model):
                         on_delete=models.CASCADE)
     requestedCodeID = models.CharField(max_length = 50)
     numberOfSamples = models.CharField(max_length = 10)
-    tipTrack = models.BooleanField()
     dispenseBeads = models.BooleanField()
 
     generatedFile = models.FileField(upload_to = openrobots_config.OPENROBOTS_OUTPUT_DIRECTORY )

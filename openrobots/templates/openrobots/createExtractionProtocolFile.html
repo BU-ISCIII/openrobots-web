@@ -354,8 +354,8 @@
                                                    </select>
                                     </div>  <!-- end select input -->
                                     <BR><br>
-                                    <label class="col-sm-5 control-label" for="ELUTION_B_LABWARE" >Elution labware</label>
-                                    <div class="col-sm-5"><select class="form-control"  required = "required" name="ELUTION_B_LABWARE" id="ELUTION_B_LABWARE">
+                                    <label class="col-sm-5 control-label" for="ELUTION_LABWARE" >Elution labware</label>
+                                    <div class="col-sm-5"><select class="form-control"  required = "required" name="ELUTION_LABWARE" id="ELUTION_LABWARE">
                                                             {% if form_data.elution_station_b_default_data %}
                                                                 <option selected="{{form_data.elution_station_b_default_data}}">{{form_data.elution_station_b_default_data}}</option>
                                                             {% else %}
@@ -373,12 +373,7 @@
                                         <label class="radio-inline"><input type="radio" name="DISPENSE_BEADS" required = "required" value="False" checked>NO</label>
                                     </div>  <!-- end  radio -->
                                     <br><br>
-                                    <label class="col-sm-5 control-label" for="TIP_TRACK" >Tip track</label>
-                                    <div class="col-sm-4">
-                                        <label class="radio-inline"><input type="radio" name="TIP_TRACK" required = "required" value="True" checked>YES</label>
-                                        <label class="radio-inline"><input type="radio" name="TIP_TRACK" required = "required" value="False">NO</label>
-                                    </div>  <!-- end  radio -->
-                                    <br><br>
+                                    
                                 </div>  <!-- end from-group   -->
                                 <div class="form-group">
                                     <label class="col-sm-5 control-label" for="notes" >User Notes</label>
