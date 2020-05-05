@@ -233,8 +233,8 @@ def get_list_labware_inventory():
         labware_data
     '''
     labware_data = []
-    if Elution_Labware.objects.all().exists():
-        elutions = Elution_Labware.objects.all().order_by('brand')
+    if InventoryLabware.objects.all().exists():
+        elutions = InventoryLabware.objects.all().order_by('brand')
         for elution in elutions:
             labware_data.append(elution.get_minimun_elution_lab_data())
     return labware_data
