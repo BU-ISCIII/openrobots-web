@@ -44,6 +44,12 @@ def create_protocol_file(request):
     else:
         return render(request, 'openrobots/createProtocolFile.html' ,{'form_data': form_data})
 
+@login_required
+def create_extraction_protocol_file(request):
+    form_data = get_form_data_creation_run_file()
+    if request.method == 'POST' and (request.POST['action']=='createprotocolfile'):
+        pass
+    return render(request, 'openrobots/createExtractionProtocolFile.html' ,{'form_data': form_data})
 
 @login_required
 def define_labware(request) :

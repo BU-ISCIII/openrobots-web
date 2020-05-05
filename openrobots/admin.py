@@ -31,7 +31,7 @@ class Elution_LabwareAdmin (admin.ModelAdmin):
     list_display =['elution_LabwareType', 'elutionHW_type', 'valueInCode']
 
 class MagPlate_Labwaredmin (admin.ModelAdmin):
-    list_display =('mag_plateLabwareType', 'description')
+    list_display =('mag_plateLabwareType', 'description', 'default')
 
 class ModuleTypeAdmin (admin.ModelAdmin):
     list_display =('moduleType', 'description')
@@ -41,33 +41,33 @@ class ModulesInLabAdmin (admin.ModelAdmin):
 
 
 class Reagent_LabwareAdmin (admin.ModelAdmin):
-    list_display =['reagentLabwareType', 'description']
+    list_display =['reagentLabwareType', 'description', 'default']
 
 
 class Waste_LabwareAdmin (admin.ModelAdmin):
-    list_display =['wasteLabwareType', 'description']
+    list_display =['wasteLabwareType', 'description','default']
 
 
 class Buffer_LabwareAdmin (admin.ModelAdmin):
-    list_display =['bufferLabwareType', 'description']
+    list_display =['bufferLabwareType', 'description', 'default']
 
 class Destination_LabwareAdmin (admin.ModelAdmin):
-    list_display =['destinationLabwareType', 'description']
+    list_display =['destinationLabwareType', 'description', 'default']
 
 class Destination_Tube_LabwareAdmin (admin.ModelAdmin):
-    list_display =['destinationTube', 'description']
+    list_display =['destinationTube', 'description','default']
 
 class Beads_LabwareAdmin (admin.ModelAdmin):
-    list_display =['beadsLabwareType', 'description']
+    list_display =['beadsLabwareType', 'description', 'default']
 
 class Plate_LabwareAdmin (admin.ModelAdmin):
-    list_display =['plateLabwareType', 'description']
+    list_display =['plateLabwareType', 'description', 'default']
 
 class Lysate_LabwareAdmin (admin.ModelAdmin):
-    list_display =['lysateLabwareType', 'description']
+    list_display =['lysateLabwareType', 'description', 'default']
 
 class Lysate_TubeAdmin (admin.ModelAdmin):
-    list_display =['lysateTube', 'description']
+    list_display =['lysateTube', 'description', 'default']
 
 class RobotsInventoryAdmin (admin.ModelAdmin):
     list_display =('userName', 'configuration',  'location','robots', 'serialNumber','IP_address','hostName',

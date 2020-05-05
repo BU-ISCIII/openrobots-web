@@ -302,6 +302,7 @@ class PCR_plateLabware (models.Model):
 class MagPlate_Labware(models.Model):
     mag_plateLabwareType = models.CharField(max_length = 80)
     description = models.CharField(max_length = 255)
+    default = models.BooleanField(default=None)
 
     def __str__ (self):
         return '%s' %(self.mag_plateLabwareType)
@@ -312,6 +313,7 @@ class MagPlate_Labware(models.Model):
 class Buffer_Labware(models.Model):
     bufferLabwareType = models.CharField(max_length = 80)
     description = models.CharField(max_length = 255)
+    default = models.BooleanField(default=None)
 
     def __str__ (self):
         return '%s' %(self.bufferLabwareType)
@@ -322,6 +324,7 @@ class Buffer_Labware(models.Model):
 class Destination_Labware(models.Model):
     destinationLabwareType = models.CharField(max_length = 80)
     description = models.CharField(max_length = 255)
+    default = models.BooleanField(default=None)
 
     def __str__ (self):
         return '%s' %(self.destinationLabwareType)
@@ -332,6 +335,7 @@ class Destination_Labware(models.Model):
 class Destination_Tube_Labware(models.Model):
     destinationTube = models.CharField(max_length = 80)
     description = models.CharField(max_length = 255)
+    default = models.BooleanField(default=None)
 
     def __str__ (self):
         return '%s' %(self.destinationTube)
@@ -341,6 +345,7 @@ class Destination_Tube_Labware(models.Model):
 class Beads_Labware(models.Model):
     beadsLabwareType = models.CharField(max_length = 80)
     description = models.CharField(max_length = 255)
+    default = models.BooleanField(default=None)
 
     def __str__ (self):
         return '%s' %(self.beadsLabwareType)
@@ -350,6 +355,7 @@ class Beads_Labware(models.Model):
 class Plate_Labware(models.Model):
     plateLabwareType = models.CharField(max_length = 80)
     description = models.CharField(max_length = 255)
+    default = models.BooleanField(default=None)
 
     def __str__ (self):
         return '%s' %(self.plateLabwareType)
@@ -359,6 +365,7 @@ class Plate_Labware(models.Model):
 class Lysate_Labware(models.Model):
     lysateLabwareType = models.CharField(max_length = 80)
     description = models.CharField(max_length = 255)
+    default = models.BooleanField(default=None)
 
     def __str__ (self):
         return '%s' %(self.lysateLabwareType)
@@ -368,6 +375,7 @@ class Lysate_Labware(models.Model):
 class Lysate_Tube (models.Model):
     lysateTube = models.CharField(max_length = 80)
     description = models.CharField(max_length = 255)
+    default = models.BooleanField(default=None)
 
     def __str__ (self):
         return '%s' %(self.lysateTube)
@@ -471,6 +479,7 @@ class Elution_Labware (models.Model):
 class Reagent_Labware(models.Model):
     reagentLabwareType = models.CharField(max_length = 80)
     description = models.CharField(max_length = 255)
+    default = models.BooleanField(default=None)
 
     def __str__ (self):
         return '%s' %(self.reagentLabwareType)
@@ -480,6 +489,7 @@ class Reagent_Labware(models.Model):
 class Waste_Labware(models.Model):
     wasteLabwareType = models.CharField(max_length = 80)
     description = models.CharField(max_length = 255)
+    default = models.BooleanField(default=None)
 
     def __str__ (self):
         return '%s' %(self.wasteLabwareType)

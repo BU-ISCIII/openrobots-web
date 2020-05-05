@@ -107,41 +107,86 @@ def get_form_data_creation_run_file():
 
     # values for station B form
     if MagPlate_Labware.objects.all().exists():
-        mag_plates = MagPlate_Labware.objects.all()
+        mag_default_obj = MagPlate_Labware.objects.filter(default = True).last()
+        if mag_default_obj:
+            form_data['mag_plate_default_data'] = mag_default_obj.get_mag_plate_name()
+            mag_plates = MagPlate_Labware.objects.exclude(pk__exact = mag_default_obj.pk)
+        else:
+            mag_plates = MagPlate_Labware.objects.all()
         for mag_plate in mag_plates:
             form_data['mag_plate_data'].append(mag_plate.get_mag_plate_name())
     if Waste_Labware.objects.all().exists():
-        wastes_lab = Waste_Labware.objects.all()
+        waste_default_obj = Waste_Labware.objects.filter(default = True).last()
+        if waste_default_obj:
+            form_data['waste_plate_default_data'] =waste_default_obj.get_waste_labware_name()
+            wastes_lab = Waste_Labware.objects.exclude(pk__exact = waste_default_obj.pk)
+        else:
+            wastes_lab = Waste_Labware.objects.all()
         for waste_lab in wastes_lab:
             form_data['waste_plate_data'].append(waste_lab.get_waste_labware_name())
     if Reagent_Labware.objects.all().exists():
-        reagents_lab = Reagent_Labware.objects.all()
+        reagent_default_obj = Reagent_Labware.objects.filter(default = True).last()
+        if reagent_default_obj:
+            form_data['reagent_labware_default_data'] = reagent_default_obj.get_reagent_labware_name()
+            reagents_lab = Reagent_Labware.objects.exclude(pk__exact = reagent_default_obj.pk)
+        else:
+            reagents_lab = Reagent_Labware.objects.all()
         for reagent_lab in reagents_lab:
             form_data['reagent_labware_data'].append(reagent_lab.get_reagent_labware_name())
 
     # values for station A form
     if Buffer_Labware.objects.all().exists():
-        buffer_types = Buffer_Labware.objects.all()
+        buffer_default_obj = Buffer_Labware.objects.filter(default = True).last()
+        if buffer_default_obj:
+            form_data['buffer_labware_default_data'] = buffer_default_obj.get_buffer_name()
+            buffer_types = Buffer_Labware.objects.exclude(pk__exact = buffer_default_obj.pk)
+        else:
+            buffer_types = Buffer_Labware.objects.all()
         for buffer_type in buffer_types:
             form_data['buffer_labware_data'].append(buffer_type.get_buffer_name())
     if Destination_Labware.objects.all().exists():
-        destination_types = Destination_Labware.objects.all()
+        destination_default_obj = Destination_Labware.objects.filter(default = True).last()
+        if destination_default_obj:
+            form_data['destination_labware_default_data'] = destination_default_obj.get_destination_labware_name()
+            destination_types = Destination_Labware.objects.exclude(pk__exact = destination_default_obj.pk)
+        else:
+            destination_types = Destination_Labware.objects.all()
         for destination_type in destination_types:
             form_data['destination_labware_data'].append(destination_type.get_destination_labware_name())
     if Destination_Tube_Labware.objects.all().exists():
-        destination_tubes = Destination_Tube_Labware.objects.all()
+        dest_tube_default_obj = Destination_Tube_Labware.objects.filter(default = True).last()
+        if dest_tube_default_obj:
+            form_data['dest_tube_labware_default_data'] = dest_tube_default_obj.get_destination_tube_name()
+            destination_tubes = Destination_Tube_Labware.objects.exclude(pk__exact = dest_tube_default_obj.pk)
+        else:
+            destination_tubes = Destination_Tube_Labware.objects.all()
         for destination_tube in destination_tubes:
             form_data['dest_tube_labware_data'].append(destination_tube.get_destination_tube_name())
     if Beads_Labware.objects.all().exists():
-        bead_types = Beads_Labware.objects.all()
+        bead_default_obj = Beads_Labware.objects.filter(default = True).last()
+        if bead_default_obj:
+            form_data['beads_labware_default_data'] = bead_default_obj.get_beads_labware_name()
+            bead_types = Beads_Labware.objects.exclude(pk__exact = bead_default_obj.pk)
+        else:
+            bead_types = Beads_Labware.objects.all()
         for bead_type in bead_types:
             form_data['beads_labware_data'].append(bead_type.get_beads_labware_name())
     if Plate_Labware.objects.all().exists():
-        plate_types = Plate_Labware.objects.all()
+        plate_default_obj = Plate_Labware.objects.filter(default = True).last()
+        if plate_default_obj:
+            form_data['plate_labware_default_data'] = plate_default_obj.get_plate_labware_name()
+            plate_types = Plate_Labware.objects.exclude(pk__exact = plate_default_obj.pk)
+        else:
+            plate_types = Plate_Labware.objects.all()
         for plate_type in plate_types:
             form_data['plate_labware_data'].append(plate_type.get_plate_labware_name())
     if Lysate_Labware.objects.all().exists():
-        lysate_types = Lysate_Labware.objects.all()
+        lysate_default_obj = Lysate_Labware.objects.filter(default = True).last()
+        if lysate_default_obj:
+            form_data['lysate_labware_default_data'] = lysate_default_obj.get_lysate_labware_name()
+            lysate_types = Lysate_Labware.objects.exclude(pk__exact = lysate_default_obj.pk)
+        else:
+            lysate_types = Lysate_Labware.objects.all()
         for lysate_type in lysate_types:
             form_data['lysate_labware_data'].append(lysate_type.get_lysate_labware_name())
 

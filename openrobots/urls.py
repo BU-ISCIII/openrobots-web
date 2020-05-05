@@ -5,6 +5,7 @@ from . import views
 urlpatterns = [
     path('', views.index, name = 'index'),
     path('createProtocolFile', views.create_protocol_file, name = 'create_protocol_file'),
+    path('createExtractionProtocolFile', views.create_extraction_protocol_file, name = 'create_extraction_protocol_file'),
     path('defineLabware', views.define_labware, name = 'define_labware'),
     path('defineRobot', views.define_robot, name = 'define_robot'),
     path('detailLabwareInventory=<int:labware_id>', views.detail_labware_inventory, name = 'detail_labware_inventory'),
