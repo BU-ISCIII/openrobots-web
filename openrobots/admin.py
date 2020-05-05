@@ -69,6 +69,12 @@ class Lysate_LabwareAdmin (admin.ModelAdmin):
 class Lysate_TubeAdmin (admin.ModelAdmin):
     list_display =['lysateTube', 'description', 'default']
 
+class ElutionStationB_LabwareAdmin (admin.ModelAdmin):
+    list_display =['elutionStationB', 'description', 'default']
+
+class ElutionStationC_LabwareAdmin (admin.ModelAdmin):
+    list_display =['elutionStationC', 'description', 'default']
+
 class RobotsInventoryAdmin (admin.ModelAdmin):
     list_display =('userName', 'configuration',  'location','robots', 'serialNumber','IP_address','hostName',
             'computer_mac','rightPipette', 'leftPipette', 'rightPipetteID', 'leftPipetteID', 'neededPlugs','observations')
@@ -116,6 +122,10 @@ admin.site.register(MasterMixLabware , MasterMixLabwareAdmin)
 admin.site.register(MasterMixTube , MasterMixTubeAdmin)
 admin.site.register(PCR_plateLabware , PCR_plateLabwareAdmin)
 #admin.site.register(Elution_Labware , Elution_LabwareAdmin)
+
+
+admin.site.register(ElutionStationB_Labware , ElutionStationB_LabwareAdmin)
+admin.site.register(ElutionStationC_Labware , ElutionStationC_LabwareAdmin)
 admin.site.register(ModuleType , ModuleTypeAdmin)
 admin.site.register(ModulesInLab , ModulesInLabAdmin)
 

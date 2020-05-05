@@ -382,6 +382,26 @@ class Lysate_Tube (models.Model):
     def get_lysate_tube (self):
         return '%s' %(self.lysateTube)
 
+class ElutionStationB_Labware(models.Model):
+    elutionStationB = models.CharField(max_length = 80)
+    description = models.CharField(max_length = 255)
+    default = models.BooleanField(default=None)
+
+    def __str__ (self):
+        return '%s' %(self.elutionStationB)
+    def get_elution_station_b (self):
+        return '%s' %(self.elutionStationB)
+
+class ElutionStationC_Labware(models.Model):
+    elutionStationC = models.CharField(max_length = 80)
+    description = models.CharField(max_length = 255)
+    default = models.BooleanField(default=None)
+
+    def __str__ (self):
+        return '%s' %(self.elutionStationC)
+    def get_elution_station_c (self):
+        return '%s' %(self.elutionStationC)
+
 class InventoryLabwareManager(models.Manager):
     def create_elution_labware(self,data):
         elutionhwtype = ElutionHardware.objects.get(hardwareType__exact = data['elutionhwtype'])
