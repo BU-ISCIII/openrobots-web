@@ -96,8 +96,8 @@ def get_form_data_creation_run_file():
         pcr_labwares = PCR_plateLabware.objects.all().order_by('PCR_plateLabwareType')
         for pcr_labware in pcr_labwares :
             form_data['pcr_labware_data'].append(pcr_labware.get_pcr_plate_labware_type())
-    if Elution_Labware.objects.all().exists():
-        elution_labwares = Elution_Labware.objects.all().order_by('elutionHW_type')
+    if ElutionStationC_Labware.objects.all().exists():
+        elution_labwares = ElutionStationC_Labware.objects.all().order_by('elutionHW_type')
         for elution_labware in elution_labwares :
             form_data['elution_labware_data'].append(elution_labware.get_elution_labware_type())
     if MasterMixType.objects.all().exists():
