@@ -10,8 +10,9 @@ def index(request):
     #
     #return redirect ('/createProtocolFile')
     return render(request, 'openrobots/index.html')
+
 @login_required
-def create_protocol_file(request):
+def create_pcr_protocol_file(request):
     # Get data to display in form
     form_data = get_form_data_creation_run_file()
     if request.method == 'POST' and (request.POST['action']=='createprotocolfile'):
@@ -23,26 +24,18 @@ def create_protocol_file(request):
 
         add_result = add_parameters_in_file (template, protocol_file,  parameters)
         if add_result != 'True':
-            return render(request, 'openrobots/createProtocolFile.html' ,{'form_data': form_data, 'error': add_result})
+            return render(request, 'openrobots/createPCRProtocolFile.html' ,{'form_data': form_data, 'error': add_result})
         database['generatedFile'] = protocol_file
         database['requestedCodeID'] = build_request_codeID (request.user, protocol_type, request.POST['station'] )
         if request.POST['station'] == 'Station C':
             new_create_protocol = RequestForStationC.objects.create_new_request(database)
-        elif request.POST['station'] == 'Station B':
-            new_create_protocol = RequestForStationB.objects.create_new_request(database)
-        elif  request.POST['station'] == 'Station A' and request.POST['protocol'] == '1' :
-            new_create_protocol = RequestForStationA_Prot1.objects.create_new_request(database)
-        elif  request.POST['station'] == 'Station A' and request.POST['protocol'] == '2' :
-            new_create_protocol = RequestForStationA_Prot2.objects.create_new_request(database)
-        elif  request.POST['station'] == 'Station A' and request.POST['protocol'] == '3' :
-            new_create_protocol = RequestForStationA_Prot3.objects.create_new_request(database)
         else:
-            return render(request, 'openrobots/createProtocolFile.html' ,{'form_data': form_data})
+            return render(request, 'openrobots/createPCRProtocolFile.html' ,{'form_data': form_data})
 
         display_result = new_create_protocol.get_result_data()
-        return render(request, 'openrobots/createProtocolFile.html' ,{'display_result': display_result})
+        return render(request, 'openrobots/createPCRProtocolFile.html' ,{'display_result': display_result})
     else:
-        return render(request, 'openrobots/createProtocolFile.html' ,{'form_data': form_data})
+        return render(request, 'openrobots/createPCRProtocolFile.html' ,{'form_data': form_data})
 
 @login_required
 def create_extraction_protocol_file(request):
@@ -56,7 +49,7 @@ def create_extraction_protocol_file(request):
 
         add_result = add_parameters_in_file (template, protocol_file,  parameters)
         if add_result != 'True':
-            return render(request, 'openrobots/createProtocolFile.html' ,{'form_data': form_data, 'error': add_result})
+            return render(request, 'openrobots/createExtractionProtocolFile.html' ,{'form_data': form_data, 'error': add_result})
         database['generatedFile'] = protocol_file
         database['requestedCodeID'] = build_request_codeID (request.user, protocol_type, request.POST['station'] )
         if request.POST['station'] == 'Station B':

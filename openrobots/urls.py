@@ -4,7 +4,7 @@ from django.conf.urls.static import static
 from . import views
 urlpatterns = [
     path('', views.index, name = 'index'),
-    path('createProtocolFile', views.create_protocol_file, name = 'create_protocol_file'),
+    path('createPCRProtocolFile', views.create_pcr_protocol_file, name = 'create_pcr_protocol_file'),
     path('createExtractionProtocolFile', views.create_extraction_protocol_file, name = 'create_extraction_protocol_file'),
     path('defineLabware', views.define_labware, name = 'define_labware'),
     path('defineRobot', views.define_robot, name = 'define_robot'),
