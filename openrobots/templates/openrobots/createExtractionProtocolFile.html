@@ -354,14 +354,14 @@
                                                    </select>
                                     </div>  <!-- end select input -->
                                     <BR><br>
-                                    <label class="col-sm-5 control-label" for="ELUTION_LABWARE" >Elution labware</label>
-                                    <div class="col-sm-5"><select class="form-control"  required = "required" name="ELUTION_LABWARE" id="ELUTION_LABWARE">
-                                                            {% if form_data.elution_labware_default_data %}
-                                                                <option selected="{{form_data.elution_labware_default_data}}">{{form_data.elution_labware_default_data}}</option>
+                                    <label class="col-sm-5 control-label" for="ELUTION_B_LABWARE" >Elution labware</label>
+                                    <div class="col-sm-5"><select class="form-control"  required = "required" name="ELUTION_B_LABWARE" id="ELUTION_B_LABWARE">
+                                                            {% if form_data.elution_station_b_default_data %}
+                                                                <option selected="{{form_data.elution_station_b_default_data}}">{{form_data.elution_station_b_default_data}}</option>
                                                             {% else %}
                                                                 <option value="">Choose a value</option>
                                                             {% endif %}
-                                                            {% for value in form_data.elution_labware_data %}
+                                                            {% for value in form_data.elution_station_b_data %}
                                                                 <option value="{{value}}">{{value}}</option>
                                                             {% endfor %}
                                                    </select>

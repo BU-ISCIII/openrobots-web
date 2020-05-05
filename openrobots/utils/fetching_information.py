@@ -75,13 +75,14 @@ def get_form_data_creation_run_file():
     form_data['mm_labware_data'] = []
     form_data['mm_tube_labware_data']  = []
     form_data['pcr_labware_data'] = []
-    form_data['elution_labware_data'] = []
-    form_data['master_mix_type_data'] =[]
+    form_data['elution_station_c_data'] = []
+    form_data['elution_station_b_data'] = []
+    form_data['master_mix_type_data'] = []
     form_data['buffer_labware_data'] = []
     form_data['destination_labware_data'] = []
     form_data['dest_tube_labware_data'] = []
     form_data['beads_labware_data'] = []
-    form_data['plate_labware_data'] =[]
+    form_data['plate_labware_data'] = []
     form_data['lysate_labware_data'] = []
 
     if MasterMixLabware.objects.all().exists():
@@ -96,10 +97,19 @@ def get_form_data_creation_run_file():
         pcr_labwares = PCR_plateLabware.objects.all().order_by('PCR_plateLabwareType')
         for pcr_labware in pcr_labwares :
             form_data['pcr_labware_data'].append(pcr_labware.get_pcr_plate_labware_type())
+
+
     if ElutionStationC_Labware.objects.all().exists():
-        elution_labwares = ElutionStationC_Labware.objects.all().order_by('elutionHW_type')
-        for elution_labware in elution_labwares :
-            form_data['elution_labware_data'].append(elution_labware.get_elution_labware_type())
+        elution_b_default_obj = ElutionStationC_Labware.objects.filter(default = True).last()
+        if elution_c_default_obj:
+            form_data['elution_station_c_default_data'] = elution_c_default_obj.get_elution_station_c()
+            elution_c_types = ElutionStationC_Labware.objects.exclude(pk__exact = elution_c_default_obj.pk)
+        else:
+            elution_c_types = ElutionStationC_Labware.objects.all()
+        for elution_c_type in elution_b_types:
+            form_data['elution_station_b_data'].append(elution_c_type.get_elution_station_c())
+
+
     if MasterMixType.objects.all().exists():
         master_mix_types = MasterMixType.objects.all().order_by('MasterMixType')
         for master_mix_type in master_mix_types :
@@ -133,6 +143,17 @@ def get_form_data_creation_run_file():
             reagents_lab = Reagent_Labware.objects.all()
         for reagent_lab in reagents_lab:
             form_data['reagent_labware_data'].append(reagent_lab.get_reagent_labware_name())
+    if ElutionStationB_Labware.objects.all().exists():
+        elution_b_default_obj = ElutionStationB_Labware.objects.filter(default = True).last()
+        if elution_b_default_obj:
+            form_data['elution_station_b_default_data'] = elution_b_default_obj.get_elution_station_b()
+            elution_b_types = ElutionStationB_Labware.objects.exclude(pk__exact = elution_b_default_obj.pk)
+        else:
+            elution_b_types = ElutionStationB_Labware.objects.all()
+        for elution_b_type in elution_b_types:
+            form_data['elution_station_b_data'].append(elution_b_type.get_elution_station_b())
+
+
 
     # values for station A form
     if Buffer_Labware.objects.all().exists():
