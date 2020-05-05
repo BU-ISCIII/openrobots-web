@@ -766,12 +766,12 @@ class RequestForStationCManager(models.Manager):
         masterMixTubeLabware = MasterMixTube.objects.get(MasterMixTube__exact = request_data['masterMixTubeLabware'])
         pcrPlateLabware = PCR_plateLabware.objects.get(PCR_plateLabwareType__exact = request_data['pcrPlateLabware'])
         masterMixType = MasterMixType.objects.get(MasterMixType__exact = request_data['masterMixType'])
-        elutionC_Labware = ElutionStationC_Labware.objects.get(elution_LabwareType__exact = request_data['elutionLabware'])
+        c_elution_Labware = ElutionStationC_Labware.objects.get(elutionStationC__exact = request_data['elutionLabware'])
         station = Stations.objects.get(stationName__exact = request_data['station'])
         usedTemplateFile = ProtocolTemplateFiles.objects.get(protocolTemplateFileName__exact = request_data['usedTemplateFile'])
 
         new_request = self.create(userRequestedBy = request_data['userRequestedBy'], masterMixLabware = masterMixLabware , masterMixTubeLabware = masterMixTubeLabware,
-                    pcrPlateLabware = pcrPlateLabware, elutionC_Labware = elutionC_Labware, masterMixType = masterMixType, station = station,
+                    pcrPlateLabware = pcrPlateLabware, c_elution_Labware = c_elution_Labware, masterMixType = masterMixType, station = station,
                     usedTemplateFile = usedTemplateFile, requestedCodeID = request_data['requestedCodeID'], numberOfSamples = request_data['numberOfSamples'],
                     prepareMastermix = util.strtobool(request_data['prepareMastermix']),
                     transferMastermix = util.strtobool(request_data['transferMastermix']),
@@ -795,9 +795,9 @@ class RequestForStationC (models.Model):
     pcrPlateLabware = models.ForeignKey (
                         PCR_plateLabware,
                         on_delete=models.CASCADE)
-    #elutionC_Labware = models.ForeignKey (
-    #                    ElutionStationC_Labware,
-    #                    on_delete=models.CASCADE)
+    c_elution_Labware = models.ForeignKey (
+                        ElutionStationC_Labware,
+                        on_delete=models.CASCADE, null = True)
     masterMixType = models.ForeignKey (
                         MasterMixType,
                         on_delete=models.CASCADE)
