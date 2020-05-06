@@ -1,0 +1,88 @@
+{% extends 'openrobots/base.html' %}
+{% load static %}
+{% block content %}
+{% csrf_token %}
+
+<div class="row row-space-2 margin-b-4">
+	<div class="col-sm-8 col-sm-offset-2">
+		<div class="panel panel-default">
+			<div class="panel-heading"><h3 style="text-align:center">Protocol Template Basic Information</h3> </div>
+			<div class="panel-body">
+				<table class="table ">
+					<thead>
+						<tr>
+							<th>Protocol Type Name</th>
+							<th>Station Name</th>
+							<th>User Name</th>
+							<th>Protocol Template File Name</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							{% for  id, protocol, station, user, file in protocol_template_data.basic_data %}
+                                <td>{{ protocol }}</td>
+                                <td>{{ station }}</td>
+                                <td>{{ user }}</td>
+								<td><a href="documents/{{file}}" download>{{file}}<span class="glyphicon glyphicon-download-alt"></span></a></td>
+
+                            {% endfor %}
+						</tr>
+					</tbody>
+				</table>
+			</div> <!--  end of panel body -->
+		</div> <!--  end of panel  -->
+	</div> <!--  end of col-sm-7 -->
+</div> <!--  end of row -->
+
+<div class="row row-space-2 margin-b-4">
+	<div class="col-sm-12">
+		<div class="panel panel-default">
+			<div class="panel-heading"><h3 style="text-align:center">Metadata Information</h3> </div>
+			<div class="panel-body">
+				<table class="table ">
+					<thead>
+						<tr>
+							<th>Protocol Name</th>
+							<th>Station Name</th>
+							<th>User Name</th>
+							<th>Protocol Template File Name</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							{% for  value in protocol_template_data.metadata %}
+                                <td>{{ value }}</td>
+                            {% endfor %}
+						</tr>
+					</tbody>
+				</table>
+			</div> <!--  end of panel body -->
+		</div> <!--  end of panel  -->
+	</div> <!--  end of col-sm-6 -->
+</div> <!--  end of row -->
+<div class="row row-space-2 margin-b-4">
+	<div class="col-sm-12">
+		<div class="panel panel-default">
+			<div class="panel-heading"><h3 style="text-align:center">Functions in the protocol</h3> </div>
+			<div class="panel-body">
+				<table class="table ">
+					<thead>
+						<tr>
+							<th>Prepare MasterMix</th>
+							<th>Transfer MasterMix</th>
+							<th>Transfer Samples</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							{% for  value in protocol_template_data.functions %}
+                                <td>{{ value }}</td>
+                            {% endfor %}
+						</tr>
+					</tbody>
+				</table>
+			</div> <!--  end of panel body -->
+		</div> <!--  end of panel  -->
+	</div> <!--  end of col-sm-6 -->
+</div> <!--  end of row -->
+{% endblock %}

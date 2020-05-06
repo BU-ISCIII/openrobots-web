@@ -1,0 +1,123 @@
+{% extends 'openrobots/base.html' %}
+{% load static %}
+{% block content %}
+{% csrf_token %}
+
+{% if error_message %}
+    <div class="row row-space-2 margin-b-4">
+        <div class="col-sm-7 col-sm-offset-3">
+            <div class="panel panel-danger">
+                <div class="panel-heading"><h3 style="text-align:center">Error when defining a new Labware</h3> </div>
+                <div class="panel-body">
+                    {% for values in error_message %}
+                        <h4>{{values}}</h4>
+                    {% endfor %}
+                </div> <!--  end of panel body -->
+            </div> <!--  end of panel  -->
+        </div> <!--  end of col-sm-7 -->
+    </div> <!--  end of row -->
+{% endif %}
+
+
+
+{% if created_new_labware %}
+
+    <div class="row row-space-2 margin-b-4">
+        <div class="col-sm-7" >
+            <div class="panel panel-default">
+                <div class="panel-heading"><h3>New Labware data has been added to your inventory</h3> </div>
+                <div class="panel-body">
+                    <table class="table  table-hover">
+    					<thead>
+    						<tr>
+    							<th>Labware name</th>
+								<th>Brand</th>
+								<th>Category</th>
+                                <th>Number of Wells</th>
+                            </tr>
+                        </thead>
+						<tbody>
+                            <tr>
+                                {% for value in created_new_labware %}
+                                    <td>{{value}}</td>
+                                {% endfor %}
+                            </tr>
+    					</tbody>
+    				</table>
+                </div>  <!--  end of panel body  -->
+            </div> <!--// end panel -->
+        </div> <!--// end col-sm-6  -->
+    </div> <!--// end row -->
+
+{% else %}
+    <div class="row row-space-2 margin-b-4">
+        <div class="col-sm-8" >
+            <div class="panel panel-default">
+                <div class="panel-heading"><h3 style="text-align:center">Form to add a new Labware to laboratory inventory </h3> </div>
+                <div class="panel-body">
+                    <form method="post" enctype="multipart/form-data" name="definelabware" id="definelabware" class="form-horizontal">
+						<div class="col-sm-12" >
+	                        {% csrf_token %}
+	                        <div class="form-group required">
+	                            <input type="hidden" name="action" value="definelabware"/>
+                                <!--
+	                            <label class="col-sm-5  control-label" for="labwarename" >Labware Name</label>
+	                            <div class="col-sm-5"><input class="form-control" type="text" required = "required" name="labwarename" id="labwarename" size="100" maxlength="100"></div>
+                                -->
+                                <BR><br>
+								<label class="col-sm-5 control-label">Upload labware json file</label>
+	                            <div class="col-sm-5"><input class="form-control" required = "required" type="file" id="jsonfile" name="jsonfile" size="80"></div>
+							</div>  <!-- end from-group   -->
+							<div class="form-group">
+	                            <BR> <BR>
+								<label class="col-sm-5 control-label">Upload labware calibration file</label>
+	                            <div class="col-sm-5"><input class="form-control"  type="file" id="pythonfile" name="pythonfile" size="80"></div>
+	                            <BR> <BR>
+								<label class="col-sm-5 control-label">Upload labware image file</label>
+	                            <div class="col-sm-5"><input class="form-control" type="file" id="imagefile" name="imagefile" size="80"></div>
+	                            <BR> <BR>
+							</div>  <!-- end from-group   -->
+	                        <input class="btn pull-left btn-primary" type="reset" value="Reset Fields">
+	                        <input class="btn pull-right btn-primary" type="submit" value="Submit" id="btnSubmit">
+						</div> <!--// end col-sm-10  -->
+					</form>
+					<p> Fields marked with <FONT COLOR="Red">*</FONT> are mandatory</p>
+				</div>  <!--  end of panel body  -->
+				<SCRIPT>
+                    //gets the element by its id
+                    var myFile = document.getElementById('jsonfile');
+                    //binds to onchange event of the input field
+                    myFile.addEventListener('change', function() {
+                     var max_size = 204800 // 200 KB
+
+                   //this.files[0].size gets the size of your file.
+                   if (this.files[0].size > max_size) {
+                     alert("Maximun size of the file is 200 KB ");
+                     document.getElementById("btnSubmit").disabled = true;
+                     }
+                    else if (this.files[0].name.split('.').pop().toLowerCase() != 'json'){
+                        alert("File name does not have python extension ");
+                        document.getElementById("btnSubmit").disabled = true;
+                    }
+                   else {
+                       document.getElementById("btnSubmit").disabled = false;}
+                   });
+
+                </SCRIPT>
+                <!--script to disable the submit button -->
+                <script>
+                    $(document).ready(function () {
+                        $("#getSample").submit(function (e) {
+                            //stop submitting the form to see the disabled button effect
+                            // e.preventDefault();
+                            //disable the submit button
+                            $("#btnSubmit").attr("disabled", true);
+                            return true;
+                        });
+                    });
+                </script>
+        	</div> <!--// end panel -->
+    	</div> <!--// end col-sm-12  -->
+    </div><!--// end row -->
+{% endif %}
+{% endblock %}

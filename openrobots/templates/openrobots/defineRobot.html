@@ -1,0 +1,183 @@
+{% extends 'openrobots/base.html' %}
+{% load static %}
+{% block content %}
+{% csrf_token %}
+
+{% if error_message %}
+    <div class="row row-space-2 margin-b-4">
+        <div class="col-sm-7 col-sm-offset-3">
+            <div class="panel panel-danger">
+                <div class="panel-heading"><h3 style="text-align:center">Error when definin a new Robot</h3> </div>
+                <div class="panel-body">
+                    {% for values in error_message %}
+                        <h4>{{values}}</h4>
+                    {% endfor %}
+                </div> <!--  end of panel body -->
+            </div> <!--  end of panel  -->
+        </div> <!--  end of col-sm-7 -->
+    </div> <!--  end of row -->
+{% endif %}
+
+
+
+{% if created_new_robot %}
+
+    <div class="row row-space-2 margin-b-4">
+        <div class="col-sm-5" >
+            <div class="panel panel-default">
+                <div class="panel-heading"><h3>New Robot data has been added to your inventory</h3> </div>
+                <div class="panel-body">
+                    <table class="table ">
+                        <thead>
+                            <tr>
+                                <th>Robot Name</th>
+                                <th>Robot Location</th>
+                                <th>Robot Configuration</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{{ created_new_robot.0 }}</td>
+                                <td>{{ created_new_robot.1 }}</td>
+                                <td>{{ created_new_robot.2 }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>  <!--  end of panel body  -->
+            </div> <!--// end panel -->
+        </div> <!--// end col-sm-6  -->
+    </div> <!--// end row -->
+
+{% else %}
+    <div class="row row-space-2 margin-b-4">
+        <div class="col-sm-12" >
+            <div class="panel panel-default">
+                <div class="panel-heading"><h3 style="text-align:center">Form to add a new Robot to laboratory inventory </h3> </div>
+                <div class="panel-body">
+                    <form method="post" enctype="multipart/form-data" name="definerobot" id="definerobot" class="form-horizontal">
+                        {% csrf_token %}
+
+                        <div class="col-sm-6" >
+                            <div class="form-group required">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading"><h3 style="text-align:center">Robot basic Information </h3> </div>
+                                    <div class="panel-body">
+                                        <input type="hidden" name="action" value="definerobot"/>
+                                        <label class="col-sm-5  control-label" for="robots" >Robot Name</label>
+                                        <div class="col-sm-5"><input class="form-control" type="text" required = "required" name="robots" id="robots" size="100" maxlength="100"></div>
+                                        <BR><br>
+                                        <label class="col-sm-5  control-label" for="location" >Robot Location</label>
+                                        <div class="col-sm-5"><input class="form-control" type="text" required = "required" name="location" id="location" size="100" maxlength="100"></div>
+                                        <BR><br>
+
+                                        <label class="col-sm-5  control-label" for="serialNumber" >Robot Serial Number</label>
+                                        <div class="col-sm-5"><input class="form-control" type="text" required = "required" name="serialNumber" id="serialNumber" size="100" maxlength="100"></div>
+                                        <BR><br>
+                                        <label class="col-sm-5 control-label" for="configuration" >Robot station configuration</label>
+                                        <div class="col-sm-4"><select class="form-control"  required = "required" name="configuration" id="configuration">
+                                                   				<option value="">Choose a value</option>
+                                                                {% for value in robot_inventory_form_data.stations %}
+                                                                    <option value="{{value}}">{{value}}</option>
+                                                                {% endfor %}
+                                                          </select>
+                                        </div>  <!-- end select input -->
+                                        <br><br>
+                                        <label class="col-sm-5  control-label" for="observations" >Observations</label>
+                                        <div class="col-sm-5"><input class="form-control" type="text" required = "required" name="observations" id="observations" size="100" maxlength="200"></div>
+                                        <BR><br>
+                                    </div>  <!--  end of panel body  -->
+                                </div> <!--// end panel -->
+                                <div class="panel panel-default">
+                                    <div class="panel-heading"><h3 style="text-align:center">Network Information </h3> </div>
+                                    <div class="panel-body">
+                                        <label class="col-sm-5  control-label" for="IP_address" >IP Address</label>
+                                        <div class="col-sm-5"><input class="form-control" type="text" required = "required" name="IP_address" id="IP_address" size="100" maxlength="100"></div>
+                                        <BR><br>
+                                        <label class="col-sm-5  control-label" for="hostName" >Host Name</label>
+                                        <div class="col-sm-5"><input class="form-control" type="text" required = "required" name="hostName" id="hostName" size="100" maxlength="100"></div>
+                                        <BR><br>
+                                        <label class="col-sm-5  control-label" for="computer_mac" >MAC Address</label>
+                                        <div class="col-sm-5"><input class="form-control" type="text" required = "required" name="computer_mac" id="computer_mac" size="100" maxlength="100"></div>
+                                        <BR><br>
+
+                                    </div>  <!--  end of panel body  -->
+                                </div> <!--// end panel -->
+                            </div>  <!-- end from-group   -->
+                        </div> <!--// end col-sm-6  -->
+                            <!-- Network configuration -->
+
+                        <div class="col-sm-6" >
+                            <div class="form-group required">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading"><h3 style="text-align:center">Module Information </h3> </div>
+                                    <div class="panel-body">
+                                        <label class="col-sm-5  control-label" for="modules" >Select the Modules used</label>
+                                        <div class="col-sm-10"><select class="form-control"  required = "required" name="modules" id="modules" multiple >
+
+                                                                {% for id, value in robot_inventory_form_data.modules %}
+                                                                    <option value="{{id}}">{{value}}</option>
+                                                                {% endfor %}
+                                                          </select>
+                                        </div>  <!-- end select input -->
+                                        <br>
+                                        <div class="col-sm-12">
+                                            <p>Hold down the Ctrl (windows) or Command (Mac) button to select multiple options.</p>
+                                        </div>
+
+                                        <BR><br>
+
+
+                                    </div>  <!--  end of panel body  -->
+                                </div> <!--// end panel -->
+                            </div>  <!-- end from-group   -->
+                            <div class="form-group">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading"><h3 style="text-align:center">Pipette Information </h3> </div>
+                                    <div class="panel-body">
+                                        <label class="col-sm-5  control-label" for="rightPipette" >Right Pipette</label>
+                                        <div class="col-sm-5"><input class="form-control" type="text" name="rightPipette" id="rightPipette" size="100" maxlength="100"></div>
+                                        <BR><br>
+                                        <label class="col-sm-5  control-label" for="rightPipetteID" >Right Pipette ID</label>
+                                        <div class="col-sm-5"><input class="form-control" type="text"  name="rightPipetteID" id="rightPipetteID" size="100" maxlength="100"></div>
+                                        <BR><br>
+                                        <label class="col-sm-5  control-label" for="leftPipette" >Left Pipette</label>
+                                        <div class="col-sm-5"><input class="form-control" type="text"  name="leftPipette" id="leftPipette" size="100" maxlength="100"></div>
+                                        <BR><br>
+                                        <label class="col-sm-5  control-label" for="leftPipetteID" >Left Pipette ID</label>
+                                        <div class="col-sm-5"><input class="form-control" type="text"  name="leftPipetteID" id="leftPipetteID" size="100" maxlength="100"></div>
+                                        <BR><br>
+
+
+                                    </div>  <!--  end of panel body  -->
+                                </div> <!--// end panel -->
+                                <div class="panel panel-default">
+                                    <div class="panel-heading"><h3 style="text-align:center">Plugs Information </h3> </div>
+                                    <div class="panel-body">
+                                        <label class="col-sm-5  control-label" for="neededPlugs" >Plugs</label>
+                                        <div class="col-sm-5"><input class="form-control" type="text" name="neededPlugs" id="neededPlugs" size="100" maxlength="100"></div>
+                                        <BR><br>
+
+
+
+                                    </div>  <!--  end of panel body  -->
+                                </div> <!--// end panel -->
+                            </div>  <!-- end from-group   -->
+                        </div> <!--// end col-sm-6  -->
+
+                        <br>
+                            <input class="btn pull-left btn-primary" type="reset" value="Reset Fields">
+                            <input class="btn pull-right btn-primary" type="submit" value="Submit">
+                    </form>
+                    <p> Fields marked with <FONT COLOR="Red">*</FONT> are mandatory</p>
+                </div>  <!--  end of panel body  -->
+
+
+            </div> <!--// end panel -->
+        </div> <!--// end col-sm-12  -->
+
+
+
+    </div><!--// end row -->
+{% endif %}
+{% endblock %}

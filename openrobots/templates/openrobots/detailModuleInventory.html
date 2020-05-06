@@ -1,0 +1,79 @@
+{% extends 'openrobots/base.html' %}
+{% load static %}
+{% block content %}
+
+{% if module_inventory_data %}
+    <div class="row row-space-2 margin-b-4">
+        <div class="col-sm-6">
+            <div class="panel panel-default">
+                <div class="panel-heading"><h3 style="text-align:center">Detail Module Information </h3> </div>
+                <div class="panel-body">
+                    <h5  style="text-align:center">{{module_inventory_data.main.0}}</h5>
+                    <table class="table ">
+    					<tbody>
+							<tr>
+                                <td>Vendor</td>
+                                <td>{{module_inventory_data.main.1}}</td>
+							</tr>
+                            {% if module_inventory_data.documents.0 %}
+                                <tr>
+                                    <td>White Papers</td>
+                                    <td><a href="/documents/{{module_inventory_data.documents.0}}" download>Download White Paper File<span class="glyphicon glyphicon-download-alt"></span></a> </td>
+                                </tr>
+
+                            {% endif %}
+                            {% if module_inventory_data.documents.1 %}
+                                <tr>
+                                    <td>User Guide</td>
+                                    <td><a href="/documents/{{module_inventory_data.documents.1}}" download>Download User Guide File<span class="glyphicon glyphicon-download-alt"></span></a> </td>
+                                </tr>
+
+                            {% endif %}
+    					</tbody>
+    				</table>
+                </div> <!--  end of panel body -->
+            </div> <!--  end of panel  -->
+        </div> <!--  end of col-sm-7 -->
+        <div class="col-sm-6">
+            <div class="panel panel-default">
+                <div class="panel-heading"><h3 style="text-align:center">Module image</h3> </div>
+                <div class="panel-body">
+                    {% if module_inventory_data.image %}
+                        <img class="promo-block-img img-responsive" src="/documents/{{module_inventory_data.image}}" align="Avatar">
+                    {% else %}
+                    <br><br><br>
+                        <h5 style="text-align:center"> No Image available</h5>
+                    {% endif%}
+                </div> <!--  end of panel body -->
+            </div> <!--  end of panel  -->
+        </div> <!--  end of col-sm-7 -->
+    </div> <!--  end of row -->
+    <div class="row row-space-2 margin-b-4">
+        <div class="col-sm-8">
+            <div class="panel panel-default">
+                <div class="panel-heading"><h3 style="text-align:center">Module Description </h3> </div>
+                <div class="panel-body">
+                    <p>{{module_inventory_data.main.2}}</p>
+                </div> <!--  end of panel body -->
+            </div> <!--  end of panel  -->
+        </div> <!--  end of col-sm-7 -->
+    </div> <!--  end of row -->
+
+
+
+{% else %}
+	<div class="row row-space-2 margin-b-4">
+		<div class="col-sm-7 col-sm-offset-3">
+			<div class="panel panel-danger">
+				<div class="panel-heading"><h3 style="text-align:center">Not available information </h3> </div>
+				<div class="panel-body">
+					<p>There is no available information for the module that you request</p>
+					<br><br>
+					<p>Click on the following link to get the Labware list defined in your lab</p>
+					<p><a href="/modulesInventory">GET MODULE INVENTORY LIST</a></p>
+				</div> <!--  end of panel body -->
+			</div> <!--  end of panel  -->
+		</div> <!--  end of col-sm-7 -->
+	</div> <!--  end of row -->
+{% endif %}
+{% endblock %}

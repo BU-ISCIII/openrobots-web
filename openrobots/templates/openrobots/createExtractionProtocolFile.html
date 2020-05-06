@@ -1,0 +1,403 @@
+{% extends 'openrobots/base.html' %}
+{% load static %}
+{% block content %}
+{% csrf_token %}
+<style>
+    .tab-content-color{
+    background-color:#FFA07A !important;
+    color:FA07A;
+    padding:5px
+}
+</style>
+
+{% if error_message %}
+    <div class="row row-space-2 margin-b-4">
+        <div class="col-sm-7 col-sm-offset-3">
+            <div class="panel panel-danger">
+                <div class="panel-heading"><h3 style="text-align:center">ERROR</h3> </div>
+                <div class="panel-body">
+                    {% for values in error_message %}
+                        <h4>{{values}}</h4>
+                    {% endfor %}
+                </div> <!--  end of panel body -->
+            </div> <!--  end of panel  -->
+        </div> <!--  end of col-sm-7 -->
+    </div> <!--  end of row -->
+{% endif %}
+
+
+{%if display_result %}
+    <div class="row row-space-2 margin-b-4">
+        <div class="col-sm-7 col-sm-offset-3">
+            <div class="panel panel-default">
+                <div class="panel-heading"><h3 style="text-align:center">Successful protocol file creation</h3> </div>
+                <div class="panel-body">
+                    <table class="table ">
+    					<tbody>
+    						<tr>
+    							<td>Request CodeID</td>
+                                <td>{{ display_result.0 }}</td>
+                            </tr>
+                            <tr>
+    							<td>Protocol Type</td>
+                                <td>{{ display_result.1 }}</td>
+                            </tr>
+
+                            <tr>
+    							<td>Protocol_file</td>
+                                <td><a href="/documents/protocol_files/{{display_result.2}}" download>Download the Protocol File<span class="glyphicon glyphicon-download-alt"></span></a></td>
+                            </tr>
+
+    					</tbody>
+    				</table>
+                </div> <!--  end of panel body -->
+            </div> <!--  end of panel  -->
+        </div> <!--  end of col-sm-7 -->
+    </div> <!--  end of row -->
+
+
+{% else %}
+    <div class="row row-space-4 margin-b-1">
+        <div class="col-sm-5 ">
+            <div class="col-sm-12 ">
+                <h3 style="text-align:center">Protocols for Station A.</h3>
+                <h5 style="text-align:center">Sample preparation</h5>
+                <div class="tab">
+                    <button class="tablinks" onclick="summaryBin(event, 'stationA_prot1')" id="defaultOpen" >Dispense buffer to tubes</button>
+                    <button class="tablinks" onclick="summaryBin(event, 'stationA_prot2')">Dispense beads to deep well plate</button>
+                    <button class="tablinks" onclick="summaryBin(event, 'stationA_prot3')">Dispense lysates to deep well plate with beads</button>
+                </div> <!--  end tabs -->
+            </div> <!--  end of col-sm-12 -->
+            <div class="col-sm-12 ">
+                <br><br>
+                <h3 style="text-align:center">Protocol for Station B</h3>
+                <div class="tab">
+                    <button class= " tablinks" onclick="summaryBin(event, 'stationB')">RNA extraction</button>
+                </div> <!--  end tabs -->
+            </div> <!--  end of col-sm-12 -->
+        </div> <!--  end of col-sm-5 -->
+        <div class="col-sm-7 ">
+            <div id="stationA_prot1" class="tabcontent">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h5 style="text-align:center">Station A Protocol: Dispense buffer to tubes</h5>
+                    </div>
+                    <div class="panel-body">
+                        <!-- FORM for Station A protocol 1 -->
+                        {% if form_data.station_a.1 %}
+                            <form method="post" enctype="multipart/form-data" name="createfile" id="createfile" class="form-horizontal well">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="createprotocolfile"/>
+                                <input type="hidden" name="station" value="Station A"/>
+                                <input type="hidden" name="protocol" value="1"/>
+                                <input type="hidden" name="template" value="{{form_data.station_a.1}}"/>
+                                <div class="form-group required">
+
+                                    <label class="col-sm-5  control-label" for="NUM_SAMPLES" >Number of Samples </label>
+                                    <div class="col-sm-5"><input class="form-control" type="text" required = "required" name="NUM_SAMPLES" id="NUM_SAMPLES" value="96" size="100" maxlength="100"></div>
+                                    <BR><br>
+                                    <label class="col-sm-5 control-label" for="BUFFER_LABWARE" >Buffer labware</label>
+                                    <div class="col-sm-5"><select class="form-control"  required = "required" name="BUFFER_LABWARE" id="BUFFER_LABWARE">
+                                                            {% if form_data.buffer_labware_default_data %}
+                                                                <option selected="{{form_data.buffer_labware_default_data}}">{{form_data.buffer_labware_default_data}}</option>
+                                                            {% else %}
+                                                                <option value="">Choose a value</option>
+                                                            {% endif %}
+                                                            {% for value in form_data.buffer_labware_data %}
+                                                                <option value="{{value}}">{{value}}</option>
+                                                            {% endfor %}
+                                                   </select>
+                                    </div>  <!-- end select input -->
+                                    <BR><br>
+                                    <label class="col-sm-5 control-label" for="DESTINATION_LABWARE" >Destination Labware</label>
+                                    <div class="col-sm-5"><select class="form-control"  required = "required" name="DESTINATION_LABWARE" id="DESTINATION_LABWARE">
+                                                            {% if form_data.destination_labware_default_data %}
+                                                                <option selected="{{form_data.destination_labware_default_data}}">{{form_data.destination_labware_default_data}}</option>
+                                                            {% else %}
+                                                                <option value="">Choose a value</option>
+                                                            {% endif %}
+                                                            {% for value in form_data.destination_labware_data %}
+                                                                <option value="{{value}}">{{value}}</option>
+                                                            {% endfor %}
+                                                   </select>
+                                    </div>  <!-- end select input -->
+                                    <BR><br>
+                                    <label class="col-sm-5 control-label" for="DEST_TUBE" >Destination tube</label>
+                                    <div class="col-sm-5"><select class="form-control"  required = "required" name="DEST_TUBE" id="DEST_TUBE">
+                                                            {% if form_data.dest_tube_labware_default_data %}
+                                                                <option selected="{{form_data.buffer_labware_default_data}}">{{form_data.buffer_labware_default_data}}</option>
+                                                            {% else %}
+                                                                <option value="">Choose a value</option>
+                                                            {% endif %}
+                                                            {% for value in form_data.dest_tube_labware_data %}
+                                                                <option value="{{value}}">{{value}}</option>
+                                                            {% endfor %}
+                                                   </select>
+                                    </div>  <!-- end select input -->
+                                    <br><br>
+                                    <label class="col-sm-5  control-label" for="VOLUME_BUFFER" >Volume buffer </label>
+                                    <div class="col-sm-5"><input class="form-control" type="text" required = "required" name="VOLUME_BUFFER" id="VOLUME_BUFFER" value="300" size="100" maxlength="100"></div>
+                                    <BR><br>
+                                </div>  <!-- end from-group   -->
+                                <div class="form-group">
+                                    <label class="col-sm-5 control-label" for="notes" >User Notes</label>
+                                    <div class="col-sm-6">
+                                        <textarea class="form-control" name="usernotes" value="" id="usernotes" rows="4" cols="60" maxlength="220"></textarea>
+                                    </div>  <!-- end textarea input -->
+                                    <br>
+                                </div>  <!-- end from-group   -->
+                                <br>
+                                <br>
+                                <input class="btn pull-left btn-primary" type="reset" value="Reset Fields">
+                                <input class="btn pull-right btn-primary" type="submit" value="Submit">
+                            </form>
+                            <p> Fields marked with <FONT COLOR="Red">*</FONT> are mandatory</p>
+                        {% else %}
+                            <h5>There is no template defined for Station A using Protocol 1: dispense buffer to tubes. </h5>
+                        {% endif %}
+                    </div>  <!--  end of panel body  -->
+                </div> <!--// end panel -->
+            </div><!-- // end of tab stationA protocol 1-->
+        <div id="stationA_prot2" class="tabcontent">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h5 style="text-align:center">Station A Protocol: Dispense beads to deep well plate.</h5>
+                    </div>
+                    <div class="panel-body">
+                        <!-- FORM for Station A protocol 2 -->
+                        {% if form_data.station_a.2 %}
+                            <form method="post" enctype="multipart/form-data" name="createfile" id="createfile" class="form-horizontal well">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="createprotocolfile"/>
+                                <input type="hidden" name="station" value="Station A"/>
+                                <input type="hidden" name="protocol" value="2"/>
+                                <input type="hidden" name="template" value="{{form_data.station_a.2}}"/>
+                                <div class="form-group required">
+                                    <label class="col-sm-5  control-label" for="NUM_SAMPLES" >Number of Samples </label>
+                                    <div class="col-sm-5"><input class="form-control" type="text" required = "required" name="NUM_SAMPLES" id="NUM_SAMPLES"  value="96" size="100" maxlength="100"></div>
+                                    <BR><br>
+                                    <label class="col-sm-5 control-label" for="BEADS_LABWARE" >Beads labware</label>
+                                    <div class="col-sm-5"><select class="form-control"  required = "required" name="BEADS_LABWARE" id="BEADS_LABWARE">
+                                                            {% if form_data.beads_labware_default_data %}
+                                                                <option selected="{{form_data.beads_labware_default_data}}">{{form_data.beads_labware_default_data}}</option>
+                                                            {% else %}
+                                                                <option value="">Choose a value</option>
+                                                            {% endif %}
+                                                            {% for value in form_data.beads_labware_data %}
+                                                                <option value="{{value}}">{{value}}</option>
+                                                            {% endfor %}
+                                                   </select>
+                                    </div>  <!-- end select input -->
+                                    <BR><br>
+                                    <label class="col-sm-5 control-label" for="PLATE_LABWARE" >Plate Labware</label>
+                                    <div class="col-sm-5"><select class="form-control"  required = "required" name="PLATE_LABWARE" id="PLATE_LABWARE">
+                                                            {% if form_data.plate_labware_default_data %}
+                                                                <option selected="{{form_data.plate_labware_default_data}}">{{form_data.plate_labware_default_data}}</option>
+                                                            {% else %}
+                                                                <option value="">Choose a value</option>
+                                                            {% endif %}
+                                                            {% for value in form_data.plate_labware_data %}
+                                                                <option value="{{value}}">{{value}}</option>
+                                                            {% endfor %}
+                                                   </select>
+                                    </div>  <!-- end select input -->
+                                    <br><br>
+                                    <label class="col-sm-5  control-label" for="VOLUME_BEADS" >Volume beads </label>
+                                    <div class="col-sm-5"><input class="form-control" type="text" required = "required" name="VOLUME_BEADS" id="VOLUME_BEADS" value="410" size="100" maxlength="100"></div>
+                                    <BR><br>
+                                </div>  <!-- end from-group   -->
+                                <div class="form-group">
+                                    <label class="col-sm-5 control-label" for="notes" >User Notes</label>
+                                    <div class="col-sm-6">
+                                        <textarea class="form-control" name="usernotes" value="" id="usernotes" rows="4" cols="60" maxlength="220"></textarea>
+                                    </div>  <!-- end textarea input -->
+                                    <br>
+                                </div>  <!-- end from-group   -->
+                                <br>
+                                <br>
+                                <input class="btn pull-left btn-primary" type="reset" value="Reset Fields">
+                                <input class="btn pull-right btn-primary" type="submit" value="Submit">
+                            </form>
+                            <p> Fields marked with <FONT COLOR="Red">*</FONT> are mandatory</p>
+                        {% else %}
+                            <h5>There is no  template defined for Station A using Protocol 2: dispense beads to deep well plate. </h5>
+                        {% endif %}
+                    </div>  <!--  end of panel body  -->
+                </div> <!--// end panel -->
+        </div><!-- // end of tab stationA protocol 1-->
+        <div id="stationA_prot3" class="tabcontent">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h5 style="text-align:center">Station A Protocol: Dispense lysates to deep well plate with beads.</h5>
+                    </div>
+                    <div class="panel-body">
+                        <!-- FORM for Station A protocol 3 -->
+                        {% if form_data.station_a.3 %}
+                            <form method="post" enctype="multipart/form-data" name="createfile" id="createfile" class="form-horizontal well">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="createprotocolfile"/>
+                                <input type="hidden" name="station" value="Station A"/>
+                                <input type="hidden" name="protocol" value="3"/>
+                                <input type="hidden" name="template" value="{{form_data.station_a.3}}"/>
+                                <div class="form-group required">
+                                    <label class="col-sm-5  control-label" for="NUM_SAMPLES" >Number of Samples </label>
+                                    <div class="col-sm-5"><input class="form-control" type="text" required = "required" name="NUM_SAMPLES" id="NUM_SAMPLES"  value="96" size="100" maxlength="100"></div>
+                                    <BR><br>
+                                    <label class="col-sm-5 control-label" for="LYSATE_LABWARE" >Lysate labware</label>
+                                    <div class="col-sm-5"><select class="form-control"  required = "required" name="LYSATE_LABWARE" id="LYSATE_LABWARE">
+                                                            {% if form_data.lysate_labware_default_data %}
+                                                                <option selected="{{form_data.lysate_labware_default_data}}">{{form_data.lysate_labware_default_data}}</option>
+                                                            {% else %}
+                                                                <option value="">Choose a value</option>
+                                                            {% endif %}
+                                                            {% for value in form_data.lysate_labware_data %}
+                                                                <option value="{{value}}">{{value}}</option>
+                                                            {% endfor %}
+                                                   </select>
+                                    </div>  <!-- end select input -->
+                                    <BR><br>
+                                    <label class="col-sm-5 control-label" for="PLATE_LABWARE" >Plate Labware</label>
+                                    <div class="col-sm-5"><select class="form-control"  required = "required" name="PLATE_LABWARE" id="PLATE_LABWARE">
+                                                            {% if form_data.plate_labware_default_data %}
+                                                                <option selected="{{form_data.plate_labware_default_data}}">{{form_data.plate_labware_default_data}}</option>
+                                                            {% else %}
+                                                                <option value="">Choose a value</option>
+                                                            {% endif %}
+                                                            {% for value in form_data.plate_labware_data %}
+                                                                <option value="{{value}}">{{value}}</option>
+                                                            {% endfor %}
+                                                   </select>
+                                    </div>  <!-- end select input -->
+                                    <br><br>
+                                    <label class="col-sm-5 control-label" for="VOLUME_LYSATE" >Volume Lysate</label>
+                                    <div class="col-sm-5"><input class="form-control" type="text" required = "required" name="VOLUME_LYSATE" id="VOLUME_LYSATE" value="400" size="100" maxlength="100"></div>
+                                    <BR><br>
+                                    <label class="col-sm-5  control-label" for="BEADS" >Beads </label>
+                                    <div class="col-sm-4">
+                                        <label class="radio-inline"><input type="radio" name="BEADS" required = "required" value="True">YES</label>
+                                        <label class="radio-inline"><input type="radio" name="BEADS" required = "required" value="False" checked>NO</label>
+                                    </div>  <!-- end  radio -->
+                                    <BR><br>
+                                </div>  <!-- end from-group   -->
+                                <div class="form-group">
+                                    <label class="col-sm-5 control-label" for="notes" >User Notes</label>
+                                    <div class="col-sm-6">
+                                        <textarea class="form-control" name="usernotes" value="" id="usernotes" rows="4" cols="60" maxlength="220"></textarea>
+                                    </div>  <!-- end textarea input -->
+                                    <br>
+                                </div>  <!-- end from-group   -->
+                                <br>
+                                <br>
+                                <input class="btn pull-left btn-primary" type="reset" value="Reset Fields">
+                                <input class="btn pull-right btn-primary" type="submit" value="Submit">
+                            </form>
+                            <p> Fields marked with <FONT COLOR="Red">*</FONT> are mandatory</p>
+                        {% else %}
+                            <h5>There is no template defined for Station A using Protocol 3: dispense lysates to deep well plate with beads. </h5>
+                        {% endif %}
+                    </div>  <!--  end of panel body  -->
+                </div> <!--// end panel -->
+        </div><!-- // end of tab stationA protocol 1-->
+        <div id="stationB" class="tabcontent">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h5 style="text-align:center">Station B Protocol:RNA extraction.</h5>
+                    </div>
+                    <div class="panel-body">
+                        {% if form_data.station_b %}
+                        <!-- FORM for Station B -->
+                            <form method="post" enctype="multipart/form-data" name="createfile" id="createfile" class="form-horizontal well">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="createprotocolfile"/>
+                                <input type="hidden" name="station" value="Station B"/>
+                                <input type="hidden" name="template" value="{{form_data.station_b}}"/>
+                                <div class="form-group required">
+                                    <label class="col-sm-5  control-label" for="NUM_SAMPLES" >Number of Samples </label>
+                                    <div class="col-sm-5"><input class="form-control" type="text" required = "required" name="NUM_SAMPLES" id="NUM_SAMPLES"  value="96" size="100" maxlength="100"></div>
+                                    <BR><br>
+                                    <label class="col-sm-5 control-label" for="REAGENT_LABWARE" >Reagent labware</label>
+                                    <div class="col-sm-5"><select class="form-control"  required = "required" name="REAGENT_LABWARE" id="REAGENT_LABWARE">
+                                                            {% if form_data.reagent_labware_default_data %}
+                                                                <option selected="{{form_data.reagent_labware_default_data}}">{{form_data.reagent_labware_default_data}}</option>
+                                                            {% else %}
+                                                                <option value="">Choose a value</option>
+                                                            {% endif %}
+                                                            {% for value in form_data.reagent_labware_data %}
+                                                                <option value="{{value}}">{{value}}</option>
+                                                            {% endfor %}
+                                                   </select>
+                                    </div>  <!-- end select input -->
+                                    <BR><br>
+                                    <label class="col-sm-5 control-label" for="MAG_PLATE" >Magnate Plate</label>
+                                    <div class="col-sm-5"><select class="form-control"  required = "required" name="MAG_PLATE" id="MAG_PLATE">
+                                                            {% if form_data.mag_plate_default_data %}
+                                                                <option selected="{{form_data.mag_plate_default_data}}">{{form_data.mag_plate_default_data}}</option>
+                                                            {% else %}
+                                                                <option value="">Choose a value</option>
+                                                            {% endif %}
+                                                            {% for value in form_data.mag_plate_data %}
+                                                                <option value="{{value}}">{{value}}</option>
+                                                            {% endfor %}
+                                                   </select>
+                                    </div>  <!-- end select input -->
+                                    <br><br>
+                                    <label class="col-sm-5 control-label" for="WASTE_LABWARE" >Waste Plate</label>
+                                    <div class="col-sm-5"><select class="form-control"  required = "required" name="WASTE_LABWARE" id="WASTE_LABWARE">
+                                                            {% if form_data.waste_plate_default_data %}
+                                                                <option selected="{{form_data.waste_plate_default_data}}">{{form_data.waste_plate_default_data}}</option>
+                                                            {% else %}
+                                                                <option value="">Choose a value</option>
+                                                            {% endif %}
+                                                            {% for value in form_data.waste_plate_data %}
+                                                                <option value="{{value}}">{{value}}</option>
+                                                            {% endfor %}
+                                                   </select>
+                                    </div>  <!-- end select input -->
+                                    <BR><br>
+                                    <label class="col-sm-5 control-label" for="ELUTION_LABWARE" >Elution labware</label>
+                                    <div class="col-sm-5"><select class="form-control"  required = "required" name="ELUTION_LABWARE" id="ELUTION_LABWARE">
+                                                            {% if form_data.elution_station_b_default_data %}
+                                                                <option selected="{{form_data.elution_station_b_default_data}}">{{form_data.elution_station_b_default_data}}</option>
+                                                            {% else %}
+                                                                <option value="">Choose a value</option>
+                                                            {% endif %}
+                                                            {% for value in form_data.elution_station_b_data %}
+                                                                <option value="{{value}}">{{value}}</option>
+                                                            {% endfor %}
+                                                   </select>
+                                    </div>  <!-- end select input -->
+                                    <br><br>
+                                    <label class="col-sm-5 control-label" for="DISPENSE_BEADS" >Dipense beads</label>
+                                    <div class="col-sm-4">
+                                        <label class="radio-inline"><input type="radio" name="DISPENSE_BEADS" required = "required" value="True">YES</label>
+                                        <label class="radio-inline"><input type="radio" name="DISPENSE_BEADS" required = "required" value="False" checked>NO</label>
+                                    </div>  <!-- end  radio -->
+                                    <br><br>
+
+                                </div>  <!-- end from-group   -->
+                                <div class="form-group">
+                                    <label class="col-sm-5 control-label" for="notes" >User Notes</label>
+                                    <div class="col-sm-6">
+                                        <textarea class="form-control" name="usernotes" value="" id="usernotes" rows="4" cols="60" maxlength="220"></textarea>
+                                    </div>  <!-- end textarea input -->
+                                    <br>
+                                </div>  <!-- end from-group   -->
+                                <br>
+                                <br>
+                                <input class="btn pull-left btn-primary" type="reset" value="Reset Fields">
+                                <input class="btn pull-right btn-primary" type="submit" value="Submit">
+                            </form>
+                            <p> Fields marked with <FONT COLOR="Red">*</FONT> are mandatory</p>
+                        {% else %}
+                        <h5>There is no  Protocol template defined for Station B </h5>
+                        {% endif %}
+                    </div>  <!--  end of panel body  -->
+                </div> <!--// end panel -->
+        </div><!-- // end of tab stationB -->
+    </div><!-- // end of row -->
+    <script>
+        // Get the element with id="defaultOpen" and click on it
+        document.getElementById("defaultOpen").click();
+    </script>
+{% endif %}
+{% endblock %}
