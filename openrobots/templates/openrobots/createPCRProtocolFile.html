@@ -76,11 +76,15 @@
                                 <div class="form-group required">
                                     <br><br>
                                     <label class="col-sm-5  control-label" for="NUM_SAMPLES" >Number of Samples </label>
-                                    <div class="col-sm-5"><input class="form-control" type="text" required = "required" name="NUM_SAMPLES" id="NUM_SAMPLES" size="100" maxlength="100"></div>
+                                    <div class="col-sm-6"><input class="form-control" type="text" required = "required" name="NUM_SAMPLES" id="NUM_SAMPLES" value="96" size="100" maxlength="100"></div>
                                     <BR><br>
                                     <label class="col-sm-5 control-label" for="MM_LABWARE" >Master Mix labware</label>
-                                    <div class="col-sm-4"><select class="form-control"  required = "required" name="MM_LABWARE" id="MM_LABWARE">
-                                               				<option value="">Choose a value</option>
+                                    <div class="col-sm-6"><select class="form-control"  required = "required" name="MM_LABWARE" id="MM_LABWARE">
+                                                            {% if form_data.mm_labware_default_data %}
+                                                                <option selected="{{form_data.mm_labware_default_data}}">{{form_data.mm_labware_default_data}}</option>
+                                                            {% else %}
+                                                                <option value="">Choose a value</option>
+                                                            {% endif %}
                                                             {% for value in form_data.mm_labware_data %}
                                                                 <option value="{{value}}">{{value}}</option>
                                                             {% endfor %}
@@ -89,8 +93,12 @@
                                     <BR><br>
 
                                     <label class="col-sm-5 control-label" for="MMTUBE_LABWARE" >Master Mix Tube</label>
-                                    <div class="col-sm-4"><select class="form-control"  required = "required" name="MMTUBE_LABWARE" id="MMTUBE_LABWARE">
-                                               				<option value="">Choose a value</option>
+                                    <div class="col-sm-6"><select class="form-control"  required = "required" name="MMTUBE_LABWARE" id="MMTUBE_LABWARE">
+                                                            {% if form_data.mm_tube_labware_default_data %}
+                                                                <option selected="{{form_data.mm_tube_labware_default_data}}">{{form_data.mm_tube_labware_default_data}}</option>
+                                                            {% else %}
+                                                                <option value="">Choose a value</option>
+                                                            {% endif %}
                                                             {% for value in form_data.mm_tube_labware_data %}
                                                                 <option value="{{value}}">{{value}}</option>
                                                             {% endfor %}
@@ -99,8 +107,12 @@
                                     </div>  <!-- end select input -->
                                     <br><br>
                                     <label class="col-sm-5 control-label" for="MM_TYPE" >Master Mix Type</label>
-                                    <div class="col-sm-4"><select class="form-control"  required = "required" name="MM_TYPE" id="MM_TYPE">
-                                               				<option value="">Choose a value</option>
+                                    <div class="col-sm-6"><select class="form-control"  required = "required" name="MM_TYPE" id="MM_TYPE">
+                                                            {% if form_data.master_mix_type_default_data %}
+                                                                <option selected="{{form_data.master_mix_type_default_data}}">{{form_data.master_mix_type_default_data}}</option>
+                                                            {% else %}
+                                                                <option value="">Choose a value</option>
+                                                            {% endif %}
                                                             {% for value in form_data.master_mix_type_data %}
                                                                 <option value="{{value}}">{{value}}</option>
                                                             {% endfor %}
@@ -109,9 +121,13 @@
                                     </div>  <!-- end select input -->
                                     <BR><br>
 
-                                    <label class="col-sm-5 control-label" for="pcrpPCR_LABWARElate" >PCR plate labware </label>
-                                    <div class="col-sm-4"><select class="form-control"  required = "required" name="PCR_LABWARE" id="PCR_LABWARE">
-                                               				<option value="">Choose a value</option>
+                                    <label class="col-sm-5 control-label" for="PCR_LABWARE" >PCR plate labware </label>
+                                    <div class="col-sm-6"><select class="form-control"  required = "required" name="PCR_LABWARE" id="PCR_LABWARE">
+                                                            {% if form_data.pcr_labware_default_data %}
+                                                                <option selected="{{form_data.pcr_labware_default_data}}">{{form_data.pcr_labware_default_data}}</option>
+                                                            {% else %}
+                                                                <option value="">Choose a value</option>
+                                                            {% endif %}
                                                             {% for value in form_data.pcr_labware_data %}
                                                                 <option value="{{value}}">{{value}}</option>
                                                             {% endfor %}
@@ -120,9 +136,13 @@
                                     </div>  <!-- end select input -->
                                     <br><br>
                                     <label class="col-sm-5 control-label" for="ELUTION_LABWARE" >Elution labware</label>
-                                    <div class="col-sm-4"><select class="form-control"  required = "required" name="ELUTION_LABWARE" id="ELUTION_LABWARE">
-                                               				<option value="">Choose a value</option>
-                                                            {% for value in form_data.elution_labware_data %}
+                                    <div class="col-sm-6"><select class="form-control"  required = "required" name="ELUTION_LABWARE" id="ELUTION_LABWARE">
+                                                            {% if form_data.elution_station_c_default_data %}
+                                                                <option selected="{{form_data.elution_station_c_default_data}}">{{form_data.elution_station_c_default_data}}</option>
+                                                            {% else %}
+                                                                <option value="">Choose a value</option>
+                                                            {% endif %}
+                                                            {% for value in form_data.elution_station_c_data %}
                                                                 <option value="{{value}}">{{value}}</option>
                                                             {% endfor %}
 

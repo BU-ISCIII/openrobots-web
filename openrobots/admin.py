@@ -16,16 +16,16 @@ class ElutionHardwareAdmin (admin.ModelAdmin):
     list_display =['hardwareType']
 
 class MasterMixTypedmin (admin.ModelAdmin):
-    list_display =['MasterMixType', 'description']
+    list_display =['MasterMixType', 'description', 'default']
 
 class MasterMixLabwareAdmin (admin.ModelAdmin):
-    list_display =['MasterMixLabwareType', 'description']
+    list_display =['MasterMixLabwareType', 'description', 'default']
 
 class MasterMixTubeAdmin (admin.ModelAdmin):
-    list_display =['MasterMixTube', 'MasterMixRadius']
+    list_display =['MasterMixTube', 'MasterMixRadius', 'default']
 
 class PCR_plateLabwareAdmin (admin.ModelAdmin):
-    list_display =['PCR_plateLabwareType', 'description']
+    list_display =['PCR_plateLabwareType', 'description', 'default']
 
 #class Elution_LabwareAdmin (admin.ModelAdmin):
 #    list_display =['elution_LabwareType', 'elutionHW_type', 'valueInCode']

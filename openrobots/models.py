@@ -262,6 +262,7 @@ class ElutionHardware (models.Model):
 class MasterMixType (models.Model):
     MasterMixType = models.CharField(max_length = 255)
     description = models.CharField(max_length = 255, null = True, blank = True )
+    default = models.BooleanField(default=None)
 
     def __str__ (self):
         return '%s' %(self.MasterMixType)
@@ -272,6 +273,7 @@ class MasterMixType (models.Model):
 class MasterMixLabware (models.Model):
     MasterMixLabwareType = models.CharField(max_length = 80)
     description = models.CharField(max_length = 255)
+    default = models.BooleanField(default=None)
 
     def __str__ (self):
         return '%s' %(self.MasterMixLabwareType)
@@ -282,6 +284,7 @@ class MasterMixLabware (models.Model):
 class MasterMixTube (models.Model):
     MasterMixTube = models.CharField(max_length = 80)
     MasterMixRadius = models.CharField(max_length = 80)
+    default = models.BooleanField(default=None)
 
     def __str__ (self):
         return '%s' %(self.MasterMixTube)
@@ -291,6 +294,7 @@ class MasterMixTube (models.Model):
 class PCR_plateLabware (models.Model):
     PCR_plateLabwareType = models.CharField(max_length = 80)
     description = models.CharField(max_length = 255)
+    default = models.BooleanField(default=None)
 
     def __str__ (self):
         return '%s' %(self.PCR_plateLabwareType)

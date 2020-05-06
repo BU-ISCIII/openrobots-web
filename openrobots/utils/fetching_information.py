@@ -85,33 +85,54 @@ def get_form_data_creation_run_file():
     form_data['plate_labware_data'] = []
     form_data['lysate_labware_data'] = []
 
+    # values for station A form
     if MasterMixLabware.objects.all().exists():
-        mm_labwares = MasterMixLabware.objects.all().order_by('MasterMixLabwareType')
+        mm_labware_default_obj = MasterMixLabware.objects.filter(default = True).last()
+        if mm_labware_default_obj:
+            form_data['mm_labware_default_data'] = mm_labware_default_obj.get_mastermix_labware_type()
+            mm_labwares = MasterMixLabware.objects.exclude(pk__exact = mm_labware_default_obj.pk)
+        else:
+            mm_labwares = MasterMixLabware.objects.all().order_by('MasterMixLabwareType')
         for mm_labware in mm_labwares :
             form_data['mm_labware_data'].append(mm_labware.get_mastermix_labware_type())
     if MasterMixTube.objects.all().exists():
-        mm_tube_labwares = MasterMixTube.objects.all().order_by('MasterMixTube')
+        mm_tube_default_obj = MasterMixTube.objects.filter(default = True).last()
+        if mm_tube_default_obj:
+            form_data['mm_tube_labware_default_data'] = mm_tube_default_obj.get_mastermix_tube()
+            mm_tube_labwares = MasterMixTube.objects.exclude(pk__exact = mm_tube_default_obj.pk)
+        else:
+            mm_tube_labwares = MasterMixTube.objects.all().order_by('MasterMixTube')
         for mm_tube_labware in mm_tube_labwares :
             form_data['mm_tube_labware_data'] .append(mm_tube_labware.get_mastermix_tube())
     if PCR_plateLabware.objects.all().exists():
-        pcr_labwares = PCR_plateLabware.objects.all().order_by('PCR_plateLabwareType')
+        pcr_labware_default_obj = PCR_plateLabware.objects.filter(default = True).last()
+        if pcr_labware_default_obj:
+            form_data['pcr_labware_default_data'] = pcr_labware_default_obj.get_pcr_plate_labware_type()
+            pcr_labwares = PCR_plateLabware.objects.exclude(pk__exact = pcr_labware_default_obj.pk)
+        else:
+            pcr_labwares = PCR_plateLabware.objects.all().order_by('PCR_plateLabwareType')
         for pcr_labware in pcr_labwares :
             form_data['pcr_labware_data'].append(pcr_labware.get_pcr_plate_labware_type())
 
 
     if ElutionStationC_Labware.objects.all().exists():
-        elution_b_default_obj = ElutionStationC_Labware.objects.filter(default = True).last()
+        elution_c_default_obj = ElutionStationC_Labware.objects.filter(default = True).last()
         if elution_c_default_obj:
             form_data['elution_station_c_default_data'] = elution_c_default_obj.get_elution_station_c()
             elution_c_types = ElutionStationC_Labware.objects.exclude(pk__exact = elution_c_default_obj.pk)
         else:
             elution_c_types = ElutionStationC_Labware.objects.all()
-        for elution_c_type in elution_b_types:
-            form_data['elution_station_b_data'].append(elution_c_type.get_elution_station_c())
+        for elution_c_type in elution_c_types:
+            form_data['elution_station_c_data'].append(elution_c_type.get_elution_station_c())
 
 
     if MasterMixType.objects.all().exists():
-        master_mix_types = MasterMixType.objects.all().order_by('MasterMixType')
+        master_mix_default_obj = MasterMixType.objects.filter(default = True).last()
+        if master_mix_default_obj:
+            form_data['master_mix_type_default_data'] = master_mix_default_obj.get_master_mix_type()
+            master_mix_types = MasterMixType.objects.exclude(pk__exact = master_mix_default_obj.pk)
+        else:
+            master_mix_types = MasterMixType.objects.all().order_by('MasterMixType')
         for master_mix_type in master_mix_types :
             form_data['master_mix_type_data'].append(master_mix_type.get_master_mix_type())
 
