@@ -3,9 +3,8 @@
 migrations/
 tmp/
 logs/
-static/
 documents/
-
+/static/
 #--- updates introduced for openrobots in submodules packaging ---
 virtualenv/
 openrobots_web/
