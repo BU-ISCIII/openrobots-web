@@ -27,8 +27,8 @@ class MasterMixTubeAdmin (admin.ModelAdmin):
 class PCR_plateLabwareAdmin (admin.ModelAdmin):
     list_display =['PCR_plateLabwareType', 'description', 'default']
 
-#class Elution_LabwareAdmin (admin.ModelAdmin):
-#    list_display =['elution_LabwareType', 'elutionHW_type', 'valueInCode']
+class InventoryLabwareAdmin (admin.ModelAdmin):
+    list_display =['elution_LabwareType', 'brand', 'valueInCode']
 
 class MagPlate_Labwaredmin (admin.ModelAdmin):
     list_display =('mag_plateLabwareType', 'description', 'default')
@@ -121,7 +121,7 @@ admin.site.register(MasterMixType , MasterMixTypedmin)
 admin.site.register(MasterMixLabware , MasterMixLabwareAdmin)
 admin.site.register(MasterMixTube , MasterMixTubeAdmin)
 admin.site.register(PCR_plateLabware , PCR_plateLabwareAdmin)
-#admin.site.register(Elution_Labware , Elution_LabwareAdmin)
+
 
 
 admin.site.register(ElutionStationB_Labware , ElutionStationB_LabwareAdmin)
@@ -141,6 +141,8 @@ admin.site.register(Reagent_Labware , Reagent_LabwareAdmin)
 admin.site.register(Waste_Labware , Waste_LabwareAdmin)
 
 admin.site.register(RobotsInventory , RobotsInventoryAdmin)
+admin.site.register(InventoryLabware , InventoryLabwareAdmin)
+
 
 admin.site.register(RequestForStationA_Prot1 , RequestForStationA_Prot1Admin)
 admin.site.register(RequestForStationA_Prot2 , RequestForStationA_Prot2Admin)

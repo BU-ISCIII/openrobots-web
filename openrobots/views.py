@@ -80,8 +80,7 @@ def define_labware(request) :
             return render(request, 'openrobots/defineLabware.html' ,{'form_data': form_data, 'error_message': error_message})
 
         json_dict = json_get_labware_information(json_saved_file)
-        json_dict['elutionhwtype'] = request.POST['elutionhwtype']
-        #json_dict['labwarename'] = request.POST['labwarename']
+
         json_dict['jsonFile'] = json_file_name
 
         if 'pythonfile' in request.FILES :
@@ -96,8 +95,8 @@ def define_labware(request) :
         else:
             json_dict['imageFile'] = ''
 
-        new_elution_labware = Elution_Labware.objects.create_elution_labware(json_dict)
-        created_new_labware = new_elution_labware.get_minimun_elution_lab_data()
+        new_inventory_labware = InventoryLabware.objects.create_inventory_labware(json_dict)
+        created_new_labware = new_inventory_labware.get_minimun_elution_lab_data()
         ## remove the id value in the data
         del created_new_labware[-1]
         return render(request, 'openrobots/defineLabware.html' ,{'created_new_labware': created_new_labware})

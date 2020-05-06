@@ -327,8 +327,8 @@ def get_labware_inventory_data(labware_id):
         labware_data
     '''
     labware_data = {}
-    if Elution_Labware.objects.filter(pk__exact = labware_id).exists():
-        labware_obj = Elution_Labware.objects.get(pk__exact = labware_id)
+    if InventoryLabware.objects.filter(pk__exact = labware_id).exists():
+        labware_obj = InventoryLabware.objects.get(pk__exact = labware_id)
         labware_data['main'] = labware_obj.get_basic_labware_data()
         labware_data['labware_name'] = labware_obj.get_elution_labware_type()
         labware_data['plate'] = labware_obj.get_plate_data()

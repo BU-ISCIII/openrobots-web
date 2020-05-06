@@ -65,15 +65,6 @@
 	                            <div class="col-sm-5"><input class="form-control" type="text" required = "required" name="labwarename" id="labwarename" size="100" maxlength="100"></div>
                                 -->
                                 <BR><br>
-								<label class="col-sm-5 control-label" for="elutionhwtype" >Elution labware</label>
-								<div class="col-sm-4"><select class="form-control"  required = "required" name="elutionhwtype" id="elutionhwtype">
-														<option value="">Choose a value</option>
-														{% for value in form_data %}
-															<option value="{{value}}">{{value}}</option>
-														{% endfor %}
-												  </select>
-								</div>  <!-- end select input -->
-								<br><br>
 								<label class="col-sm-5 control-label">Upload labware json file</label>
 	                            <div class="col-sm-5"><input class="form-control" required = "required" type="file" id="jsonfile" name="jsonfile" size="80"></div>
 							</div>  <!-- end from-group   -->

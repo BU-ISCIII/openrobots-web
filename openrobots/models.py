@@ -407,9 +407,9 @@ class ElutionStationC_Labware(models.Model):
         return '%s' %(self.elutionStationC)
 
 class InventoryLabwareManager(models.Manager):
-    def create_elution_labware(self,data):
-        elutionhwtype = ElutionHardware.objects.get(hardwareType__exact = data['elutionhwtype'])
-        new_elution_labware = self.create( elutionHW_type = elutionhwtype, elution_LabwareType = data['displayName'],
+    def create_inventory_labware(self,data):
+
+        new_inventory_labware = self.create( elution_LabwareType = data['displayName'],
                 valueInCode = data['loadName'], brand = data['brand'], category= data['displayCategory'],
                 x_dimension = data['xDimension'], y_dimension = data['yDimension'], z_dimension = data['zDimension'],
                 num_columns= data['colums'],  num_rows = data['rows'], spacing_col = data['spacing_col'],
@@ -417,7 +417,7 @@ class InventoryLabwareManager(models.Manager):
                 well_volume = data['totalLiquidVolume'], well_diameter = data['diameter'], num_wells = data['num_wells'],
                 jsonFile= data['jsonFile'], pythonFile = data['pythonFile'], imageFile = data['imageFile'] )
 
-        return new_elution_labware
+        return new_inventory_labware
 
 class InventoryLabware (models.Model):
     #elutionHW_type =  models.ForeignKey (
