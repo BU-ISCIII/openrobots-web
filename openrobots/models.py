@@ -842,3 +842,9 @@ class RequestForStationC (models.Model):
 
 
     objects = RequestForStationCManager()
+
+
+class RobotsActionPost(models.Model):
+    RobotID = models.CharField(max_length = 50)
+    executedAction = models.CharField(max_length = 250)
+    generatedat = models.DateTimeField(auto_now_add=True)
