@@ -135,7 +135,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for  id, protocol, station, user, prot_name in stored_protocol_file %}
+                            {% for  id, protocol, station, user, prot_name, file in stored_protocol_file %}
                                 <tr>
                                     <td><a href="/displayTemplateFile={{ id }}">{{ prot_name }}</a></td>
                                     <td>{{ protocol }}</td>
