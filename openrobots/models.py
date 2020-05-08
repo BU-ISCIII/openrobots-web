@@ -848,3 +848,15 @@ class RobotsActionPost(models.Model):
     RobotID = models.CharField(max_length = 50)
     executedAction = models.CharField(max_length = 250)
     generatedat = models.DateTimeField(auto_now_add=True)
+
+    def __str__ (self):
+        return '%s' %(self.RobotID)
+
+    def get_robot_name (self):
+        return '%s' %(self.RobotID)
+
+    def get_robot_action_and_date (self):
+        data=[]
+        data.append(self.executedAction)
+        data.append(self.generatedat.strftime("%Y-%b-%d"))
+        return data

@@ -1,4 +1,5 @@
-import datetime, time, re
+import time, re
+from datetime import datetime
 from openrobots.models import *
 from openrobots.openrobots_config import *
 
@@ -43,6 +44,20 @@ def build_request_codeID (user, protocol_type, station ) :
 
     num_times += 1
     return user.username + protocol_type + station + str(num_times)
+
+def check_valid_date_format (date):
+    '''
+    Description:
+        Function check if date has a valid format
+    Return:
+        True if valid
+    '''
+    try:
+        datetime.strptime(date, '%Y-%m-%d')
+        return True
+    except:
+        return False
+
 
 def get_form_data_creation_new_robot():
     '''
@@ -425,6 +440,32 @@ def get_protocol_type_from_template(template):
     if ProtocolTemplateFiles.objects.filter(protocolTemplateFileName__exact = template).exists() :
         return ProtocolTemplateFiles.objects.get(protocolTemplateFileName__exact = template).get_protocol_type()
     return 'None'
+
+def get_robots_utilization(start_date , end_date):
+    '''
+    Description:
+        The function will look for robot jobs in the period of time between start_date
+        and end_date.
+        graphic_about utilization and jobs executed per robots are returned
+    Return:
+        robot_jobs_data
+    '''
+    robot_jobs_data = {}
+    if RobotsActionPost.objects.filter(generatedat__range = (start_date, end_date)).exists():
+        action_objs = RobotsActionPost.objects.filter(generatedat__range = (start_date, end_date)).order_by('generatedat')
+        for action_obj in action_objs:
+            robot_name = action_obj.get_robot_name()
+            if robot_name not in robot_jobs_data :
+                robot_jobs_data[robot_name] = {}
+                robot_jobs_data[robot_name]['robot_usage'] = 0
+                robot_jobs_data[robot_name]['robot_actions'] =[]
+            robot_jobs_data[robot_name]['robot_usage'] +=1
+            robot_jobs_data[robot_name]['robot_actions'].append(action_obj.get_robot_action_and_date())
+
+
+    import pdb; pdb.set_trace()
+
+    return robot_jobs_data
 
 def get_station_from_template(template):
     '''
