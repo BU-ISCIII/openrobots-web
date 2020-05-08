@@ -19,11 +19,11 @@
 					</thead>
 					<tbody>
 						<tr>
-							{% for  id, protocol, station, user, file in protocol_template_data.basic_data %}
+							{% for  id, protocol, station, user, protocolTemplateFileName, file in protocol_template_data.basic_data %}
                                 <td>{{ protocol }}</td>
                                 <td>{{ station }}</td>
                                 <td>{{ user }}</td>
-								<td><a href="documents/{{file}}" download>{{file}}<span class="glyphicon glyphicon-download-alt"></span></a></td>
+								<td><a href="documents/{{file}}" download>{{protocolTemplateFileName}}<span class="glyphicon glyphicon-download-alt"></span></a></td>
 
                             {% endfor %}
 						</tr>
