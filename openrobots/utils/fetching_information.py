@@ -253,11 +253,11 @@ def get_form_data_creation_run_file():
         protocol_types = ['Protocol 1', 'Protocol 2', 'Protocol 3']
         for i in range(len(protocol_types)) :
             if ProtocolTemplateFiles.objects.filter(station__stationName__iexact = 'Station A', protocolName__icontains = protocol_types[i]).exists():
-                form_data['station_a'] [i+1]= ProtocolTemplateFiles.objects.get(station__stationName__iexact = 'Station A', protocolName__icontains = protocol_types[i]).get_protocol_file_name()
+                form_data['station_a'] [i+1]= ProtocolTemplateFiles.objects.filter(station__stationName__iexact = 'Station A', protocolName__icontains = protocol_types[i]).last().get_protocol_file_name()
     if ProtocolTemplateFiles.objects.filter(station__stationName__iexact = 'Station B').exists():
-        form_data['station_b'] = ProtocolTemplateFiles.objects.get(station__stationName__iexact = 'Station B').get_protocol_file_name()
+        form_data['station_b'] = ProtocolTemplateFiles.objects.filter(station__stationName__iexact = 'Station B').last().get_protocol_file_name()
     if ProtocolTemplateFiles.objects.filter(station__stationName__iexact = 'Station C').exists():
-        form_data['station_c'] = ProtocolTemplateFiles.objects.get(station__stationName__iexact = 'Station C').get_protocol_file_name()
+        form_data['station_c'] = ProtocolTemplateFiles.objects.filter(station__stationName__iexact = 'Station C').last().get_protocol_file_name()
 
     return form_data
 

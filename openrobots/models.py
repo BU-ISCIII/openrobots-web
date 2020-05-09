@@ -231,6 +231,7 @@ class ProtocolTemplateFiles (models.Model):
         data.append(self.station.get_station_name())
         data.append(self.userName)
         data.append(self.protocolName)
+        data.append(self.protocolTemplateFileName)
         return data
 
     def get_metadata(self):
