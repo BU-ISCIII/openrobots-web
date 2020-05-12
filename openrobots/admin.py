@@ -108,6 +108,9 @@ class RequestForStationCAdmin (admin.ModelAdmin):
 
 
 
+class RobotsActionPostAdmin(admin.ModelAdmin):
+    list_display = ['RobotID', 'executedAction']
+
 
 admin.site.register(Stations , StationsAdmin)
 admin.site.register(ProtocolsType , ProtocolsTypeAdmin)
@@ -150,3 +153,5 @@ admin.site.register(RequestForStationA_Prot3 , RequestForStationA_Prot3Admin)
 
 admin.site.register(RequestForStationB , RequestForStationBAdmin)
 admin.site.register(RequestForStationC , RequestForStationCAdmin)
+
+admin.site.register(RobotsActionPost, RobotsActionPostAdmin)

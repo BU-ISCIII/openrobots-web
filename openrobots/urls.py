@@ -17,6 +17,7 @@ urlpatterns = [
     path('uploadProtocolTemplates', views.upload_protocol_templates, name = 'upload_protocol_templates'),
     path('listOfRequests', views.list_of_requests, name = 'list_of_requests'),
     path('robotInventory', views.robot_inventory, name = 'robot_inventory'),
+    path('robotsJobs', views.robots_jobs, name ='robots_jobs'),
 	]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

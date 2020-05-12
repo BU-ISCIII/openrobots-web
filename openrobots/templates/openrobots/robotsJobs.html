@@ -1,0 +1,136 @@
+{% extends 'openrobots/base.html' %}
+{% load static %}
+{% block content %}
+{% csrf_token %}
+<script src="https://d3js.org/d3.v3.min.js"></script>
+<script type="text/javascript" src="{% static "js/d3js_graphics/pie_donuts_3d.js"%}"></script>
+
+<style>
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  width: 960px;
+  height: 500px;
+  position: relative;
+}
+path.slice{
+    stroke-width:2px;
+}
+polyline{
+    opacity: .3;
+    stroke: black;
+    stroke-width: 2px;
+    fill: none;
+}
+svg text.percent{
+    fill:white;
+    text-anchor:middle;
+    font-size:12px;
+}
+
+</style>
+
+
+{% if error_message %}
+    <div class="row row-space-2 margin-b-4">
+        <div class="col-sm-7 col-sm-offset-3">
+            <div class="panel panel-danger">
+                <div class="panel-heading"><h3 style="text-align:center">Error when requesting Robot jobs</h3> </div>
+                <div class="panel-body">
+                    {% for values in error_message %}
+                        <h4>{{values}}</h4>
+                    {% endfor %}
+                </div> <!--  end of panel body -->
+            </div> <!--  end of panel  -->
+        </div> <!--  end of col-sm-7 -->
+    </div> <!--  end of row -->
+{% endif %}
+
+{% if display_robot_utilization %}
+
+
+{% else %}
+    <div class="row row-space-2 margin-b-4">
+        <div class="col-sm-7 col-sm-offset-3" >
+            <div class="panel panel-default">
+                <div class="panel-heading"><h3>Robot Utilization</h3> </div>
+                <div class="panel-body">
+                    <form method="post" enctype="multipart/form-data" name="robotsjobs" id="robotsjobs" class="form-horizontal">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="robotsjobs"/>
+                        <div class="form-group">
+                            <label class="col-sm-5 control-label" for="startdate" >Start Date (DD-MM-YYYY)</label>
+                            <div class="col-sm-5"><input class="form-control" type="date" name="startdate" value="" id="startdate"></div>
+
+                            <br><br>
+                            <label class="col-sm-5 control-label" for="enddate" >End Date (DD-MM-YYYY)</label>
+                            <div class="col-sm-5"><input class="form-control" type="date" name="enddate" value="" id="enddate"></div>
+                        </div>  <!-- end from-group   -->
+                        <input class="btn pull-right btn-primary" type="submit" value="Submit" id="btnSubmit">
+                    </form> <!-- end form -->
+                </div> <!--  end of panel body -->
+            </div> <!--  end of panel  -->
+        </div> <!--  end of col-sm-7 -->
+    </div> <!--  end of row -->
+
+
+    <div class="row row-space-2 margin-b-4">
+        <div class="col-sm-7 col-sm-offset-3" >
+            <div class="panel panel-default">
+                <div class="panel-heading"><h3>Robot graphics</h3> </div>
+                <div class="panel-body">
+
+                    <button onClick="changeData()">Change Data</button>
+                    <svg id= "chart">
+
+                    </svg>
+                </div> <!--  end of panel body -->
+            </div> <!--  end of panel  -->
+        </div> <!--  end of col-sm-7 -->
+    </div> <!--  end of row -->
+    <script>
+
+        var salesData=[
+            {label:"Basic", color:"#3366CC"},
+            {label:"Plus", color:"#DC3912"},
+            {label:"Lite", color:"#FF9900"},
+            {label:"Elite", color:"#109618"},
+            {label:"Delux", color:"#990099"}
+        ];
+
+        // var svg = d3.select("body").append("svg").attr("width",700).attr("height",300);
+        var svg = d3.select("#chart").attr("width",700).attr("height",300);
+        svg.append("g").attr("id","salesDonut");
+        svg.append("g").attr("id","quotesDonut");
+        // svg.append("text").attr("x", 220).attr("y", 130).text("variable A").style("font-size", "15px").attr("alignment-baseline","middle");
+        var textG = svg.selectAll(".labels")
+      .data(pie(newData))
+      .enter().append("g")
+      .attr("class", "labels");
+
+      // Append text labels to each arc
+    textG.append("text")
+      .attr("transform", function(d) {
+        return "translate(" + arc.centroid(d) + ")";
+      })
+      .attr("dy", ".35em")
+      .style("text-anchor", "middle")
+      .attr("fill", "#fff")
+      .text(function(d, i) {
+        return d.data.count > 0 ? d.data.emote : '';
+      });
+        // Donut3D.draw("salesDonut", randomData(), 150, 150, 130, 100, 30, 0.4);
+        Donut3D.draw("quotesDonut", randomData(), 450, 150, 130, 100, 30, 0);
+
+        function changeData(){
+            // Donut3D.transition("salesDonut", randomData(), 130, 100, 30, 0.4);
+            Donut3D.transition("quotesDonut", randomData(), 130, 100, 30, 0);
+        }
+
+        function randomData(){
+            return salesData.map(function(d){
+                return {label:d.label, value:1000*Math.random(), color:d.color};});
+        }
+    </script>
+{% endif %}
+
+{% endblock %}
