@@ -56,3 +56,6 @@ INVALID_JSON_FILE = ['Invalid json File', 'File does not contains all requested 
 METADATA_FIELDS_FOR_PROTOCOL_TEMPLATE = ['protocolName', 'author', 'source','apiLevel']
 PROTOCOL_STEPS_IN_TEMPLATE_FILE = ['prepare_mastermix', 'transfer_mastermix' , 'transfer_samples' ]
 ADMIN_USERS = ['admin']
+
+###### ERROR TEXT #############################################
+ERROR_INVALID_FORMAT_FOR_DATES = ['Invalid date format. Use the format  (DD-MM-YYYY)']

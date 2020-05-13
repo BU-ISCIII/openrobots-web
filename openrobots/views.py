@@ -162,6 +162,25 @@ def list_of_requests(request):
     list_requests_data = get_list_of_requests()
     return render(request, 'openrobots/listOfRequests.html' ,{'list_requests_data': list_requests_data} )
 
+
+@login_required
+def robots_jobs (request):
+    if request.method == 'POST' and request.POST['action'] == 'robotsjobs':
+        start_date=request.POST['startdate']
+        end_date=request.POST['enddate']
+        if start_date != '':
+            if not check_valid_date_format(start_date) :
+                error_message = ERROR_INVALID_FORMAT_FOR_DATES
+                return render(request, 'openrobots/robotsJobs.html', {'error_message':error_message})
+        if end_date != '':
+            if not check_valid_date_format(end_date) :
+                error_message = ERROR_INVALID_FORMAT_FOR_DATES
+                return render(request, 'openrobots/robotsJobs.html', {'error_message':error_message})
+        display_robot_utilization = get_robots_utilization(start_date, end_date)
+        return render (request, 'openrobots/robotsJobs.html',{'display_robot_utilization': display_robot_utilization})
+
+    return render (request, 'openrobots/robotsJobs.html')
+
 @login_required
 def upload_protocol_templates(request):
     if request.user.username not in ADMIN_USERS :
