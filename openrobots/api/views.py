@@ -20,6 +20,11 @@ def api_usage(request):
 def api_create_usage(request):
 
     if request.method == 'POST':
+        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+        if x_forwarded_for:
+            ip = x_forwarded_for.split(',')[0]
+        else:
+            ip = request.META.get('REMOTE_ADDR')
         import pdb; pdb.set_trace()
         serializer = RobotsActionPostSerializer(data=request.data)
         if serializer.is_valid():

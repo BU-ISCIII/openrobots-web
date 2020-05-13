@@ -813,6 +813,7 @@ class RequestForStationC (models.Model):
                         ProtocolTemplateFiles,
                         on_delete=models.CASCADE)
     requestedCodeID = models.CharField(max_length = 50)
+    filecodeID = models.CharField(max_length = 50)
     numberOfSamples = models.CharField(max_length = 10)
     prepareMastermix = models.BooleanField()
     transferMastermix = models.BooleanField()
@@ -843,6 +844,12 @@ class RequestForStationC (models.Model):
 
 
     objects = RequestForStationCManager()
+
+class FileIDUserRequestMapping(models.Model):
+    fileID = models.CharField(max_length = 50)
+    station = models.CharField(max_length = 20)
+    protocol = models.CharField(max_length = 50)
+    generatedat = models.DateTimeField(auto_now_add=True)
 
 
 class RobotsActionPost(models.Model):

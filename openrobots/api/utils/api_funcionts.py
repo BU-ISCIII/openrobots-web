@@ -1,0 +1,1 @@
+from openrobots.models import *
