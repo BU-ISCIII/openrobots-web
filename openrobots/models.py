@@ -813,7 +813,7 @@ class RequestForStationC (models.Model):
                         ProtocolTemplateFiles,
                         on_delete=models.CASCADE)
     requestedCodeID = models.CharField(max_length = 50)
-    filecodeID = models.CharField(max_length = 50)
+    filecodeID = models.CharField(max_length = 50, null= True)
     numberOfSamples = models.CharField(max_length = 10)
     prepareMastermix = models.BooleanField()
     transferMastermix = models.BooleanField()
