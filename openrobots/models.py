@@ -523,7 +523,16 @@ class Waste_Labware(models.Model):
         return '%s' %(self.wasteLabwareType)
 
 
+class Language(models.Model):
+    languageCode = models.CharField(max_length = 10)
+    languageDescription = models.CharField(max_length = 80)
+    default = models.BooleanField(default=None)
 
+    def __str__ (self):
+        return '%s' %(self.languageCode)
+
+    def get_language_code (self):
+        return '%s' %(self.languageCode)
 
 class RequestForStationA_Prot1Manager(models.Manager):
 
@@ -558,9 +567,14 @@ class RequestForStationA_Prot1 (models.Model):
     usedTemplateFile = models.ForeignKey(
                         ProtocolTemplateFiles,
                         on_delete=models.CASCADE)
+    languageCode = models.ForeignKey(
+                        Language,
+                        on_delete=models.CASCADE, null = True)
     requestedCodeID = models.CharField(max_length = 50)
+    protocolID = models.CharField(max_length = 50, default = None)
     numberOfSamples = models.CharField(max_length = 10)
     volumeBuffer = models.CharField(max_length = 10)
+    resetTipcount = models.BooleanField(default=None)
     generatedFile = models.FileField(upload_to = openrobots_config.OPENROBOTS_OUTPUT_DIRECTORY )
     userNotes = models.CharField(max_length = 255)
     generatedat = models.DateTimeField(auto_now_add=True)
@@ -613,9 +627,15 @@ class RequestForStationA_Prot2 (models.Model):
     usedTemplateFile = models.ForeignKey(
                         ProtocolTemplateFiles,
                         on_delete=models.CASCADE)
+    languageCode = models.ForeignKey(
+                        Language,
+                        on_delete=models.CASCADE, null = True)
     requestedCodeID = models.CharField(max_length = 50)
+    protocolID = models.CharField(max_length = 50, default = None)
     numberOfSamples = models.CharField(max_length = 10)
     volumeBeads = models.CharField(max_length = 10)
+    diluteBeads = models.BooleanField(default=None)
+    resetTipcount = models.BooleanField(default=None)
     generatedFile = models.FileField(upload_to = openrobots_config.OPENROBOTS_OUTPUT_DIRECTORY )
     userNotes = models.CharField(max_length = 255)
     generatedat = models.DateTimeField(auto_now_add=True)
@@ -669,10 +689,15 @@ class RequestForStationA_Prot3 (models.Model):
     usedTemplateFile = models.ForeignKey(
                         ProtocolTemplateFiles,
                         on_delete=models.CASCADE)
+    languageCode = models.ForeignKey(
+                        Language,
+                        on_delete=models.CASCADE, null = True)
     requestedCodeID = models.CharField(max_length = 50)
+    protocolID = models.CharField(max_length = 50, default = None)
     numberOfSamples = models.CharField(max_length = 10)
     volumeLysate = models.CharField(max_length = 10)
     beads = models.BooleanField()
+    resetTipcount = models.BooleanField(default=None)
     generatedFile = models.FileField(upload_to = openrobots_config.OPENROBOTS_OUTPUT_DIRECTORY )
     userNotes = models.CharField(max_length = 255)
     generatedat = models.DateTimeField(auto_now_add=True)
@@ -733,10 +758,14 @@ class RequestForStationB (models.Model):
     usedTemplateFile = models.ForeignKey(
                         ProtocolTemplateFiles,
                         on_delete=models.CASCADE)
+    languageCode = models.ForeignKey(
+                        Language,
+                        on_delete=models.CASCADE, null = True)
     requestedCodeID = models.CharField(max_length = 50)
+    protocolID = models.CharField(max_length = 50, default = None)
     numberOfSamples = models.CharField(max_length = 10)
     dispenseBeads = models.BooleanField()
-
+    resetTipcount = models.BooleanField(default=None)
     generatedFile = models.FileField(upload_to = openrobots_config.OPENROBOTS_OUTPUT_DIRECTORY )
     userNotes = models.CharField(max_length = 255)
     generatedat = models.DateTimeField(auto_now_add=True)
@@ -812,12 +841,17 @@ class RequestForStationC (models.Model):
     usedTemplateFile = models.ForeignKey(
                         ProtocolTemplateFiles,
                         on_delete=models.CASCADE)
+    languageCode = models.ForeignKey(
+                        Language,
+                        on_delete=models.CASCADE, null = True)
     requestedCodeID = models.CharField(max_length = 50)
+    protocolID = models.CharField(max_length = 50, default = None)
     numberOfSamples = models.CharField(max_length = 10)
     prepareMastermix = models.BooleanField()
     transferMastermix = models.BooleanField()
     transferSamples = models.BooleanField()
-
+    resetTipcount = models.BooleanField(default=None)
+    volumeElution = models.CharField(max_length = 10,  null = True)
     generatedFile = models.FileField(upload_to = openrobots_config.OPENROBOTS_OUTPUT_DIRECTORY )
     userNotes = models.CharField(max_length = 255)
     generatedat = models.DateTimeField(auto_now_add=True)

@@ -148,6 +148,19 @@
 
                                                       </select>
                                     </div>  <!-- end select input -->
+                                    <BR><br>
+                                    <label class="col-sm-5 control-label" for="LANGUAGE" >Language for notifications</label>
+                                    <div class="col-sm-5"><select class="form-control"  required = "required" name="LANGUAGE" id="LANGUAGE">
+                                                            {% if form_data.language_default_data %}
+                                                                <option selected="{{form_data.language_default_data}}">{{form_data.language_default_data}}</option>
+                                                            {% else %}
+                                                                <option value="">Choose a value</option>
+                                                            {% endif %}
+                                                            {% for value in form_data.language_data %}
+                                                                <option value="{{value}}">{{value}}</option>
+                                                            {% endfor %}
+                                                   </select>
+                                    </div>  <!-- end select input -->
 
                                     <br><br>
                                     <label class="col-sm-5 control-label" for="PREPARE_MASTERMIX" >Prepare Mastermix</label>

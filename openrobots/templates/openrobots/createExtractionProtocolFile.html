@@ -134,6 +134,19 @@
                                                             {% endfor %}
                                                    </select>
                                     </div>  <!-- end select input -->
+                                    <BR><br>
+                                    <label class="col-sm-5 control-label" for="LANGUAGE" >Language for notifications</label>
+                                    <div class="col-sm-5"><select class="form-control"  required = "required" name="LANGUAGE" id="LANGUAGE">
+                                                            {% if form_data.language_default_data %}
+                                                                <option selected="{{form_data.language_default_data}}">{{form_data.language_default_data}}</option>
+                                                            {% else %}
+                                                                <option value="">Choose a value</option>
+                                                            {% endif %}
+                                                            {% for value in form_data.language_data %}
+                                                                <option value="{{value}}">{{value}}</option>
+                                                            {% endfor %}
+                                                   </select>
+                                    </div>  <!-- end select input -->
                                     <br><br>
                                     <label class="col-sm-5  control-label" for="VOLUME_BUFFER" >Volume buffer </label>
                                     <div class="col-sm-5"><input class="form-control" type="text" required = "required" name="VOLUME_BUFFER" id="VOLUME_BUFFER" value="300" size="100" maxlength="100"></div>
@@ -201,6 +214,19 @@
                                                             {% endfor %}
                                                    </select>
                                     </div>  <!-- end select input -->
+                                    <BR><br>
+                                    <label class="col-sm-5 control-label" for="LANGUAGE" >Language for notifications</label>
+                                    <div class="col-sm-5"><select class="form-control"  required = "required" name="LANGUAGE" id="LANGUAGE">
+                                                            {% if form_data.language_default_data %}
+                                                                <option selected="{{form_data.language_default_data}}">{{form_data.language_default_data}}</option>
+                                                            {% else %}
+                                                                <option value="">Choose a value</option>
+                                                            {% endif %}
+                                                            {% for value in form_data.language_data %}
+                                                                <option value="{{value}}">{{value}}</option>
+                                                            {% endfor %}
+                                                   </select>
+                                    </div>  <!-- end select input -->
                                     <br><br>
                                     <label class="col-sm-5  control-label" for="VOLUME_BEADS" >Volume beads </label>
                                     <div class="col-sm-5"><input class="form-control" type="text" required = "required" name="VOLUME_BEADS" id="VOLUME_BEADS" value="410" size="100" maxlength="100"></div>
@@ -264,6 +290,19 @@
                                                                 <option value="">Choose a value</option>
                                                             {% endif %}
                                                             {% for value in form_data.plate_labware_data %}
+                                                                <option value="{{value}}">{{value}}</option>
+                                                            {% endfor %}
+                                                   </select>
+                                    </div>  <!-- end select input -->
+                                    <BR><br>
+                                    <label class="col-sm-5 control-label" for="LANGUAGE" >Language for notifications</label>
+                                    <div class="col-sm-5"><select class="form-control"  required = "required" name="LANGUAGE" id="LANGUAGE">
+                                                            {% if form_data.language_default_data %}
+                                                                <option selected="{{form_data.language_default_data}}">{{form_data.language_default_data}}</option>
+                                                            {% else %}
+                                                                <option value="">Choose a value</option>
+                                                            {% endif %}
+                                                            {% for value in form_data.language_data %}
                                                                 <option value="{{value}}">{{value}}</option>
                                                             {% endfor %}
                                                    </select>
@@ -362,6 +401,19 @@
                                                                 <option value="">Choose a value</option>
                                                             {% endif %}
                                                             {% for value in form_data.elution_station_b_data %}
+                                                                <option value="{{value}}">{{value}}</option>
+                                                            {% endfor %}
+                                                   </select>
+                                    </div>  <!-- end select input -->
+                                    <BR><br>
+                                    <label class="col-sm-5 control-label" for="LANGUAGE" >Language for notifications</label>
+                                    <div class="col-sm-5"><select class="form-control"  required = "required" name="LANGUAGE" id="LANGUAGE">
+                                                            {% if form_data.language_default_data %}
+                                                                <option selected="{{form_data.language_default_data}}">{{form_data.language_default_data}}</option>
+                                                            {% else %}
+                                                                <option value="">Choose a value</option>
+                                                            {% endif %}
+                                                            {% for value in form_data.language_data %}
                                                                 <option value="{{value}}">{{value}}</option>
                                                             {% endfor %}
                                                    </select>

@@ -99,6 +99,7 @@ def get_form_data_creation_run_file():
     form_data['beads_labware_data'] = []
     form_data['plate_labware_data'] = []
     form_data['lysate_labware_data'] = []
+    form_data['language_data'] = []
 
     # values for station A form
     if MasterMixLabware.objects.all().exists():
@@ -247,6 +248,15 @@ def get_form_data_creation_run_file():
         for lysate_type in lysate_types:
             form_data['lysate_labware_data'].append(lysate_type.get_lysate_labware_name())
 
+    if Language.objects.all().exists():
+        language_default_obj = Language.objects.filter(default = True).last()
+        if language_default_obj:
+            form_data['language_default_data'] = language_default_obj.get_language_code()
+            language_types = Language.objects.exclude(pk__exact = language_default_obj.pk)
+        else:
+            language_types = Language.objects.all()
+        for language_type in language_types:
+            form_data['language_data'].append(language_type.get_language_code())
 
     if ProtocolTemplateFiles.objects.filter(station__stationName__iexact = 'Station A').exists():
         form_data['station_a'] = {}
