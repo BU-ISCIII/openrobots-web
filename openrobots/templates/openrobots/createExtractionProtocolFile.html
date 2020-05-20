@@ -134,10 +134,29 @@
                                                             {% endfor %}
                                                    </select>
                                     </div>  <!-- end select input -->
+                                    <BR><br>
+                                    <label class="col-sm-5 control-label" for="LANGUAGE" >Language for notifications</label>
+                                    <div class="col-sm-5"><select class="form-control"  required = "required" name="LANGUAGE" id="LANGUAGE">
+                                                            {% if form_data.language_default_data %}
+                                                                <option selected="{{form_data.language_default_data}}">{{form_data.language_default_data}}</option>
+                                                            {% else %}
+                                                                <option value="">Choose a value</option>
+                                                            {% endif %}
+                                                            {% for value in form_data.language_data %}
+                                                                <option value="{{value}}">{{value}}</option>
+                                                            {% endfor %}
+                                                   </select>
+                                    </div>  <!-- end select input -->
                                     <br><br>
                                     <label class="col-sm-5  control-label" for="VOLUME_BUFFER" >Volume buffer </label>
                                     <div class="col-sm-5"><input class="form-control" type="text" required = "required" name="VOLUME_BUFFER" id="VOLUME_BUFFER" value="300" size="100" maxlength="100"></div>
                                     <BR><br>
+                                    <label class="col-sm-5 control-label" for="RESET_TIPCOUNT" >Reset Tip Count</label>
+                                    <div class="col-sm-4">
+                                        <label class="radio-inline"><input type="radio" name="RESET_TIPCOUNT" required = "required" value="True" >YES</label>
+                                        <label class="radio-inline"><input type="radio" name="RESET_TIPCOUNT" required = "required" value="False" checked>NO</label>
+                                    </div>  <!-- end  radio -->
+                                    <br><br>
                                 </div>  <!-- end from-group   -->
                                 <div class="form-group">
                                     <label class="col-sm-5 control-label" for="notes" >User Notes</label>
@@ -201,10 +220,35 @@
                                                             {% endfor %}
                                                    </select>
                                     </div>  <!-- end select input -->
+                                    <BR><br>
+                                    <label class="col-sm-5 control-label" for="LANGUAGE" >Language for notifications</label>
+                                    <div class="col-sm-5"><select class="form-control"  required = "required" name="LANGUAGE" id="LANGUAGE">
+                                                            {% if form_data.language_default_data %}
+                                                                <option selected="{{form_data.language_default_data}}">{{form_data.language_default_data}}</option>
+                                                            {% else %}
+                                                                <option value="">Choose a value</option>
+                                                            {% endif %}
+                                                            {% for value in form_data.language_data %}
+                                                                <option value="{{value}}">{{value}}</option>
+                                                            {% endfor %}
+                                                   </select>
+                                    </div>  <!-- end select input -->
                                     <br><br>
                                     <label class="col-sm-5  control-label" for="VOLUME_BEADS" >Volume beads </label>
                                     <div class="col-sm-5"><input class="form-control" type="text" required = "required" name="VOLUME_BEADS" id="VOLUME_BEADS" value="410" size="100" maxlength="100"></div>
                                     <BR><br>
+                                    <label class="col-sm-5 control-label" for="DILUTE_BEADS" >Dilute Beads</label>
+                                    <div class="col-sm-4">
+                                        <label class="radio-inline"><input type="radio" name="DILUTE_BEADS" required = "required" value="True" checked>YES</label>
+                                        <label class="radio-inline"><input type="radio" name="DILUTE_BEADS" required = "required" value="False" >NO</label>
+                                    </div>  <!-- end  radio -->
+                                    <br><br>
+                                    <label class="col-sm-5 control-label" for="RESET_TIPCOUNT" >Reset Tip Count</label>
+                                    <div class="col-sm-4">
+                                        <label class="radio-inline"><input type="radio" name="RESET_TIPCOUNT" required = "required" value="True" >YES</label>
+                                        <label class="radio-inline"><input type="radio" name="RESET_TIPCOUNT" required = "required" value="False" checked>NO</label>
+                                    </div>  <!-- end  radio -->
+                                    <br><br>
                                 </div>  <!-- end from-group   -->
                                 <div class="form-group">
                                     <label class="col-sm-5 control-label" for="notes" >User Notes</label>
@@ -268,6 +312,19 @@
                                                             {% endfor %}
                                                    </select>
                                     </div>  <!-- end select input -->
+                                    <BR><br>
+                                    <label class="col-sm-5 control-label" for="LANGUAGE" >Language for notifications</label>
+                                    <div class="col-sm-5"><select class="form-control"  required = "required" name="LANGUAGE" id="LANGUAGE">
+                                                            {% if form_data.language_default_data %}
+                                                                <option selected="{{form_data.language_default_data}}">{{form_data.language_default_data}}</option>
+                                                            {% else %}
+                                                                <option value="">Choose a value</option>
+                                                            {% endif %}
+                                                            {% for value in form_data.language_data %}
+                                                                <option value="{{value}}">{{value}}</option>
+                                                            {% endfor %}
+                                                   </select>
+                                    </div>  <!-- end select input -->
                                     <br><br>
                                     <label class="col-sm-5 control-label" for="VOLUME_LYSATE" >Volume Lysate</label>
                                     <div class="col-sm-5"><input class="form-control" type="text" required = "required" name="VOLUME_LYSATE" id="VOLUME_LYSATE" value="400" size="100" maxlength="100"></div>
@@ -278,6 +335,12 @@
                                         <label class="radio-inline"><input type="radio" name="BEADS" required = "required" value="False" checked>NO</label>
                                     </div>  <!-- end  radio -->
                                     <BR><br>
+                                    <label class="col-sm-5 control-label" for="RESET_TIPCOUNT" >Reset Tip Count</label>
+                                    <div class="col-sm-4">
+                                        <label class="radio-inline"><input type="radio" name="RESET_TIPCOUNT" required = "required" value="True" >YES</label>
+                                        <label class="radio-inline"><input type="radio" name="RESET_TIPCOUNT" required = "required" value="False" checked>NO</label>
+                                    </div>  <!-- end  radio -->
+                                    <br><br>
                                 </div>  <!-- end from-group   -->
                                 <div class="form-group">
                                     <label class="col-sm-5 control-label" for="notes" >User Notes</label>
@@ -310,6 +373,7 @@
                                 {% csrf_token %}
                                 <input type="hidden" name="action" value="createprotocolfile"/>
                                 <input type="hidden" name="station" value="Station B"/>
+                                <input type="hidden" name="protocol" value="1"/>
                                 <input type="hidden" name="template" value="{{form_data.station_b}}"/>
                                 <div class="form-group required">
                                     <label class="col-sm-5  control-label" for="NUM_SAMPLES" >Number of Samples </label>
@@ -366,6 +430,19 @@
                                                             {% endfor %}
                                                    </select>
                                     </div>  <!-- end select input -->
+                                    <BR><br>
+                                    <label class="col-sm-5 control-label" for="LANGUAGE" >Language for notifications</label>
+                                    <div class="col-sm-5"><select class="form-control"  required = "required" name="LANGUAGE" id="LANGUAGE">
+                                                            {% if form_data.language_default_data %}
+                                                                <option selected="{{form_data.language_default_data}}">{{form_data.language_default_data}}</option>
+                                                            {% else %}
+                                                                <option value="">Choose a value</option>
+                                                            {% endif %}
+                                                            {% for value in form_data.language_data %}
+                                                                <option value="{{value}}">{{value}}</option>
+                                                            {% endfor %}
+                                                   </select>
+                                    </div>  <!-- end select input -->
                                     <br><br>
                                     <label class="col-sm-5 control-label" for="DISPENSE_BEADS" >Dipense beads</label>
                                     <div class="col-sm-4">
@@ -374,6 +451,12 @@
                                     </div>  <!-- end  radio -->
                                     <br><br>
 
+                                    <label class="col-sm-5 control-label" for="RESET_TIPCOUNT" >Reset Tip Count</label>
+                                    <div class="col-sm-4">
+                                        <label class="radio-inline"><input type="radio" name="RESET_TIPCOUNT" required = "required" value="True" >YES</label>
+                                        <label class="radio-inline"><input type="radio" name="RESET_TIPCOUNT" required = "required" value="False" checked>NO</label>
+                                    </div>  <!-- end  radio -->
+                                    <br><br>
                                 </div>  <!-- end from-group   -->
                                 <div class="form-group">
                                     <label class="col-sm-5 control-label" for="notes" >User Notes</label>
