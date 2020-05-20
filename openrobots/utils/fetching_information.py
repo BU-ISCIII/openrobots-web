@@ -633,6 +633,56 @@ def get_list_of_requests():
 
     return request_list
 
+def increase_protocol_file_id ():
+    '''
+    Description:
+        The function look for the latest file id value and increment in one unit.
+        When reaching 9999 it will step up the letter
+    Return:
+        new_file_id
+    '''
+    # get the latest value stored in database
+    if FileIDUserRequestMapping.objects.all().exists():
+        last_index = FileIDUserRequestMapping.objects.last().get_file_id()
+        index_number_str, index_letter = last_index.split('-')
+        # increase the index number
+        index_number = int(index_number_str) +1
+        if index_number > 9999:
+            index_number = 0
+            # step up the letter
+            split_index_letter = list(index_letter)
+            if split_index_letter[1] == 'Z':
+                last_letter = chr(ord(split_index_letter[0])+1)
+                split_index_letter[0] = last_letter
+                split_index_letter[1] = 'A'
+                index_letter = ''.join(split_index_letter)
+            else:
+                first_letter=chr(ord(split_index_letter[1])+1)
+                split_index_letter[1] = first_letter
+                index_letter = ''.join(split_index_letter)
+
+        index_number_str = str(index_number)
+        index_number_str = index_number_str.zfill(4)
+        return str(index_number_str + '-'+ index_letter)
+    else:
+        return '0000-AA'
+
+
+def store_file_id (protocol_file_id, station, protocol):
+    '''
+    Description:
+        The function store in database to link the file_id with the station and protocol
+    Return:
+        new_file_id
+    '''
+    data = {}
+    data['fileID'] = protocol_file_id
+    data['station'] = station
+    data['protocol'] = protocol
+    new_file_id = FileIDUserRequestMapping.objects.create_file_id_user(data)
+    return new_file_id
+
+
 def validate_metadata_for_protocol_template(metadata):
     '''
     Description:

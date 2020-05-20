@@ -72,6 +72,7 @@
                                 {% csrf_token %}
                                 <input type="hidden" name="action" value="createprotocolfile"/>
                                 <input type="hidden" name="station" value="Station C"/>
+                                <input type="hidden" name="protocol" value="1"/>
                                 <input type="hidden" name="template" value="{{form_data.station_c}}"/>
                                 <div class="form-group required">
                                     <br><br>
@@ -161,12 +162,20 @@
                                                             {% endfor %}
                                                    </select>
                                     </div>  <!-- end select input -->
-
                                     <br><br>
+                                    <label class="col-sm-5  control-label" for="VOLUME_ELUTION" >Volume Elution</label>
+                                    <div class="col-sm-6"><input class="form-control" type="text" required = "required" name="VOLUME_ELUTION" id="VOLUME_ELUTION" value="7" size="100" maxlength="100"></div>
+                                    <BR><br>
                                     <label class="col-sm-5 control-label" for="PREPARE_MASTERMIX" >Prepare Mastermix</label>
                                     <div class="col-sm-4">
                                         <label class="radio-inline"><input type="radio" name="PREPARE_MASTERMIX" required = "required" value="True" >YES</label>
                                         <label class="radio-inline"><input type="radio" name="PREPARE_MASTERMIX" required = "required" value="False" checked>NO</label>
+                                    </div>  <!-- end  radio -->
+                                    <br><br>
+                                    <label class="col-sm-5 control-label" for="RESET_TIPCOUNT" >Reset Tip Count</label>
+                                    <div class="col-sm-4">
+                                        <label class="radio-inline"><input type="radio" name="RESET_TIPCOUNT" required = "required" value="True" >YES</label>
+                                        <label class="radio-inline"><input type="radio" name="RESET_TIPCOUNT" required = "required" value="False" checked>NO</label>
                                     </div>  <!-- end  radio -->
                                     <br><br>
                                     <label class="col-sm-5 control-label" for="TRANSFER_MASTERMIX" >Transfer Mastermix</label>

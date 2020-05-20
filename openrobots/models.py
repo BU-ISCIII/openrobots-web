@@ -541,11 +541,13 @@ class RequestForStationA_Prot1Manager(models.Manager):
         destinationLabware =  Destination_Labware.objects.get(destinationLabwareType__exact = request_data['destinationLabware'])
         destinationTube =  Destination_Tube_Labware.objects.get(destinationTube__exact = request_data['destinationTube'])
         usedTemplateFile = ProtocolTemplateFiles.objects.get(protocolTemplateFileName__exact = request_data['usedTemplateFile'])
-
+        languageCode = Language.objects.filter(languageCode__exact = request_data['languageCode']).last()
         new_request = self.create(userRequestedBy = request_data['userRequestedBy'], bufferLabware = bufferLabware,
-                    destinationLabware = destinationLabware, destinationTube = destinationTube,
-                    usedTemplateFile = usedTemplateFile, requestedCodeID = request_data['requestedCodeID'], numberOfSamples = request_data['numberOfSamples'],
-                    volumeBuffer = request_data['volumeBuffer'], generatedFile = request_data['generatedFile'] , userNotes = request_data['userNotes'])
+                    destinationLabware = destinationLabware, destinationTube = destinationTube, languageCode = languageCode,
+                    usedTemplateFile = usedTemplateFile, requestedCodeID = request_data['requestedCodeID'],
+                    numberOfSamples = request_data['numberOfSamples'],  protocolID = request_data['protocolID'],
+                    volumeBuffer = request_data['volumeBuffer'], generatedFile = request_data['generatedFile'] ,
+                    resetTipcount = util.strtobool(request_data['resetTipcount']), userNotes = request_data['userNotes'])
 
         return new_request
 
@@ -606,11 +608,14 @@ class RequestForStationA_Prot2Manager(models.Manager):
         beadsLabware =  Beads_Labware.objects.get(beadsLabwareType__exact = request_data['beadsLabware'])
         plateLabware =  Plate_Labware.objects.get(plateLabwareType__exact = request_data['plateLabware'])
         usedTemplateFile = ProtocolTemplateFiles.objects.get(protocolTemplateFileName__exact = request_data['usedTemplateFile'])
+        languageCode = Language.objects.filter(languageCode__exact = request_data['languageCode']).last()
 
         new_request = self.create(userRequestedBy = request_data['userRequestedBy'], beadsLabware = beadsLabware,
-                    plateLabware = plateLabware, usedTemplateFile = usedTemplateFile,
+                    plateLabware = plateLabware, usedTemplateFile = usedTemplateFile, languageCode = languageCode,
                     requestedCodeID = request_data['requestedCodeID'], numberOfSamples = request_data['numberOfSamples'],
-                    volumeBeads = request_data['volumeBeads'], generatedFile = request_data['generatedFile'] , userNotes = request_data['userNotes'])
+                    volumeBeads = request_data['volumeBeads'],  protocolID = request_data['protocolID'],
+                    resetTipcount = util.strtobool(request_data['resetTipcount']), diluteBeads = util.strtobool(request_data['diluteBeads']),
+                    generatedFile = request_data['generatedFile'] , userNotes = request_data['userNotes'])
 
         return new_request
 
@@ -667,12 +672,14 @@ class RequestForStationA_Prot3Manager(models.Manager):
         lysateLabware =  Lysate_Labware.objects.get(lysateLabwareType__exact = request_data['lysateLabware'])
         plateLabware =  Plate_Labware.objects.get(plateLabwareType__exact = request_data['plateLabware'])
         usedTemplateFile = ProtocolTemplateFiles.objects.get(protocolTemplateFileName__exact = request_data['usedTemplateFile'])
+        languageCode = Language.objects.filter(languageCode__exact = request_data['languageCode']).last()
 
         new_request = self.create(userRequestedBy = request_data['userRequestedBy'], lysateLabware = lysateLabware,
-                    plateLabware = plateLabware, usedTemplateFile = usedTemplateFile,
+                    plateLabware = plateLabware, usedTemplateFile = usedTemplateFile, languageCode = languageCode,
                     requestedCodeID = request_data['requestedCodeID'], numberOfSamples = request_data['numberOfSamples'],
                     volumeLysate = request_data['volumeLysate'], beads = util.strtobool(request_data['beads']),
-                    generatedFile = request_data['generatedFile'] , userNotes = request_data['userNotes'])
+                    protocolID = request_data['protocolID'] , generatedFile = request_data['generatedFile'] ,
+                    resetTipcount =  util.strtobool(request_data['resetTipcount']), userNotes = request_data['userNotes'])
 
         return new_request
 
@@ -730,11 +737,13 @@ class RequestForStationBManager(models.Manager):
         wasteLabware =  Waste_Labware.objects.get(wasteLabwareType__exact = request_data['wasteLabware'])
         b_elution_Labware = ElutionStationB_Labware.objects.get(elutionStationB__exact = request_data['elutionLabware'])
         usedTemplateFile = ProtocolTemplateFiles.objects.get(protocolTemplateFileName__exact = request_data['usedTemplateFile'])
+        languageCode = Language.objects.filter(languageCode__exact = request_data['languageCode']).last()
 
         new_request = self.create(userRequestedBy = request_data['userRequestedBy'], magPlateLabware = magPlateLabware,
                     reagentLabware = reagentLabware, b_elution_Labware = b_elution_Labware, wasteLabware = wasteLabware,
                     usedTemplateFile = usedTemplateFile, requestedCodeID = request_data['requestedCodeID'], numberOfSamples = request_data['numberOfSamples'],
-                    dispenseBeads = util.strtobool(request_data['dispenseBeads']),
+                    dispenseBeads = util.strtobool(request_data['dispenseBeads']), languageCode = languageCode,
+                    protocolID = request_data['protocolID'], resetTipcount = util.strtobool(request_data['resetTipcount']),
                     generatedFile = request_data['generatedFile'] , userNotes = request_data['userNotes'])
 
         return new_request
@@ -803,13 +812,15 @@ class RequestForStationCManager(models.Manager):
         c_elution_Labware = ElutionStationC_Labware.objects.get(elutionStationC__exact = request_data['elutionLabware'])
         station = Stations.objects.get(stationName__exact = request_data['station'])
         usedTemplateFile = ProtocolTemplateFiles.objects.get(protocolTemplateFileName__exact = request_data['usedTemplateFile'])
+        languageCode = Language.objects.filter(languageCode__exact = request_data['languageCode']).last()
 
         new_request = self.create(userRequestedBy = request_data['userRequestedBy'], masterMixLabware = masterMixLabware , masterMixTubeLabware = masterMixTubeLabware,
                     pcrPlateLabware = pcrPlateLabware, c_elution_Labware = c_elution_Labware, masterMixType = masterMixType, station = station,
                     usedTemplateFile = usedTemplateFile, requestedCodeID = request_data['requestedCodeID'], numberOfSamples = request_data['numberOfSamples'],
-                    prepareMastermix = util.strtobool(request_data['prepareMastermix']),
-                    transferMastermix = util.strtobool(request_data['transferMastermix']),
-                    transferSamples = util.strtobool(request_data['transferSamples']),
+                    prepareMastermix = util.strtobool(request_data['prepareMastermix']), languageCode = languageCode,
+                    volumeElution = request_data ['volumeElution'], transferMastermix = util.strtobool(request_data['transferMastermix']),
+                    protocolID = request_data['protocolID'], transferSamples = util.strtobool(request_data['transferSamples']),
+                    resetTipcount =  util.strtobool(request_data['resetTipcount']),
                     generatedFile = request_data['generatedFile'] , userNotes = request_data['userNotes'])
 
         return new_request
@@ -877,6 +888,29 @@ class RequestForStationC (models.Model):
 
 
     objects = RequestForStationCManager()
+
+
+class FileIDUserRequestMappingManager(models.Manager):
+
+    def create_file_id_user (self, request_data):
+        new_file_id = self.create( fileID= request_data['fileID'], station= request_data['station'],
+                                protocol = request_data['protocol'])
+        return new_file_id
+
+
+class FileIDUserRequestMapping(models.Model):
+    fileID = models.CharField(max_length = 50)
+    station = models.CharField(max_length = 20)
+    protocol = models.CharField(max_length = 50)
+    generatedat = models.DateTimeField(auto_now_add=True)
+
+    def __str__ (self):
+        return '%s' %(self.fileID)
+
+    def get_file_id (self):
+        return '%s' %(self.fileID)
+
+    objects = FileIDUserRequestMappingManager()
 
 
 class RobotsActionPost(models.Model):
