@@ -79,7 +79,8 @@ class RobotsInventoryAdmin (admin.ModelAdmin):
     list_display =('userName', 'configuration',  'location','robots', 'serialNumber','IP_address','hostName',
             'computer_mac','rightPipette', 'leftPipette', 'rightPipetteID', 'leftPipetteID', 'neededPlugs','observations')
 
-
+class LanguageAdmin (admin.ModelAdmin):
+    list_display =['languageCode','languageDescription','default']
 
 class RequestForStationA_Prot1Admin(admin.ModelAdmin):
     list_display =['requestedCodeID','bufferLabware', 'destinationLabware','destinationTube','numberOfSamples',
@@ -146,6 +147,7 @@ admin.site.register(Waste_Labware , Waste_LabwareAdmin)
 admin.site.register(RobotsInventory , RobotsInventoryAdmin)
 admin.site.register(InventoryLabware , InventoryLabwareAdmin)
 
+admin.site.register(Language, LanguageAdmin)
 
 admin.site.register(RequestForStationA_Prot1 , RequestForStationA_Prot1Admin)
 admin.site.register(RequestForStationA_Prot2 , RequestForStationA_Prot2Admin)

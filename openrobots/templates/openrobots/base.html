@@ -39,10 +39,8 @@
                                     {% if user.is_authenticated %}
                     				    <li class=" js_nav-item nav-item dropdown"><a class=" nav-item-child nav-item-hover dropdown-toggle" data-toggle="dropdown" href="#">Inventory<span class="caret"></span></a>
                     				        <ul class="dropdown-menu">
-                                                {% if reques.user == admin %}
-                                                    <li><a href="/defineRobot">Define New Robot</a></li>
-                                                    <li><a href="/defineLabware">Define New Labware</a></li>
-                                                {% endif %}
+                                                <li><a href="/defineRobot">Define New Robot</a></li>
+                                                <li><a href="/defineLabware">Define New Labware</a></li>
                                                 <li><a href="/modulesInventory">Modules Inventory</a></li>
                                                 <li><a href="/labwareInventory">Labware Inventory</a></li>
                                                 <li><a href="/robotInventory">Robot Inventory</a></li>
@@ -54,7 +52,7 @@
                                                 <li><a href="/createPCRProtocolFile">Create PCR Protocol File</a></li>
                                             </ul>
                           				</li>
-                                        {% if reques.user == admin %}
+                                        {% if user.username == "admin" %}
                                             <li class=" js_nav-item nav-item dropdown"><a class=" nav-item-child nav-item-hover dropdown-toggle" data-toggle="dropdown" href="#">Admin<span class="caret"></span></a>
                                                 <ul class="dropdown-menu">
                                                     <li><a href="/listOfRequests">List of Requests</a></li>

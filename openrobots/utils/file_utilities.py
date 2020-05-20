@@ -6,7 +6,7 @@ from django.core.files.storage import FileSystemStorage
 from openrobots.openrobots_config import *
 
 
-def add_parameters_in_file (in_file, output_file, parameters):
+def add_parameters_in_file (in_file, output_file, parameters, file_id):
     '''
     Description:
         The function will get protocol template file and add the parameters to create an output file
@@ -15,6 +15,7 @@ def add_parameters_in_file (in_file, output_file, parameters):
         in_file     # template file
         output_file    # output file name
         parameters  # dictionnary with the information to include in the file
+        file_id     # fileID
     Constans:
         OPENROBOTS_DELIMITATION_PARAMETERS_TAGS
     Return:
@@ -50,6 +51,7 @@ def add_parameters_in_file (in_file, output_file, parameters):
                             out_fh.write(key + ' = '+ parameters[key]+ '\n')
                         else:
                             out_fh.write(key + ' = \''+ parameters[key]+ '\'\n')
+                    out_fh.write('PROTOCOL_ID = \'' + file_id + '\'\n')
                     parameters_added = True
                     continue
                 if end_parameter_section :
