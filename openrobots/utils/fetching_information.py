@@ -24,7 +24,7 @@ def  build_protocol_file_name(user, template):
 
     return '_'.join(name) + '.py'
 
-def build_request_codeID (user, protocol_type, station ) :
+def build_request_codeID (user, protocol_type, station, protocol ) :
     '''
     Description:
         The function build the request codeID by joining the user, protocol_type, station and
@@ -44,6 +44,16 @@ def build_request_codeID (user, protocol_type, station ) :
     elif station == 'Station B':
         if RequestForStationB.objects.filter(userRequestedBy = user, usedTemplateFile__typeOfProtocol__protocolTypeName__exact = protocol_type).exists():
             num_times = RequestForStationB.objects.filter(userRequestedBy = user, usedTemplateFile__typeOfProtocol__protocolTypeName__exact = protocol_type).count()
+    elif station == 'Station A':
+        if protocol == '1':
+            if RequestForStationA_Prot1.objects.filter(userRequestedBy = user, usedTemplateFile__typeOfProtocol__protocolTypeName__exact = protocol_type).exists():
+                num_times = RequestForStationA_Prot1.objects.filter(userRequestedBy = user, usedTemplateFile__typeOfProtocol__protocolTypeName__exact = protocol_type).count()
+        elif protocol == '2':
+            if RequestForStationA_Prot2.objects.filter(userRequestedBy = user, usedTemplateFile__typeOfProtocol__protocolTypeName__exact = protocol_type).exists():
+                num_times = RequestForStationA_Prot2.objects.filter(userRequestedBy = user, usedTemplateFile__typeOfProtocol__protocolTypeName__exact = protocol_type).count()
+        else:
+            if RequestForStationA_Prot3.objects.filter(userRequestedBy = user, usedTemplateFile__typeOfProtocol__protocolTypeName__exact = protocol_type).exists():
+                num_times = RequestForStationA_Prot3.objects.filter(userRequestedBy = user, usedTemplateFile__typeOfProtocol__protocolTypeName__exact = protocol_type).count()
 
     num_times += 1
     return user.username + protocol_type + station + str(num_times)
