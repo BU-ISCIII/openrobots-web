@@ -30,7 +30,7 @@ def create_pcr_protocol_file(request):
             return render(request, 'openrobots/createPCRProtocolFile.html' ,{'form_data': form_data, 'error': add_result})
         database['generatedFile'] = protocol_file
         database['protocolID'] = protocol_file_id
-        database['requestedCodeID'] = build_request_codeID (request.user, protocol_type, request.POST['station'] )
+        database['requestedCodeID'] = build_request_codeID (request.user, protocol_type, request.POST['station'],request.POST['protocol'] )
         if request.POST['station'] == 'Station C':
             new_create_protocol = RequestForStationC.objects.create_new_request(database)
         else:
@@ -50,7 +50,7 @@ def create_extraction_protocol_file(request):
         parameters, database = extract_form_data_station(request)
         protocol_type = get_protocol_type_from_template(template)
         protocol_file = build_protocol_file_name(request.user.username,template)
-        
+
         protocol_file_id = increase_protocol_file_id()
         new_prot_file_id_obj = store_file_id (protocol_file_id,request.POST['station'], request.POST['protocol'])
 
@@ -59,7 +59,7 @@ def create_extraction_protocol_file(request):
             return render(request, 'openrobots/createExtractionProtocolFile.html' ,{'form_data': form_data, 'error': add_result})
         database['generatedFile'] = protocol_file
         database['protocolID'] = protocol_file_id
-        database['requestedCodeID'] = build_request_codeID (request.user, protocol_type, request.POST['station'] )
+        database['requestedCodeID'] = build_request_codeID (request.user, protocol_type, request.POST['station'], request.POST['protocol'] )
         if request.POST['station'] == 'Station B':
             new_create_protocol = RequestForStationB.objects.create_new_request(database)
         elif  request.POST['station'] == 'Station A' and request.POST['protocol'] == '1' :

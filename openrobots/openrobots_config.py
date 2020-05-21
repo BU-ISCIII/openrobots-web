@@ -48,6 +48,11 @@ MAP_PROTOCOL_PARAMETER_TO_DATABASE_STATION_C = [('NUM_SAMPLES','numberOfSamples'
 OPENROBOTS_DELIMITATION_PARAMETERS_TAGS = ['# Parameters to adapt the protocol',
                     '# End Parameters to adapt the protocol']
 
+
+#PROTOCOL_NAME_MAPPING_STATION_A = [('Prot1', 'buffer'), ('Prot2', 'beads'), ('Prot3', 'lysates')]
+#PROTOCOL_NAME_MAPPING_STATION_B = [('Prot1', 'extraction')]
+#PROTOCOL_NAME_MAPPING_STATION_C = [('Prot1', 'pcr')]
+
 JSON_LABWARE_ROOT_FIELDS_TO_CHECK = ['metadata', 'dimensions','wells','parameters','brand']
 JSON_LABWARE_FIELDS_TO_GET = {'brand':['brand'],'metadata':['displayName','displayCategory'],'dimensions':['xDimension',
         'yDimension', 'zDimension'],'parameters':['isMagneticModuleCompatible', 'loadName']}

@@ -14,14 +14,17 @@ def  build_protocol_file_name(user, template):
     Return:
         protocol_file_name
     '''
+
     name = [user]
+
     name.append(''.join(get_protocol_type_from_template(template).split()))
     name.append(''.join(get_station_from_template(template).split()))
+
     name.append(time.strftime("%Y%m%d-%H%M%S"))
 
     return '_'.join(name) + '.py'
 
-def build_request_codeID (user, protocol_type, station ) :
+def build_request_codeID (user, protocol_type, station, protocol ) :
     '''
     Description:
         The function build the request codeID by joining the user, protocol_type, station and
@@ -41,6 +44,16 @@ def build_request_codeID (user, protocol_type, station ) :
     elif station == 'Station B':
         if RequestForStationB.objects.filter(userRequestedBy = user, usedTemplateFile__typeOfProtocol__protocolTypeName__exact = protocol_type).exists():
             num_times = RequestForStationB.objects.filter(userRequestedBy = user, usedTemplateFile__typeOfProtocol__protocolTypeName__exact = protocol_type).count()
+    elif station == 'Station A':
+        if protocol == '1':
+            if RequestForStationA_Prot1.objects.filter(userRequestedBy = user, usedTemplateFile__typeOfProtocol__protocolTypeName__exact = protocol_type).exists():
+                num_times = RequestForStationA_Prot1.objects.filter(userRequestedBy = user, usedTemplateFile__typeOfProtocol__protocolTypeName__exact = protocol_type).count()
+        elif protocol == '2':
+            if RequestForStationA_Prot2.objects.filter(userRequestedBy = user, usedTemplateFile__typeOfProtocol__protocolTypeName__exact = protocol_type).exists():
+                num_times = RequestForStationA_Prot2.objects.filter(userRequestedBy = user, usedTemplateFile__typeOfProtocol__protocolTypeName__exact = protocol_type).count()
+        else:
+            if RequestForStationA_Prot3.objects.filter(userRequestedBy = user, usedTemplateFile__typeOfProtocol__protocolTypeName__exact = protocol_type).exists():
+                num_times = RequestForStationA_Prot3.objects.filter(userRequestedBy = user, usedTemplateFile__typeOfProtocol__protocolTypeName__exact = protocol_type).count()
 
     num_times += 1
     return user.username + protocol_type + station + str(num_times)
@@ -488,9 +501,10 @@ def get_station_from_template(template):
         protocol_template_obj = ProtocolTemplateFiles.objects.get(protocolTemplateFileName__exact = template)
         protocol_name = protocol_template_obj.get_protocol_name()
         try:
-            prot = re.search(r'.*Station [A|B|C] Protocol (\d).*',protocol_name).group(1)
+            prot_fields = re.search(r'.*Station [A|B|C] Protocol (\d+) (\w+) .*',protocol_name).groups()
+            prot = '_'.join(prot_fields)
         except:
-            prot = '1'
+            prot = '1_Unkonwn'
 
         return protocol_template_obj.get_station() + '_Prot' + prot
     return 'None'
