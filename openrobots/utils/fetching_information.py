@@ -14,9 +14,12 @@ def  build_protocol_file_name(user, template):
     Return:
         protocol_file_name
     '''
+
     name = [user]
+
     name.append(''.join(get_protocol_type_from_template(template).split()))
     name.append(''.join(get_station_from_template(template).split()))
+
     name.append(time.strftime("%Y%m%d-%H%M%S"))
 
     return '_'.join(name) + '.py'
@@ -488,9 +491,10 @@ def get_station_from_template(template):
         protocol_template_obj = ProtocolTemplateFiles.objects.get(protocolTemplateFileName__exact = template)
         protocol_name = protocol_template_obj.get_protocol_name()
         try:
-            prot = re.search(r'.*Station [A|B|C] Protocol (\d).*',protocol_name).group(1)
+            prot_fields = re.search(r'.*Station [A|B|C] Protocol (\d+) (\w+) .*',protocol_name).groups()
+            prot = '_'.join(prot_fields)
         except:
-            prot = '1'
+            prot = '1_Unkonwn'
 
         return protocol_template_obj.get_station() + '_Prot' + prot
     return 'None'
