@@ -4,4 +4,4 @@ from openrobots.models import RobotsActionPost
 class RobotsActionPostSerializer(serializers.ModelSerializer):
     class Meta:
         model = RobotsActionPost
-        fields = ['RobotID','executedAction']
+        fields = ['hostname','RobotID','executedAction','ProtocolID','StartRunTime','FinishRunTime']

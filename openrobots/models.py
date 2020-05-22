@@ -888,12 +888,14 @@ class RequestForStationC (models.Model):
 
 
     objects = RequestForStationCManager()
-
+'''
 class FileIDUserRequestMapping(models.Model):
     fileID = models.CharField(max_length = 50)
     station = models.CharField(max_length = 20)
     protocol = models.CharField(max_length = 50)
     generatedat = models.DateTimeField(auto_now_add=True)
+'''
+
 
 
 class FileIDUserRequestMappingManager(models.Manager):
@@ -919,10 +921,17 @@ class FileIDUserRequestMapping(models.Model):
     objects = FileIDUserRequestMappingManager()
 
 
+
 class RobotsActionPost(models.Model):
+    hostname = models.CharField(max_length = 50,  null = True)
     RobotID = models.CharField(max_length = 50)
     executedAction = models.CharField(max_length = 250)
+    ProtocolID = models.CharField(max_length = 50, null = True)
+    StartRunTime =models.DateTimeField(max_length = 50,  null = True)
+    FinishRunTime = models.DateTimeField(max_length = 50,  null = True)
     generatedat = models.DateTimeField(auto_now_add=True)
+
+
 
     def __str__ (self):
         return '%s' %(self.RobotID)
@@ -935,3 +944,25 @@ class RobotsActionPost(models.Model):
         data.append(self.executedAction)
         data.append(self.generatedat.strftime("%Y-%b-%d"))
         return data
+
+class ParametersRobotActionManager(models.Manager):
+    def create_parameter(self, request_data):
+        new_parameter = self.create()
+
+        return new_parameter
+
+
+class ParametersRobotAction (models.Model):
+    robotActionPost = models.ForeignKey (
+                        RobotsActionPost,
+                        on_delete=models.CASCADE )
+    protocolFileID = models.ForeignKey (
+                        FileIDUserRequestMapping,
+                        on_delete=models.CASCADE )
+    parameterName = models.CharField(max_length = 80)
+    parameterValue = models.CharField(max_length = 80)
+    modified = models.BooleanField(default = False)
+    generatedat = models.DateTimeField(auto_now_add=True)
+
+
+    objects = ParametersRobotActionManager()

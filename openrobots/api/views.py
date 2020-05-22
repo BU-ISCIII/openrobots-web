@@ -25,11 +25,13 @@ def api_create_usage(request):
             ip = x_forwarded_for.split(',')[0]
         else:
             ip = request.META.get('REMOTE_ADDR')
-        import pdb; pdb.set_trace()
-        serializer = RobotsActionPostSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            import pdb; pdb.set_trace()
-            return Response(serializer.data, status = status.HTTP_201_CREATED)
 
+        serializer = RobotsActionPostSerializer(data=request.data)
+        import pdb; pdb.set_trace()
+        if not serializer.is_valid():
+            return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
+        robot_action_obj = serializer.save()
+        import pdb; pdb.set_trace()
+        return Response(serializer.data, status = status.HTTP_201_CREATED)
+    else:
         return Response(serializer.errors, status = status.HTTP_404_NOT_FOUND)
