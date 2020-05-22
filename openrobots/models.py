@@ -918,20 +918,27 @@ class FileIDUserRequestMapping(models.Model):
     def get_file_id (self):
         return '%s' %(self.fileID)
 
+    def get_station_protocol(self):
+        return '%s' %(self.protocol)
+
+    def get_station(self):
+        return '%s' %(self.station)
+
+
+
     objects = FileIDUserRequestMappingManager()
 
 
 
 class RobotsActionPost(models.Model):
-    hostname = models.CharField(max_length = 50,  null = True)
+    ipaddress = models.CharField(max_length = 50,  null = True)
     RobotID = models.CharField(max_length = 50)
     executedAction = models.CharField(max_length = 250)
     ProtocolID = models.CharField(max_length = 50, null = True)
     StartRunTime =models.DateTimeField(max_length = 50,  null = True)
     FinishRunTime = models.DateTimeField(max_length = 50,  null = True)
+    modifiedParameters = models.BooleanField(default = False)
     generatedat = models.DateTimeField(auto_now_add=True)
-
-
 
     def __str__ (self):
         return '%s' %(self.RobotID)
@@ -939,15 +946,26 @@ class RobotsActionPost(models.Model):
     def get_robot_name (self):
         return '%s' %(self.RobotID)
 
+    def get_protocol_id(self):
+        return '%s' %(self.ProtocolID)
+
     def get_robot_action_and_date (self):
         data=[]
         data.append(self.executedAction)
-        data.append(self.generatedat.strftime("%Y-%b-%d"))
+        data.append(self.StartRunTime.strftime("%Y-%b-%d"))
+        data.append(self.FinishRunTime.strftime("%Y-%b-%d"))
         return data
+
+    def update_modified_parameters(self, value):
+        self.modifiedParameters = value
+        self.save()
+        return self
 
 class ParametersRobotActionManager(models.Manager):
     def create_parameter(self, request_data):
-        new_parameter = self.create()
+        new_parameter = self.create( robotActionPost = request_data['robotActionPost'],  protocolFileID= request_data['protocolFileID'],
+                    parameterName = request_data['parameterName'], parameterValue = request_data['parameterValue'],
+                    modified = request_data['modified'])
 
         return new_parameter
 
