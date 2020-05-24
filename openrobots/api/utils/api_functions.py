@@ -52,6 +52,21 @@ def get_file_mapping_obj_from_protocol_id(protocol_id):
     return None
 
 
+def get_robot_station(robot_id):
+    '''
+    Function:
+        The function get the station type which robot belongs to
+    Inputs:
+        robot_id     # robot id to find the station
+    Return:
+        file_mapping_obj. None if not match
+    '''
+    if RobotsInventory.objects.filter(robots__exact = robot_id).exists() :
+        return RobotsInventory.objects.filter(robots__exact = robot_id).last().get_station_name()
+    else:
+        return None
+
+
 def get_station_and_protocol(protocol_id):
     '''
     Function:
@@ -88,9 +103,13 @@ def store_and_find_changes_parameter_values(parameters, robot_action_obj):
         pass
     elif station == 'Station A':
         if station_protocol == '1':
-            pass
+            if RequestForStationA_Prot1.objects.filter(protocolID__exact = protocol_id).exists():
+                req_station_obj = RequestForStationA_Prot1.objects.filter(protocolID__exact = protocol_id).last()
+                mapping_variables_dict = dict(MAP_PROTOCOL_PARAMETER_TO_DATABASE_STATION_A_PROT_1)
         elif station_protocol == '2':
-            pass
+            if RequestForStationA_Prot2.objects.filter(protocolID__exact = protocol_id).exists():
+                req_station_obj = RequestForStationA_Prot2.objects.filter(protocolID__exact = protocol_id).last()
+                mapping_variables_dict = dict(MAP_PROTOCOL_PARAMETER_TO_DATABASE_STATION_A_PROT_2)
         else:
             if RequestForStationA_Prot3.objects.filter(protocolID__exact = protocol_id).exists():
                 req_station_obj = RequestForStationA_Prot3.objects.filter(protocolID__exact = protocol_id).last()
@@ -102,7 +121,6 @@ def store_and_find_changes_parameter_values(parameters, robot_action_obj):
         request_data['protocolFileID'] = file_mapping_obj
         request_data['parameterName'] = par
         request_data['parameterValue'] = parameters[par]
-        import pdb; pdb.set_trace()
         try:
             ### use the object attribute to get the value
             if str(parameters[par]) ==  str(getattr(req_station_obj, mapping_variables_dict[par])):

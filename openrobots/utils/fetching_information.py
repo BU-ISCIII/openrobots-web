@@ -1,5 +1,6 @@
 import time, re
 from datetime import datetime
+from datetime import timedelta
 from openrobots.models import *
 from openrobots.openrobots_config import *
 
@@ -284,6 +285,32 @@ def get_form_data_creation_run_file():
 
     return form_data
 
+
+def get_form_data_robots_usage():
+    '''
+    Description:
+        The function will get information to include in the robot usage form
+    Return:
+        form_data
+    '''
+    form_data = {}
+    form_data['stations'] = []
+    if Stations.objects.all().exists():
+        stations = Stations.objects.all()
+        for station in stations:
+            form_data['stations'].append(station.get_station_name())
+    if RobotsActionPost.objects.all().exists():
+        robots_list = []
+        protocols_action_list = []
+        robot_objs = RobotsActionPost.objects.all()
+        for robot_obj in robot_objs:
+            robots_list.append(robot_obj.get_robot_name())
+            protocols_action_list.append(robot_obj.get_executed_action())
+        form_data['robots'] = list(set(robots_list))
+        form_data['protocols_action'] = list(set(protocols_action_list))
+
+    return form_data
+
 def get_list_labware_inventory():
     '''
     Description:
@@ -421,6 +448,68 @@ def get_robot_inventory_data(robot_id):
 
     return robot_data
 
+def get_robots_action_from_user_form(form_data ):
+    '''
+    Description:
+        The function will the objects for the robot action that match user data
+        in the form. If start date is empty the query only check the
+        end_date. On the contrary if end_date is not given the match will be done
+        until today, If no dates are given the matches are limited to today
+    Inputs:
+        form_data      # data from user form
+    Functions:
+        get_today_and_tomorrows_day     # located at this file
+    Return:
+        robots_actions_objs or None
+    '''
+    if RobotsActionPost.objects.all().exists():
+        start_date = form_data['startdate']
+        end_date = form_data['enddate']
+        #robot = form_data['robots']
+        #station = form_data['stations']
+        #protocol = form_data['protocols']
+
+        if start_date == '' and end_date == '':
+            #if empty values set the date to today and tomorrow
+            start_date, end_date = get_today_and_tomorrows_day()
+
+        # only end_date is defined
+        if start_date == '' and end_date != '':
+            if RobotsActionPost.objects.filter(generatedat__lte = end_date).exists():
+                robots_actions_objs = RobotsActionPost.objects.filter(generatedat__lte = end_date).order_by('generatedat')
+            else:
+                return None
+        # only start date is difined
+        if end_date == '' and start_date != '':
+            if RobotsActionPost.objects.filter(generatedat__gte = start_date).exists():
+                robots_actions_objs =  RobotsActionPost.objects.filter(generatedat__gte = start_date).order_by('generatedat')
+            else:
+                return None
+        if end_date != '' and start_date != '':
+            if  RobotsActionPost.objects.filter(generatedat__range=(start_date, end_date )).exists():
+                robots_actions_objs =  RobotsActionPost.objects.filter(generatedat__range=(start_date, end_date )).order_by('generatedat')
+            else:
+                return None
+        if form_data['robots'] != '':
+            if robots_actions_objs.filter(RobotID__exact = form_data['robots']).exists():
+                robots_actions_objs = robots_actions_objs.filter(RobotID__exact = form_data['robots'])
+            else:
+                return None
+        if form_data['stations'] != '':
+            if robots_actions_objs.filter(stationType__exact = form_data['stations']).exists():
+                robots_actions_objs = robots_actions_objs.filter(stationType__exact = form_data['stations'])
+            else:
+                return None
+        if form_data['protocolsAction'] != '':
+            if robots_actions_objs.filter(executedAction__exact = form_data['protocolsAction']).exists():
+                robots_actions_objs = robots_actions_objs.filter(executedAction__exact = form_data['protocolsAction'])
+            else:
+                return None
+
+        return  robots_actions_objs
+    else:
+        return None
+
 
 def get_protocol_types():
     '''
@@ -464,7 +553,7 @@ def get_protocol_type_from_template(template):
         return ProtocolTemplateFiles.objects.get(protocolTemplateFileName__exact = template).get_protocol_type()
     return 'None'
 
-def get_robots_utilization(start_date , end_date):
+def get_robots_information_utilization(robots_action_obj):
     '''
     Description:
         The function will look for robot jobs in the period of time between start_date
@@ -474,19 +563,18 @@ def get_robots_utilization(start_date , end_date):
         robot_jobs_data
     '''
     robot_jobs_data = {}
-    if RobotsActionPost.objects.filter(generatedat__range = (start_date, end_date)).exists():
-        action_objs = RobotsActionPost.objects.filter(generatedat__range = (start_date, end_date)).order_by('generatedat')
-        for action_obj in action_objs:
-            robot_name = action_obj.get_robot_name()
-            if robot_name not in robot_jobs_data :
-                robot_jobs_data[robot_name] = {}
-                robot_jobs_data[robot_name]['robot_usage'] = 0
-                robot_jobs_data[robot_name]['robot_actions'] =[]
-            robot_jobs_data[robot_name]['robot_usage'] +=1
-            robot_jobs_data[robot_name]['robot_actions'].append(action_obj.get_robot_action_and_date())
+    for action_obj in robots_action_obj:
+        robot_name = action_obj.get_robot_name()
+
+        if robot_name not in robot_jobs_data :
+            robot_jobs_data[robot_name] = {}
+            robot_jobs_data[robot_name]['robot_usage'] = 0
+            robot_jobs_data[robot_name]['robot_actions'] =[]
+        robot_jobs_data[robot_name]['robot_usage'] +=1
+        robot_jobs_data[robot_name]['robot_actions'].append(action_obj.get_robot_action_date_and_duration())
 
 
-    import pdb; pdb.set_trace()
+
 
     return robot_jobs_data
 
@@ -647,6 +735,7 @@ def get_list_of_requests():
 
     return request_list
 
+
 def increase_protocol_file_id ():
     '''
     Description:
@@ -695,6 +784,20 @@ def store_file_id (protocol_file_id, station, protocol):
     data['protocol'] = protocol
     new_file_id = FileIDUserRequestMapping.objects.create_file_id_user(data)
     return new_file_id
+
+def get_today_and_tomorrows_day():
+    '''
+    Description:
+        Teh function get the day of today and tomorrow
+    Return:
+        today_day , tomorrow_day
+    '''
+    today = datetime.now()
+    today_day = datetime.now().strftime('%Y-%m-%d')
+    tomorrow_day = (today + timedelta(days=1)).strftime('%Y-%m-%d')
+
+    return (today_day, tomorrow_day)
+
 
 
 def validate_metadata_for_protocol_template(metadata):

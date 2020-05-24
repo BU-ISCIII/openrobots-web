@@ -120,6 +120,9 @@ class RobotsInventory (models.Model):
     def get_robot_id (self):
         return '%s'  %(self.pk)
 
+    def get_station_name(self):
+        return '%s' %(self.configuration.get_station_name())
+
     def get_minimum_robot_data(self):
         data = []
         data.append(self.robots)
@@ -932,6 +935,7 @@ class FileIDUserRequestMapping(models.Model):
 
 class RobotsActionPost(models.Model):
     ipaddress = models.CharField(max_length = 50,  null = True)
+    stationType = models.CharField(max_length = 50,  null = True, blank = True)
     RobotID = models.CharField(max_length = 50)
     executedAction = models.CharField(max_length = 250)
     ProtocolID = models.CharField(max_length = 50, null = True)
@@ -949,15 +953,24 @@ class RobotsActionPost(models.Model):
     def get_protocol_id(self):
         return '%s' %(self.ProtocolID)
 
-    def get_robot_action_and_date (self):
+    def get_executed_action(self):
+        return '%s' %(self.executedAction)
+
+    def get_robot_action_date_and_duration (self):
         data=[]
         data.append(self.executedAction)
-        data.append(self.StartRunTime.strftime("%Y-%b-%d"))
-        data.append(self.FinishRunTime.strftime("%Y-%b-%d"))
+        data.append(self.StartRunTime.strftime("%Y-%b-%d  %H:%M"))
+        data.append(self.FinishRunTime.strftime("%Y-%b-%d %H:%M"))
+        data.append(str(self.FinishRunTime - self.StartRunTime))
         return data
 
     def update_modified_parameters(self, value):
         self.modifiedParameters = value
+        self.save()
+        return self
+
+    def update_robot_station(self, station_robot):
+        self.stationType = station_robot
         self.save()
         return self
 

@@ -173,21 +173,35 @@ def list_of_requests(request):
 
 @login_required
 def robots_jobs (request):
+    data = "[{ name: 'Direct', count: 2742 },{ name: 'Facebook', count: 2242 }, { name: 'Pinterest', count: 3112 }, { name: 'Search', count: 937 },{ name: 'Others', count: 1450 }]"
+    form_data = get_form_data_robots_usage()
+
     if request.method == 'POST' and request.POST['action'] == 'robotsjobs':
         start_date=request.POST['startdate']
         end_date=request.POST['enddate']
+
         if start_date != '':
             if not check_valid_date_format(start_date) :
                 error_message = ERROR_INVALID_FORMAT_FOR_DATES
                 return render(request, 'openrobots/robotsJobs.html', {'error_message':error_message})
+
         if end_date != '':
             if not check_valid_date_format(end_date) :
                 error_message = ERROR_INVALID_FORMAT_FOR_DATES
                 return render(request, 'openrobots/robotsJobs.html', {'error_message':error_message})
-        display_robot_utilization = get_robots_utilization(start_date, end_date)
+
+
+        robots_action_objs = get_robots_action_from_user_form(request.POST)
+
+        if not robots_action_objs:
+            error_message = ERROR_NOT_ROBOT_ACTION_MATCHES_FOUND
+            return render (request, 'openrobots/robotsJobs.html', {'error_message':error_message, 'form_data': form_data})
+
+        display_robot_utilization = get_robots_information_utilization (robots_action_objs)
+        #import pdb; pdb.set_trace()
         return render (request, 'openrobots/robotsJobs.html',{'display_robot_utilization': display_robot_utilization})
 
-    return render (request, 'openrobots/robotsJobs.html')
+    return render (request, 'openrobots/robotsJobs.html', {'data':data, 'form_data': form_data})
 
 @login_required
 def upload_protocol_templates(request):

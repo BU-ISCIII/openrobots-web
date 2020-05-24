@@ -21,6 +21,10 @@ def api_usage(request):
 def api_create_usage(request):
 
     if request.method == 'POST':
+        if  not 'StartRunTime' in request.data:
+            request.data['StartRunTime'] = ''
+        if not 'FinishRunTime' in request.data:
+            request.data['FinishRunTime'] = ''
         x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
         if x_forwarded_for:
             request.data['ipaddress'] = x_forwarded_for.split(',')[0]
@@ -32,10 +36,16 @@ def api_create_usage(request):
         if not serializer.is_valid():
             return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
         robot_action_obj = serializer.save()
-        if store_and_find_changes_parameter_values(request.data['parameters'], robot_action_obj):
-            robot_action_obj.update_modified_parameters(True)
-            return Response(serializer.data, status = status.HTTP_202_ACCEPTED)
-        import pdb; pdb.set_trace()
-        return Response(serializer.data, status = status.HTTP_201_CREATED)
+        robot_station = get_robot_station(request.data['RobotID'])
+        if robot_station :
+            robot_action_obj.update_robot_station(robot_station)
+        if 'parameters' in request.data :
+
+            if not store_and_find_changes_parameter_values(request.data['parameters'], robot_action_obj):
+                return Response(serializer.data, status = status.HTTP_201_CREATED)
+        robot_action_obj.update_modified_parameters(True)
+        return Response(serializer.data, status = status.HTTP_202_ACCEPTED)
+
+
     else:
         return Response(serializer.errors, status = status.HTTP_404_NOT_FOUND)

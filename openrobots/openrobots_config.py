@@ -67,3 +67,7 @@ ADMIN_USERS = ['admin']
 
 ###### ERROR TEXT #############################################
 ERROR_INVALID_FORMAT_FOR_DATES = ['Invalid date format. Use the format  (DD-MM-YYYY)']
+ERROR_NOT_ROBOT_ACTION_MATCHES_FOUND = ['There is not robot actions that matches your query']
+
+####### URL for Rest Api ######################################
+URL_FOR_REST_API_ROBOT_USAGE = '/api/robots/createUsage'

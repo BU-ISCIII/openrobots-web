@@ -110,7 +110,8 @@ class RequestForStationCAdmin (admin.ModelAdmin):
 
 
 class RobotsActionPostAdmin(admin.ModelAdmin):
-    list_display = ['RobotID', 'executedAction']
+    list_display = ['RobotID', 'executedAction', 'ipaddress','ProtocolID', 'StartRunTime', 'FinishRunTime','modifiedParameters']
+ 
 
 
 admin.site.register(Stations , StationsAdmin)
