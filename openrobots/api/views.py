@@ -19,7 +19,7 @@ def api_usage(request):
 def api_create_usage(request):
 
     if request.method == 'POST':
-        import pdb; pdb.set_trace()
+
         data = request.data
         if isinstance(data, QueryDict ):
             data = data.dict()
@@ -41,16 +41,21 @@ def api_create_usage(request):
         if not serializer.is_valid():
             return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
         robot_action_obj = serializer.save()
-        import pdb; pdb.set_trace()
+
         robot_station = get_robot_station(data['RobotID'])
         if robot_station :
             robot_action_obj.update_robot_station(robot_station)
-        if 'parameters' in request.data and isinstance(parameters, dict) :
-            if  store_and_find_changes_parameter_values(data['parameters'], robot_action_obj):
-                robot_action_obj.update_modified_parameters(True)
-                return Response(serializer.data, status = status.HTTP_202_ACCEPTED)
+        import pdb; pdb.set_trace()
+        if 'parameters' in data :
+            if isinstance(data['parameters'], dict) :
+                if  store_and_find_changes_parameter_values(data['parameters'], robot_action_obj):
+                    robot_action_obj.update_modified_parameters(True)
+                    return Response(serializer.data, status = status.HTTP_202_ACCEPTED)
+                else:
+                    return Response(serializer.data, status = status.HTTP_201_CREATED)
             else:
-                return Response(serializer.data, status = status.HTTP_201_CREATED)
+                robot_action_obj.update_modified_parameters(True)
+                return Response(serializer.data, status = status.HTTP_204_NO_CONTENT)
         else:
             robot_action_obj.update_modified_parameters(True)
             return Response(serializer.data, status = status.HTTP_204_NO_CONTENT)
