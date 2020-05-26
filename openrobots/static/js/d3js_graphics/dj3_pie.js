@@ -1,4 +1,7 @@
+//import { select } from 'd3';
+
 function my_pie(dataset){
+    //import { select } from 'd3';
 /*
 var dataset = [
         { name: 'Direct', count: 2742 },
@@ -14,6 +17,7 @@ var total=0;
 
 dataset.forEach(function(d){
     total+= d.count;
+
 });
 var pie_data=d3.pie()
             .value(function(d){return d.count})
@@ -22,6 +26,8 @@ var pie=d3.pie()
         .value(function(d){return d.count})
         .sort(null);
 var w=300,h=300;
+//const w = select('#chart').attr('width');
+//const h = select('#chart').attr('height');
 const adj = 60;
 
 var outerRadiusArc=w/2;

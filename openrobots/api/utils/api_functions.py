@@ -97,6 +97,7 @@ def store_and_find_changes_parameter_values(parameters, robot_action_obj):
     protocol_id = robot_action_obj.get_protocol_id()
     file_mapping_obj = get_file_mapping_obj_from_protocol_id (protocol_id)
     station , station_protocol = get_station_and_protocol(protocol_id)
+    import pdb; pdb.set_trace()
     if station == 'Station C':
         pass
     elif station == 'Station B':
