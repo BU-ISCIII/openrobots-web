@@ -17,9 +17,7 @@ def api_usage(request):
 
 @api_view(['POST',])
 def api_create_usage(request):
-
     if request.method == 'POST':
-
         data = request.data
         if isinstance(data, QueryDict ):
             data = data.dict()
@@ -45,7 +43,6 @@ def api_create_usage(request):
         robot_station = get_robot_station(data['RobotID'])
         if robot_station :
             robot_action_obj.update_robot_station(robot_station)
-        import pdb; pdb.set_trace()
         if 'parameters' in data :
             if isinstance(data['parameters'], dict) :
                 if  store_and_find_changes_parameter_values(data['parameters'], robot_action_obj):
