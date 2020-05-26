@@ -51,8 +51,45 @@ def get_file_mapping_obj_from_protocol_id(protocol_id):
         return FileIDUserRequestMapping.objects.filter(fileID__exact = protocol_id).last()
     return None
 
+def get_owner_of_protocol(protocol_id) :
+    '''
+    Function:
+        The function get the protocol id and look for the owner of the protocol
+    Inputs:
+        protocol_id     # protocol id to find the owner
+    Return:
+        usr_obj. None if not match
+    '''
+    if protocol_id :
+        if FileIDUserRequestMapping.objects.filter(fileID__exact = protocol_id).exists():
+            file_mapping = FileIDUserRequestMapping.objects.filter(fileID__exact = protocol_id).last()
+            station = file_mapping.get_station()
+            protocol = file_mapping.get_station_protocol()
+            if station == 'Station C':
+                if RequestForStationC.objects.filter(protocolID__exact = protocol_id).exists():
+                    station_obj = RequestForStationC.objects.filter(protocolID__exact = protocol_id).last()
+                    return station_obj.get_user_file_obj()
+            elif station == 'Station B':
+                if RequestForStationB.objects.filter(protocolID__exact = protocol_id).exists():
+                    station_obj = RequestForStationB.objects.filter(protocolID__exact = protocol_id).last()
+                    return station_obj.get_user_file_obj()
+            elif station == 'Station A':
+                if protocol == '1':
+                    if RequestForStationA_Prot1.objects.filter(protocolID__exact = protocol_id).exists():
+                        station_obj = RequestForStationA_Prot1.objects.filter(protocolID__exact = protocol_id).last()
+                        return station_obj.get_user_file_obj()
+                elif protocol == '2':
+                    if RequestForStationA_Prot2.objects.filter(protocolID__exact = protocol_id).exists():
+                        station_obj = RequestForStationA_Prot2.objects.filter(protocolID__exact = protocol_id).last()
+                        return station_obj.get_user_file_obj()
+                else:
+                    if RequestForStationA_Prot3.objects.filter(protocolID__exact = protocol_id).exists():
+                        station_obj = RequestForStationA_Prot3.objects.filter(protocolID__exact = protocol_id).last()
+                        return station_obj.get_user_file_obj()
+    return None
 
-def get_robot_station(robot_id):
+
+def get_robot_station_type(robot_id):
     '''
     Function:
         The function get the station type which robot belongs to

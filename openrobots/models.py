@@ -602,6 +602,12 @@ class RequestForStationA_Prot1 (models.Model):
         data.append(self.generatedFile)
         return data
 
+    def get_user_file(self):
+        return '%s' %(self.userRequestedBy.username)
+
+    def get_user_file_obj(self):
+        return self.userRequestedBy
+
     objects = RequestForStationA_Prot1Manager()
 
 
@@ -666,6 +672,12 @@ class RequestForStationA_Prot2 (models.Model):
         data.append(self.generatedFile)
         return data
 
+    def get_user_file(self):
+        return '%s' %(self.userRequestedBy.username)
+
+    def get_user_file_obj(self):
+        return self.userRequestedBy
+
     objects = RequestForStationA_Prot2Manager()
 
 
@@ -729,6 +741,12 @@ class RequestForStationA_Prot3 (models.Model):
         data.append(self.generatedat.strftime("%Y-%b-%d"))
         data.append(self.generatedFile)
         return data
+
+    def get_user_file(self):
+        return '%s' %(self.userRequestedBy.username)
+
+    def get_user_file_obj(self):
+        return self.userRequestedBy
 
     objects = RequestForStationA_Prot3Manager()
 
@@ -799,6 +817,12 @@ class RequestForStationB (models.Model):
         data.append(self.generatedat.strftime("%Y-%b-%d"))
         data.append(self.generatedFile)
         return data
+
+    def get_user_file(self):
+        return '%s' %(self.userRequestedBy.username)
+
+    def get_user_file_obj(self):
+        return self.userRequestedBy
 
     objects = RequestForStationBManager()
 
@@ -889,6 +913,11 @@ class RequestForStationC (models.Model):
         data.append(self.generatedFile)
         return data
 
+    def get_user_file(self):
+        return '%s' %(self.userRequestedBy.username)
+
+    def get_user_file_obj(self):
+        return self.userRequestedBy
 
     objects = RequestForStationCManager()
 '''
@@ -934,6 +963,9 @@ class FileIDUserRequestMapping(models.Model):
 
 
 class RobotsActionPost(models.Model):
+    ownerProtocol = models.ForeignKey (
+                        User,
+                        on_delete=models.CASCADE, null = True, blank = True )
     ipaddress = models.CharField(max_length = 50,  null = True)
     stationType = models.CharField(max_length = 50,  null = True, blank = True)
     RobotID = models.CharField(max_length = 50)
@@ -947,17 +979,26 @@ class RobotsActionPost(models.Model):
     def __str__ (self):
         return '%s' %(self.RobotID)
 
+    def get_executed_action(self):
+        return '%s' %(self.executedAction)
+
+    def get_station_type(self):
+        return '%s' %(self.stationType)
+
     def get_robot_name (self):
         return '%s' %(self.RobotID)
 
     def get_protocol_id(self):
         return '%s' %(self.ProtocolID)
 
-    def get_executed_action(self):
-        return '%s' %(self.executedAction)
 
-    def get_robot_action_date_and_duration (self):
+
+    def get_robot_action_data (self):
         data=[]
+        try:
+            data.append(self.ownerProtocol.username)
+        except:
+            data.append('Not recorded')
         data.append(self.executedAction)
         data.append(self.StartRunTime.strftime("%Y-%b-%d  %H:%M"))
         data.append(self.FinishRunTime.strftime("%Y-%b-%d %H:%M"))
@@ -969,7 +1010,12 @@ class RobotsActionPost(models.Model):
         self.save()
         return self
 
-    def update_robot_station(self, station_robot):
+    def update_protocol_owner(self, user):
+        self.ownerProtocol = user
+        self.save()
+        return self
+
+    def update_robot_station_type(self, station_robot):
         self.stationType = station_robot
         self.save()
         return self

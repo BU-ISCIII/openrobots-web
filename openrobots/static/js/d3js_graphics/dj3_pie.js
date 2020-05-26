@@ -1,17 +1,4 @@
-//import { select } from 'd3';
-
 function my_pie(dataset){
-    //import { select } from 'd3';
-/*
-var dataset = [
-        { name: 'Direct', count: 2742 },
-        { name: 'Facebook', count: 2242 },
-        { name: 'Pinterest', count: 3112 },
-        { name: 'Search', count: 937 },
-        { name: 'Others', count: 1450 }
-    ];
-*/
-//var dataset = {{data|safe}}
 
 var total=0;
 
@@ -115,7 +102,7 @@ var restOfTheData=function(){
 
 
     addText(function(){
-        return "Page View";
+        return "Robot Actions";
     },25);
 
 };

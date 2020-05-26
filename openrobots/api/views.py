@@ -39,10 +39,14 @@ def api_create_usage(request):
         if not serializer.is_valid():
             return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
         robot_action_obj = serializer.save()
-
-        robot_station = get_robot_station(data['RobotID'])
+        # get the station type
+        robot_station = get_robot_station_type(data['RobotID'])
         if robot_station :
-            robot_action_obj.update_robot_station(robot_station)
+            robot_action_obj.update_robot_station_type(robot_station)
+        # get the owner of the protocol
+        protocol_owner = get_owner_of_protocol(robot_action_obj.get_protocol_id())
+        robot_action_obj.update_protocol_owner(protocol_owner)
+
         if 'parameters' in data :
             if isinstance(data['parameters'], dict) :
                 if  store_and_find_changes_parameter_values(data['parameters'], robot_action_obj):

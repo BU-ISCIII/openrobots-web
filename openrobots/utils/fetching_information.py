@@ -465,9 +465,6 @@ def get_robots_action_from_user_form(form_data ):
     if RobotsActionPost.objects.all().exists():
         start_date = form_data['startdate']
         end_date = form_data['enddate']
-        #robot = form_data['robots']
-        #station = form_data['stations']
-        #protocol = form_data['protocols']
 
         if start_date == '' and end_date == '':
             #if empty values set the date to today and tomorrow
@@ -505,7 +502,6 @@ def get_robots_action_from_user_form(form_data ):
                 robots_actions_objs = robots_actions_objs.filter(executedAction__exact = form_data['protocolsAction'])
             else:
                 return None
-
         return  robots_actions_objs
     else:
         return None
@@ -563,19 +559,30 @@ def get_robots_information_utilization(robots_action_obj):
         robot_jobs_data
     '''
     robot_jobs_data = {}
+    robot_jobs_data['actions'] = {}
+    robot_jobs_data['robot_usage'] = {}
+    robot_jobs_data['grafic'] = []
+    #robot_jobs_data[station_type]['robot_usage'] = 0
+    #robot_jobs_data[station_type][robot_name]['robot_actions'] =[]
     for action_obj in robots_action_obj:
+        station_type = action_obj.get_station_type().replace(' ','_')
         robot_name = action_obj.get_robot_name()
+        if not station_type in robot_jobs_data['actions'] :
+            robot_jobs_data['actions'][station_type] = {}
 
-        if robot_name not in robot_jobs_data :
-            robot_jobs_data[robot_name] = {}
-            robot_jobs_data[robot_name]['robot_usage'] = 0
-            robot_jobs_data[robot_name]['robot_actions'] =[]
-        robot_jobs_data[robot_name]['robot_usage'] +=1
-        robot_jobs_data[robot_name]['robot_actions'].append(action_obj.get_robot_action_date_and_duration())
+        if not robot_name in robot_jobs_data['actions'][station_type] :
+            robot_jobs_data['actions'][station_type][robot_name] = []
+        if not robot_name in robot_jobs_data['robot_usage']:
+            robot_jobs_data['robot_usage'][robot_name] = 0
 
+        robot_jobs_data['robot_usage'][robot_name] +=1
+        robot_jobs_data['actions'][station_type][robot_name].append(action_obj.get_robot_action_data())
 
-
-
+    for key, val in robot_jobs_data['robot_usage'].items():
+        temp_dict = {}
+        temp_dict['name'] = key
+        temp_dict['count'] = val
+        robot_jobs_data['grafic'].append(temp_dict)
     return robot_jobs_data
 
 def get_station_from_template(template):

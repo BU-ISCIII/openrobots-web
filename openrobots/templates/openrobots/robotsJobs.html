@@ -3,6 +3,7 @@
 {% block content %}
 {% csrf_token %}
 <script src="https://d3js.org/d3.v3.min.js"></script>
+
 <script type="text/javascript" src="{% static "js/d3js_graphics/pie_donuts_3d.js"%}"></script>
 
 <style>
@@ -31,49 +32,184 @@
 {% if display_robot_utilization %}
     <div class="row row-space-2 margin-b-4">
         <div class="col-sm-7 col-sm-offset-3">
-            <div class="panel panel-danger">
-                <div class="panel-heading"><h3 style="text-align:center">grafica</h3> </div>
+            <div class="panel panel-default">
+                <div class="panel-heading"><h3 style="text-align:center">Robot graphics</h3> </div>
                 <div class="panel-body">
-                    {% for values in error_message %}
-                        <h4>{{values}}</h4>
-                    {% endfor %}
+                        <div id="chart" width = "350" height = "300"></div>
                 </div> <!--  end of panel body -->
+
+
             </div> <!--  end of panel  -->
         </div> <!--  end of col-sm-7 -->
     </div> <!--  end of row -->
-
-    <div class="row row-space-2 margin-b-4">
-        <div class="col-sm-12" >
-            <div class="panel panel-default">
-                <div class="panel-heading"><h3>Robot Utilization</h3> </div>
-                {% for key, values in display_robot_utilization.items %}
-                    <div class="panel-body">
-                        <h4 style="text-align:center">Robot {{key}}</h4>
-                        <table class="table table-hover">
-                            <thead>
-                                <th>Action</th>
-                                <th>Start Date</th>
-                                <th>Finish Date</th>
-                                <th>Execution Duration</th>
-                            </thead>
-                            <tbody>
-                                    {%for action, s_date, f_date, time in values.robot_actions %}
-                                        <tr>
-                                            <td>{{action}}</td>
-                                            <td>{{s_date}}</td>
-                                            <td>{{f_date}}</td>
-                                            <td>{{time}}</td>
-                                        </tr>
-                                    {% endfor %}
-                            </tbody>
-                        </table>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script type="text/javascript" src="{% static "js/d3js_graphics/dj3_pie.js"%}"></script>
+    <script>
+        window.onload = my_pie({{display_robot_utilization.grafic|safe}});
+    </script>
 
 
-                    </div> <!--  end of panel body -->
-                {% endfor %}
-            </div> <!--  end of panel  -->
+    <div class="row row-space-4 margin-b-1">
+        <div class="col-sm-12 ">
+            <div class="tab">
+                <button class="tablinks" onclick="summaryBin(event, 'stationA')">Station A Utilization</button>
+                {% if display_robot_utilization.actions.Station_B %}
+                    <button class="tablinks" onclick="summaryBin(event, 'stationB')">Station B Utilization</button>
+                {% endif %}
+                <button class="tablinks" onclick="summaryBin(event, 'stationC')">Station C Utilization</button>
+                {% if display_robot_utilization.actions.None %}
+                    <button class="tablinks" onclick="summaryBin(event, 'stationNone')">Not defined Station</button>
+                {% endif %}
+
+                <div id="stationA" class="tabcontent">
+                    <div class="row row-space-4 margin-b-4">
+                        <div class="col-sm-10 col-sm-offset-1" >
+                            <div class="panel panel-default">
+                                {% for robot , values in display_robot_utilization.actions.Station_A.items %}
+                                    <div class="panel-heading"><h3 style="text-align:center">Robot Utilization {{robot}}</h3></div>
+                                    <div class="panel-body">
+
+    									<table class="table table-hover">
+    				    					<thead>
+    				    						<tr>
+    				    							<th>User Requested</th>
+                                                    <th>Action</th>
+                                                    <th>Start Date</th>
+                                                    <th>Finish Date</th>
+                                                    <th>Execution Duration</th>
+
+    				                            </tr>
+    				                        </thead>
+    										<tbody>
+                                                {% for  user, action, s_date, f_date, duration in values %}
+    											    <tr>
+    				                                    <td>{{user}}</td>
+                                                        <td>{{action}}</td>
+                                                        <td>{{s_date}}</td>
+                                                        <td>{{f_date}}</td>
+                                                        <td>{{duration}}</td>
+                                                    </tr>
+    				                            {% endfor %}
+    				    					</tbody>
+    				    				</table>
+                                    </div>  <!--  end of panel body  -->
+                                {% endfor %}
+                            </div> <!--// end panel -->
+                        </div> <!--// end col-sm-10  -->
+                    </div> <!--  end of row -->
+                </div><!-- // end of tab station A -->
+
+                <div id="stationB" class="tabcontent">
+                    <div class="row row-space-4 margin-b-4">
+                        <div class="col-sm-10 col-sm-offset-1" >
+                            <div class="panel panel-default">
+                                <div class="panel-heading"><h5 style="text-align:center">Robot Utilization</h5></div>
+                                <div class="panel-body">
+									<table class="table table-hover">
+				    					<thead>
+				    						<tr>
+				    							<th>User Requested</th>
+                                                <th>Action</th>
+                                                <th>Start Date</th>
+                                                <th>Finish Date</th>
+                                                <th>Execution Duration</th>
+
+				                            </tr>
+				                        </thead>
+										<tbody>
+                                            {% for  user, action, s_date, f_date, duration in display_robot_utilization.actions.Station_B %}
+											    <tr>
+				                                    <td>{{user}}</td>
+                                                    <td>{{action}}</td>
+                                                    <td>{{s_date}}</td>
+                                                    <td>{{f_date}}</td>
+                                                    <td>{{duration}}</td>
+                                                </tr>
+				                            {% endfor %}
+				    					</tbody>
+				    				</table>
+                                </div>  <!--  end of panel body  -->
+                            </div> <!--// end panel -->
+                        </div> <!--// end col-sm-10  -->
+                    </div> <!--  end of row -->
+                </div><!-- // end of tab station B -->
+
+                <div id="stationC" class="tabcontent">
+                    <div class="row row-space-4 margin-b-4">
+                        <div class="col-sm-10 col-sm-offset-1" >
+                            <div class="panel panel-default">
+                                <div class="panel-heading"><h5 style="text-align:center">Robot Utilization</h5></div>
+                                <div class="panel-body">
+									<table class="table table-hover">
+				    					<thead>
+				    						<tr>
+				    							<th>User Requested</th>
+                                                <th>Action</th>
+                                                <th>Start Date</th>
+                                                <th>Finish Date</th>
+                                                <th>Execution Duration</th>
+
+				                            </tr>
+				                        </thead>
+										<tbody>
+                                            {% for  user, action, s_date, f_date, duration in display_robot_utilization.Station_C %}
+											    <tr>
+				                                    <td>{{user}}</td>
+                                                    <td>{{action}}</td>
+                                                    <td>{{s_date}}</td>
+                                                    <td>{{f_date}}</td>
+                                                    <td>{{duration}}</td>
+                                                </tr>
+				                            {% endfor %}
+				    					</tbody>
+				    				</table>
+                                </div>  <!--  end of panel body  -->
+                            </div> <!--// end panel -->
+                        </div> <!--// end col-sm-10  -->
+                    </div> <!--  end of row -->
+                </div><!-- // end of tab station C -->
+
+                <div id="stationNone" class="tabcontent">
+                    <div class="row row-space-4 margin-b-4">
+                        <div class="col-sm-10 col-sm-offset-1" >
+                            <div class="panel panel-default">
+                                {% for robot , values in display_robot_utilization.actions.None.items %}
+                                    <div class="panel-heading"><h3 style="text-align:center">Robot Utilization {{robot}}</h3></div>
+                                    <div class="panel-body">
+
+    									<table class="table table-hover">
+    				    					<thead>
+    				    						<tr>
+    				    							<th>User Requested</th>
+                                                    <th>Action</th>
+                                                    <th>Start Date</th>
+                                                    <th>Finish Date</th>
+                                                    <th>Execution Duration</th>
+
+    				                            </tr>
+    				                        </thead>
+    										<tbody>
+                                                {% for  user, action, s_date, f_date, duration in values %}
+    											    <tr>
+    				                                    <td>{{user}}</td>
+                                                        <td>{{action}}</td>
+                                                        <td>{{s_date}}</td>
+                                                        <td>{{f_date}}</td>
+                                                        <td>{{duration}}</td>
+                                                    </tr>
+    				                            {% endfor %}
+    				    					</tbody>
+    				    				</table>
+                                    </div>  <!--  end of panel body  -->
+                                {% endfor %}
+                            </div> <!--// end panel -->
+                        </div> <!--// end col-sm-10  -->
+                    </div> <!--  end of row -->
+                </div><!-- // end of tab stationNone -->
+            </div> <!--  end of Tab  -->
         </div> <!--  end of col-sm-12 -->
     </div> <!--  end of row -->
+
 {% else %}
     <div class="row row-space-2 margin-b-4">
         <div class="col-sm-7 col-sm-offset-3" >
