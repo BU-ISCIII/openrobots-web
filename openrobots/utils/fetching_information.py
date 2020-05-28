@@ -566,6 +566,7 @@ def get_robots_information_utilization(robots_action_obj):
     robot_jobs_data['actions'] = {}
     robot_jobs_data['robot_usage'] = {}
     robot_jobs_data['grafic'] = []
+    protocols_used = []
     #robot_jobs_data[station_type]['robot_usage'] = 0
     #robot_jobs_data[station_type][robot_name]['robot_actions'] =[]
     for action_obj in robots_action_obj:
@@ -581,12 +582,22 @@ def get_robots_information_utilization(robots_action_obj):
 
         robot_jobs_data['robot_usage'][robot_name] +=1
         robot_jobs_data['actions'][station_type][robot_name].append(action_obj.get_robot_action_data())
+        protocols_used.append(action_obj.get_protocol_id())
 
     for key, val in robot_jobs_data['robot_usage'].items():
         temp_dict = {}
         temp_dict['name'] = key
         temp_dict['count'] = val
         robot_jobs_data['grafic'].append(temp_dict)
+    # collect data for summary
+    summary = {}
+    summary['n_actions'] = sum(list(robot_jobs_data['robot_usage'].values()))
+    summary['n_robots'] = len(robot_jobs_data['robot_usage'])
+    summary['n_exec_prot'] = len(protocols_used)
+    summary['n_dif_exec_prot'] = len(set(protocols_used))
+
+    robot_jobs_data['summary'] = summary
+
     return robot_jobs_data
 
 def get_station_from_template(template):

@@ -33,8 +33,35 @@
     <div class="row row-space-2 margin-b-4">
         <div class="col-sm-6 ">
             <div class="panel panel-default">
-                <div class="panel-heading"><h3 style="text-align:center">Robot Summary</h3> </div>
+                <div class="panel-heading"><h3 style="text-align:center">Robot Utilization Summary</h3> </div>
                 <div class="panel-body">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Measure data</th>
+                                <th>Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Number of actions</td>
+                                <td>{{display_robot_utilization.summary.n_actions}}</td>
+                            </tr>
+                            <tr>
+                                <td>Number of Robots</td>
+                                <td>{{display_robot_utilization.summary.n_robots}}</td>
+                            </tr>
+                            <tr>
+                                <td>Number of Executed Protocols</td>
+                                <td>{{display_robot_utilization.summary.n_exec_prot}}</td>
+                            </tr>
+                            <tr>
+                                <td>Number of different protocols</td>
+                                <td>{{display_robot_utilization.summary.n_dif_exec_prot}}</td>
+                            </tr>
+
+                        </tbody>
+                    </table>
 
                 </div> <!--  end of panel body -->
             </div> <!--  end of panel  -->

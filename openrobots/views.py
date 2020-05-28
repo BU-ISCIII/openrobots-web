@@ -177,7 +177,6 @@ def list_of_requests(request):
 
 @login_required
 def robots_jobs (request):
-    data = "[{ name: 'Direct', count: 2742 },{ name: 'Facebook', count: 2242 }, { name: 'Pinterest', count: 3112 }, { name: 'Search', count: 937 },{ name: 'Others', count: 1450 }]"
     form_data = get_form_data_robots_usage()
 
     if request.method == 'POST' and request.POST['action'] == 'robotsjobs':
@@ -200,9 +199,9 @@ def robots_jobs (request):
 
         display_robot_utilization = get_robots_information_utilization (robots_action_objs)
         #import pdb; pdb.set_trace()
-        return render (request, 'openrobots/robotsJobs.html',{'display_robot_utilization': display_robot_utilization, 'data':data})
+        return render (request, 'openrobots/robotsJobs.html',{'display_robot_utilization': display_robot_utilization})
 
-    return render (request, 'openrobots/robotsJobs.html', {'data':data, 'form_data': form_data})
+    return render (request, 'openrobots/robotsJobs.html',{'form_data': form_data})
 
 @login_required
 def upload_protocol_templates(request):
