@@ -65,7 +65,7 @@
             <div id="stationC_prot1" class="tabcontent">
             <!-- FORM for Station C -->
                 <div class="panel panel-default">
-                    <div class="panel-heading"><h3>Form to create protocol from station C</h3></div>
+                    <div class="panel-heading"><h5 style="text-align:center">Station C Protocol: Real Time PCR.</h5></div>
                     <div class="panel-body">
                         {% if form_data.station_c.1 %}
                            <!-- FORM for Station C -->
@@ -220,9 +220,9 @@
             <div id="stationC_prot2" class="tabcontent">
             <!-- FORM for Station C -->
                 <div class="panel panel-default">
-                    <div class="panel-heading"><h3>Form to create protocol from station C</h3></div>
+                    <div class="panel-heading"><h5 style="text-align:center">Station C Protocol: Real Time PCR  Multi.</h5></div>
                     <div class="panel-body">
-                        {% if form_data.station_c2 %}
+                        {% if form_data.station_c.2 %}
                            <!-- FORM for Station C -->
                             <form method="post" enctype="multipart/form-data" name="createfile" id="createfile" class="form-horizontal well">
                                 {% csrf_token %}
@@ -248,36 +248,6 @@
                                                       </select>
                                     </div>  <!-- end select input -->
                                     <BR><br>
-
-                                    <label class="col-sm-5 control-label" for="MMTUBE_LABWARE" >Master Mix Tube</label>
-                                    <div class="col-sm-6"><select class="form-control"  required = "required" name="MMTUBE_LABWARE" id="MMTUBE_LABWARE">
-                                                            {% if form_data.mm_tube_labware_default_data %}
-                                                                <option selected="{{form_data.mm_tube_labware_default_data}}">{{form_data.mm_tube_labware_default_data}}</option>
-                                                            {% else %}
-                                                                <option value="">Choose a value</option>
-                                                            {% endif %}
-                                                            {% for value in form_data.mm_tube_labware_data %}
-                                                                <option value="{{value}}">{{value}}</option>
-                                                            {% endfor %}
-
-                                                      </select>
-                                    </div>  <!-- end select input -->
-                                    <br><br>
-                                    <label class="col-sm-5 control-label" for="MM_TYPE" >Master Mix Type</label>
-                                    <div class="col-sm-6"><select class="form-control"  required = "required" name="MM_TYPE" id="MM_TYPE">
-                                                            {% if form_data.master_mix_type_default_data %}
-                                                                <option selected="{{form_data.master_mix_type_default_data}}">{{form_data.master_mix_type_default_data}}</option>
-                                                            {% else %}
-                                                                <option value="">Choose a value</option>
-                                                            {% endif %}
-                                                            {% for value in form_data.master_mix_type_data %}
-                                                                <option value="{{value}}">{{value}}</option>
-                                                            {% endfor %}
-
-                                                      </select>
-                                    </div>  <!-- end select input -->
-                                    <BR><br>
-
                                     <label class="col-sm-5 control-label" for="PCR_LABWARE" >PCR plate labware </label>
                                     <div class="col-sm-6"><select class="form-control"  required = "required" name="PCR_LABWARE" id="PCR_LABWARE">
                                                             {% if form_data.pcr_labware_default_data %}
@@ -322,29 +292,14 @@
                                     <label class="col-sm-5  control-label" for="VOLUME_ELUTION" >Volume Elution</label>
                                     <div class="col-sm-6"><input class="form-control" type="text" required = "required" name="VOLUME_ELUTION" id="VOLUME_ELUTION" value="7" size="100" maxlength="100"></div>
                                     <BR><br>
-                                    <label class="col-sm-5 control-label" for="PREPARE_MASTERMIX" >Prepare Mastermix</label>
-                                    <div class="col-sm-4">
-                                        <label class="radio-inline"><input type="radio" name="PREPARE_MASTERMIX" required = "required" value="True" >YES</label>
-                                        <label class="radio-inline"><input type="radio" name="PREPARE_MASTERMIX" required = "required" value="False" checked>NO</label>
-                                    </div>  <!-- end  radio -->
-                                    <br><br>
+
                                     <label class="col-sm-5 control-label" for="RESET_TIPCOUNT" >Reset Tip Count</label>
                                     <div class="col-sm-4">
                                         <label class="radio-inline"><input type="radio" name="RESET_TIPCOUNT" required = "required" value="True" >YES</label>
                                         <label class="radio-inline"><input type="radio" name="RESET_TIPCOUNT" required = "required" value="False" checked>NO</label>
                                     </div>  <!-- end  radio -->
                                     <br><br>
-                                    <label class="col-sm-5 control-label" for="TRANSFER_MASTERMIX" >Transfer Mastermix</label>
-                                    <div class="col-sm-4">
-                                        <label class="radio-inline"><input type="radio" name="TRANSFER_MASTERMIX" required = "required" value="True" checked>YES</label>
-                                        <label class="radio-inline"><input type="radio" name="TRANSFER_MASTERMIX" required = "required" value="False">NO</label>
-                                    </div>  <!-- end  radio -->
-                                    <br><br>
-                                    <label class="col-sm-5 control-label" for="TRANSFER_SAMPLES" >Transfer Samples</label>
-                                    <div class="col-sm-4">
-                                        <label class="radio-inline"><input type="radio" name="TRANSFER_SAMPLES" required = "required" value="True" checked>YES</label>
-                                        <label class="radio-inline"><input type="radio" name="TRANSFER_SAMPLES" required = "required" value="False">NO</label>
-                                    </div>  <!-- end  radio -->
+
                             </div>  <!-- end from-group   -->
                             <div class="form-group">
                                 <label class="col-sm-5 control-label" for="notes" >User Notes</label>
@@ -361,7 +316,7 @@
                             </form>
                             <p> Fields marked with <FONT COLOR="Red">*</FONT> are mandatory</p>
                         {% else %}
-                            <h5>There is no  Protocol template defined for Station C </h5>
+                            <h5>There is no  Protocol template defined for PCR Multi </h5>
                         {% endif %}
                     </div>  <!--  end of panel body  -->
 
