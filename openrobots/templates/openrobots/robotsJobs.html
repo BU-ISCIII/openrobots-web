@@ -31,7 +31,16 @@
 
 {% if display_robot_utilization %}
     <div class="row row-space-2 margin-b-4">
-        <div class="col-sm-7 col-sm-offset-3">
+        <div class="col-sm-6 ">
+            <div class="panel panel-default">
+                <div class="panel-heading"><h3 style="text-align:center">Robot Summary</h3> </div>
+                <div class="panel-body">
+
+                </div> <!--  end of panel body -->
+            </div> <!--  end of panel  -->
+        </div> <!--  end of col-sm-7 -->
+
+        <div class="col-sm-5 col-sm-offset-1">
             <div class="panel panel-default">
                 <div class="panel-heading"><h3 style="text-align:center">Robot graphics</h3> </div>
                 <div class="panel-body">
@@ -45,7 +54,7 @@
     <script src="https://d3js.org/d3.v5.min.js"></script>
     <script type="text/javascript" src="{% static "js/d3js_graphics/dj3_pie.js"%}"></script>
     <script>
-        window.onload = my_pie({{display_robot_utilization.grafic|safe}});
+        window.onload = my_pie({{display_robot_utilization.grafic|safe}}, 'Robot Actions');
     </script>
 
 

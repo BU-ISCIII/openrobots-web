@@ -828,7 +828,7 @@ class RequestForStationB (models.Model):
 
 
 
-class RequestForStationCManager(models.Manager):
+class RequestForStationC_Prot1Manager(models.Manager):
 
     def create_new_request (self, request_data):
 
@@ -854,7 +854,7 @@ class RequestForStationCManager(models.Manager):
 
 
 
-class RequestForStationC (models.Model):
+class RequestForStationC_Prot1 (models.Model):
     userRequestedBy = models.ForeignKey (
                         User,
                         on_delete=models.CASCADE, null = True, blank = True )
@@ -919,7 +919,7 @@ class RequestForStationC (models.Model):
     def get_user_file_obj(self):
         return self.userRequestedBy
 
-    objects = RequestForStationCManager()
+    objects = RequestForStationC_Prot1Manager()
 '''
 class FileIDUserRequestMapping(models.Model):
     fileID = models.CharField(max_length = 50)

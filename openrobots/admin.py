@@ -103,7 +103,7 @@ class RequestForStationBAdmin (admin.ModelAdmin):
 
 
 
-class RequestForStationCAdmin (admin.ModelAdmin):
+class RequestForStationC_Prot1Admin (admin.ModelAdmin):
     list_display =['requestedCodeID','masterMixLabware', 'masterMixTubeLabware','pcrPlateLabware', 'masterMixType', 'numberOfSamples',
                 'prepareMastermix', 'transferMastermix', 'transferSamples', 'generatedFile', 'usedTemplateFile','userRequestedBy' , 'userNotes']
 
@@ -111,7 +111,7 @@ class RequestForStationCAdmin (admin.ModelAdmin):
 
 class RobotsActionPostAdmin(admin.ModelAdmin):
     list_display = ['RobotID', 'executedAction', 'ipaddress','ProtocolID', 'StartRunTime', 'FinishRunTime','modifiedParameters']
- 
+
 
 
 admin.site.register(Stations , StationsAdmin)
@@ -155,6 +155,6 @@ admin.site.register(RequestForStationA_Prot2 , RequestForStationA_Prot2Admin)
 admin.site.register(RequestForStationA_Prot3 , RequestForStationA_Prot3Admin)
 
 admin.site.register(RequestForStationB , RequestForStationBAdmin)
-admin.site.register(RequestForStationC , RequestForStationCAdmin)
+admin.site.register(RequestForStationC_Prot1 , RequestForStationC_Prot1Admin)
 
 admin.site.register(RobotsActionPost, RobotsActionPostAdmin)
