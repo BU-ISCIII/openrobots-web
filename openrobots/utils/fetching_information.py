@@ -40,8 +40,8 @@ def build_request_codeID (user, protocol_type, station, protocol ) :
     '''
     num_times = 0
     if station == 'Station C':
-        if RequestForStationC.objects.filter(userRequestedBy = user, usedTemplateFile__typeOfProtocol__protocolTypeName__exact = protocol_type).exists():
-            num_times = RequestForStationC.objects.filter(userRequestedBy = user, usedTemplateFile__typeOfProtocol__protocolTypeName__exact = protocol_type).count()
+        if RequestForStationC_Prot1.objects.filter(userRequestedBy = user, usedTemplateFile__typeOfProtocol__protocolTypeName__exact = protocol_type).exists():
+            num_times = RequestForStationC_Prot1.objects.filter(userRequestedBy = user, usedTemplateFile__typeOfProtocol__protocolTypeName__exact = protocol_type).count()
     elif station == 'Station B':
         if RequestForStationB.objects.filter(userRequestedBy = user, usedTemplateFile__typeOfProtocol__protocolTypeName__exact = protocol_type).exists():
             num_times = RequestForStationB.objects.filter(userRequestedBy = user, usedTemplateFile__typeOfProtocol__protocolTypeName__exact = protocol_type).count()
@@ -281,7 +281,11 @@ def get_form_data_creation_run_file():
     if ProtocolTemplateFiles.objects.filter(station__stationName__iexact = 'Station B').exists():
         form_data['station_b'] = ProtocolTemplateFiles.objects.filter(station__stationName__iexact = 'Station B').last().get_protocol_file_name()
     if ProtocolTemplateFiles.objects.filter(station__stationName__iexact = 'Station C').exists():
-        form_data['station_c'] = ProtocolTemplateFiles.objects.filter(station__stationName__iexact = 'Station C').last().get_protocol_file_name()
+        form_data['station_c'] = {}
+        protocol_types = ['Protocol 1', 'Protocol 2']
+        for i in range(len(protocol_types)) :
+            if ProtocolTemplateFiles.objects.filter(station__stationName__iexact = 'Station C', protocolName__icontains = protocol_types[i]).exists():
+                form_data['station_c'][i+1] = ProtocolTemplateFiles.objects.filter(station__stationName__iexact = 'Station C', protocolName__icontains = protocol_types[i]).last().get_protocol_file_name()
 
     return form_data
 
@@ -639,7 +643,8 @@ def extract_form_data_station (request) :
     Description:
         The function extract the user form data and define a dictionnary with the values
     Constants:
-        PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_C
+        PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_C_PROT_1
+        PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_C_PROT_2
         PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_B
         PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_A_PROT_1
         PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_A_PROT_2
@@ -650,20 +655,26 @@ def extract_form_data_station (request) :
     data_for_file = {}
     data_for_file2 = {}
     data_for_database = {}
-    if request.POST['station'] == 'Station C':
-        for item in PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_C:
+    if request.POST['station'] == 'Station C' and request.POST['protocol'] == '1':
+        for item in PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_C_PROT_1:
+            data_for_file[item] = request.POST[item]
+        for item in MAP_PROTOCOL_PARAMETER_TO_DATABASE_STATION_C_PROT_1 :
+            data_for_database[item[1]] = request.POST[item[0]]
+        data_for_database['station'] = 'Station C'
+    elif request.POST['station'] == 'Station C' and request.POST['protocol'] == '2':
+        for item in PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_C_PROT_2:
             data_for_file[item] = request.POST[item]
         #[(data_for_file2[item] = request.POST[item]) for item in PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_C ]
-        for item in MAP_PROTOCOL_PARAMETER_TO_DATABASE_STATION_C :
+        for item in MAP_PROTOCOL_PARAMETER_TO_DATABASE_STATION_C_PROT_2 :
             data_for_database[item[1]] = request.POST[item[0]]
-
-        data_for_database['station'] = request.POST['station']
+        data_for_database['station'] = 'Station C'
     elif request.POST['station'] == 'Station B':
         for item in PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_B:
             data_for_file[item] = request.POST[item]
         #[(data_for_file2[item] = request.POST[item]) for item in PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_C ]
         for item in MAP_PROTOCOL_PARAMETER_TO_DATABASE_STATION_B :
             data_for_database[item[1]] = request.POST[item[0]]
+
     elif  request.POST['station'] == 'Station A' and request.POST['protocol'] == '1' :
         for item in PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_A_PROT_1:
             data_for_file[item] = request.POST[item]
@@ -713,9 +724,9 @@ def get_list_of_requests():
     '''
     request_list = {}
     # get request for Station C protocols
-    if RequestForStationC.objects.all().exists():
+    if RequestForStationC_Prot1.objects.all().exists():
         request_list['station_c'] = []
-        c_requests = RequestForStationC.objects.all().order_by('userRequestedBy').order_by('generatedat')
+        c_requests = RequestForStationC_Prot1.objects.all().order_by('userRequestedBy').order_by('generatedat')
         for request in c_requests:
             request_list['station_c'].append(request.get_request_info())
     if RequestForStationB.objects.all().exists():

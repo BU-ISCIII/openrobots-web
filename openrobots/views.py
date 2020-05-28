@@ -15,6 +15,7 @@ def index(request):
 def create_pcr_protocol_file(request):
     # Get data to display in form
     form_data = get_form_data_creation_run_file()
+
     if request.method == 'POST' and (request.POST['action']=='createprotocolfile'):
         template = request.POST['template']
 
@@ -25,14 +26,17 @@ def create_pcr_protocol_file(request):
         new_prot_file_id_obj = store_file_id (protocol_file_id,request.POST['station'], request.POST['protocol'])
 
         add_result = add_parameters_in_file (template, protocol_file,  parameters, protocol_file_id)
-
         if add_result != 'True':
             return render(request, 'openrobots/createPCRProtocolFile.html' ,{'form_data': form_data, 'error': add_result})
         database['generatedFile'] = protocol_file
         database['protocolID'] = protocol_file_id
         database['requestedCodeID'] = build_request_codeID (request.user, protocol_type, request.POST['station'],request.POST['protocol'] )
+
         if request.POST['station'] == 'Station C':
-            new_create_protocol = RequestForStationC.objects.create_new_request(database)
+            if request.POST['protocol'] == '1':
+                new_create_protocol = RequestForStationC_Prot1.objects.create_new_request(database)
+            else:
+                new_create_protocol = RequestForStationC_Prot2.objects.create_new_request(database)
         else:
             return render(request, 'openrobots/createPCRProtocolFile.html' ,{'form_data': form_data})
 

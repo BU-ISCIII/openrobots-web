@@ -101,11 +101,14 @@ class RequestForStationBAdmin (admin.ModelAdmin):
 
 
 
-
-
 class RequestForStationC_Prot1Admin (admin.ModelAdmin):
-    list_display =['requestedCodeID','masterMixLabware', 'masterMixTubeLabware','pcrPlateLabware', 'masterMixType', 'numberOfSamples',
-                'prepareMastermix', 'transferMastermix', 'transferSamples', 'generatedFile', 'usedTemplateFile','userRequestedBy' , 'userNotes']
+    list_display =['requestedCodeID','masterMixLabware', 'masterMixTubeLabware','pcrPlateLabware', 'masterMixType',
+                'numberOfSamples', 'c_elution_Labware', 'prepareMastermix', 'transferMastermix', 'transferSamples',
+                'volumeElution', 'generatedFile', 'usedTemplateFile','userRequestedBy' , 'userNotes']
+
+class RequestForStationC_Prot2Admin (admin.ModelAdmin):
+    list_display =['requestedCodeID','masterMixLabware', 'pcrPlateLabware', 'numberOfSamples',
+                 'volumeElution', 'c_elution_Labware', 'generatedFile', 'usedTemplateFile','userRequestedBy' , 'userNotes']
 
 
 
@@ -156,5 +159,6 @@ admin.site.register(RequestForStationA_Prot3 , RequestForStationA_Prot3Admin)
 
 admin.site.register(RequestForStationB , RequestForStationBAdmin)
 admin.site.register(RequestForStationC_Prot1 , RequestForStationC_Prot1Admin)
+admin.site.register(RequestForStationC_Prot2 , RequestForStationC_Prot2Admin)
 
 admin.site.register(RobotsActionPost, RobotsActionPostAdmin)

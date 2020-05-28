@@ -928,6 +928,106 @@ class FileIDUserRequestMapping(models.Model):
     generatedat = models.DateTimeField(auto_now_add=True)
 '''
 
+class RequestForStationC_Prot2Manager(models.Manager):
+
+    def create_new_request (self, request_data):
+
+        masterMixLabware = MasterMixLabware.objects.get(MasterMixLabwareType__exact = request_data['masterMixLabware'])
+        #masterMixTubeLabware = MasterMixTube.objects.get(MasterMixTube__exact = request_data['masterMixTubeLabware'])
+        pcrPlateLabware = PCR_plateLabware.objects.get(PCR_plateLabwareType__exact = request_data['pcrPlateLabware'])
+        #masterMixType = MasterMixType.objects.get(MasterMixType__exact = request_data['masterMixType'])
+        c_elution_Labware = ElutionStationC_Labware.objects.get(elutionStationC__exact = request_data['elutionLabware'])
+
+        usedTemplateFile = ProtocolTemplateFiles.objects.get(protocolTemplateFileName__exact = request_data['usedTemplateFile'])
+        languageCode = Language.objects.filter(languageCode__exact = request_data['languageCode']).last()
+
+        new_request = self.create(userRequestedBy = request_data['userRequestedBy'], masterMixLabware = masterMixLabware ,
+                    # masterMixTubeLabware = masterMixTubeLabware,
+                    pcrPlateLabware = pcrPlateLabware, c_elution_Labware = c_elution_Labware,
+                    # masterMixType = masterMixType, station = station,
+                    usedTemplateFile = usedTemplateFile, requestedCodeID = request_data['requestedCodeID'], numberOfSamples = request_data['numberOfSamples'],
+                    # prepareMastermix = util.strtobool(request_data['prepareMastermix']), languageCode = languageCode,
+                    volumeElution = request_data ['volumeElution'],
+                    #transferMastermix = util.strtobool(request_data['transferMastermix']),
+                    protocolID = request_data['protocolID'],
+                    #transferSamples = util.strtobool(request_data['transferSamples']),
+                    resetTipcount =  util.strtobool(request_data['resetTipcount']),
+                    generatedFile = request_data['generatedFile'] , userNotes = request_data['userNotes'])
+
+        return new_request
+
+
+
+class RequestForStationC_Prot2 (models.Model):
+    userRequestedBy = models.ForeignKey (
+                        User,
+                        on_delete=models.CASCADE, null = True, blank = True )
+    masterMixLabware = models.ForeignKey (
+                        MasterMixLabware,
+                        on_delete=models.CASCADE)
+    '''
+    masterMixTubeLabware = models.ForeignKey (
+                        MasterMixTube,
+                        on_delete=models.CASCADE)
+    '''
+    pcrPlateLabware = models.ForeignKey (
+                        PCR_plateLabware,
+                        on_delete=models.CASCADE)
+    c_elution_Labware = models.ForeignKey (
+                        ElutionStationC_Labware,
+                        on_delete=models.CASCADE, null = True)
+    '''
+    masterMixType = models.ForeignKey (
+                        MasterMixType,
+                        on_delete=models.CASCADE)
+    station = models.ForeignKey(
+                        Stations,
+                        on_delete=models.CASCADE)
+    '''
+    usedTemplateFile = models.ForeignKey(
+                        ProtocolTemplateFiles,
+                        on_delete=models.CASCADE)
+    languageCode = models.ForeignKey(
+                        Language,
+                        on_delete=models.CASCADE, null = True)
+    requestedCodeID = models.CharField(max_length = 50)
+    protocolID = models.CharField(max_length = 50, default = None)
+    numberOfSamples = models.CharField(max_length = 10)
+    #prepareMastermix = models.BooleanField()
+    #transferMastermix = models.BooleanField()
+    #transferSamples = models.BooleanField()
+    resetTipcount = models.BooleanField(default=None)
+    volumeElution = models.CharField(max_length = 10,  null = True)
+    generatedFile = models.FileField(upload_to = openrobots_config.OPENROBOTS_OUTPUT_DIRECTORY )
+    userNotes = models.CharField(max_length = 255)
+    generatedat = models.DateTimeField(auto_now_add=True)
+
+    def __str__ (self):
+        return '%s' %(self.requestedCodeID)
+
+    def get_result_data(self):
+        data = []
+        data.append(self.requestedCodeID)
+        data.append(self.usedTemplateFile.get_protocol_type())
+
+        data.append(self.generatedFile)
+        return data
+
+    def get_request_info(self):
+        data = []
+        data.append(self.userRequestedBy.username)
+        data.append(self.requestedCodeID)
+        data.append(self.generatedat.strftime("%Y-%b-%d"))
+        data.append(self.generatedFile)
+        return data
+
+    def get_user_file(self):
+        return '%s' %(self.userRequestedBy.username)
+
+    def get_user_file_obj(self):
+        return self.userRequestedBy
+
+    objects = RequestForStationC_Prot2Manager()
 
 
 class FileIDUserRequestMappingManager(models.Manager):
