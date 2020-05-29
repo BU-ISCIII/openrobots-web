@@ -1,0 +1,144 @@
+{% extends 'openrobots/base.html' %}
+{% load static %}
+{% block content %}
+
+{% if detail_data %}
+    <div class="row row-space-2 margin-b-4">
+        <div class="col-sm-12">
+            <div class="panel panel-default">
+                <div class="panel-heading"><h3 style="text-align:center">Robot action main data</h3> </div>
+                <div class="panel-body">
+                    <table class="table table-hover">
+						<thead>
+							<tr>
+								<th>User Requested</th>
+								<th>Action</th>
+								<th>Start Date</th>
+								<th>Finish Date</th>
+								<th>Execution Duration</th>
+								<th>Modified</th>
+
+							</tr>
+						</thead>
+						<tbody>
+							{% for  user, action, s_date, f_date, duration ,modified, id in detail_data.main_data %}
+								<tr>
+									<td>{{user}}</td>
+									<td>{{action}}</td>
+									<td>{{s_date}}</td>
+									<td>{{f_date}}</td>
+									<td>{{duration}}</td>
+									<td>{{modified}}</td>
+								</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>  <!--  end of panel body  -->
+			</div> <!--// end panel -->
+		</div> <!--// end col-sm-10  -->
+	</div> <!--  end of row -->
+
+	<div class="row row-space-2 margin-b-4">
+		<div class="col-sm-7 col-sm-offset-2">
+			{% if detail_data.param_not_found %}
+				<div class="col-sm-12">
+					<div class="panel panel-danger">
+						<div class="panel-heading"><h3 style="text-align:center">Parameters not found in action Robot</h3> </div>
+						<div class="panel-body">
+							<table class="table table-hover">
+								<thead>
+									<tr>
+										<th>Parameter Name</th>
+										<th>Parameter value in original request</th>
+		                            </tr>
+		                        </thead>
+								<tbody>
+									{% for name, value in detail_data.param_not_found %}
+										<tr>
+											<td>{{name}}</td>
+											<td>{{value}}</td>
+										</tr>
+									{% endfor %}
+								</tbody>
+							</table>
+						</div>  <!--  end of panel body  -->
+					</div> <!--// end panel -->
+				</div> <!--// end col-sm-12  -->
+			{% endif %}
+
+			{% if detail_data.param_modified %}
+				<div class="col-sm-12">
+					<div class="panel panel-warning">
+						<div class="panel-heading"><h3 style="text-align:center">Parameters values modified</h3> </div>
+						<div class="panel-body">
+							<table class="table table-hover">
+								<thead>
+									<tr>
+										<th>Parameter Name</th>
+										<th>Parameter value in robot execution</th>
+										<th>Parameter value in original request</th>
+		                            </tr>
+		                        </thead>
+								<tbody>
+									{% for name, value, original in detail_data.param_modified %}
+										<tr>
+											<td>{{name}}</td>
+											<td>{{value}}</td>
+											<td>{{original}}</td>
+										</tr>
+									{% endfor %}
+								</tbody>
+							</table>
+						</div>  <!--  end of panel body  -->
+					</div> <!--// end panel -->
+				</div> <!--// end col-sm-12  -->
+			{% endif %}
+
+			{% if detail_data.param_not_modified %}
+				<div class="col-sm-12">
+					<div class="panel panel-default">
+						<div class="panel-heading"><h3 style="text-align:center">Parameters values used in the robot action </h3> </div>
+						<div class="panel-body">
+							<table class="table table-hover">
+								<thead>
+									<tr>
+										<th>Parameter Name</th>
+										<th>Parameter value</th>
+		                            </tr>
+		                        </thead>
+								<tbody>
+									{% for name, value in detail_data.param_not_modified %}
+										<tr>
+											<td>{{name}}</td>
+											<td>{{value}}</td>
+											<td>{{original}}</td>
+										</tr>
+									{% endfor %}
+								</tbody>
+							</table>
+						</div>  <!--  end of panel body  -->
+					</div> <!--// end panel -->
+				</div> <!--// end col-sm-12  -->
+			{% endif %}
+		</div> <!--// end col-sm-7  -->
+	</div> <!--  end of row -->
+
+
+
+
+
+{% else %}
+	<div class="row row-space-2 margin-b-4">
+		<div class="col-sm-7 col-sm-offset-3">
+			<div class="panel panel-danger">
+				<div class="panel-heading"><h3 style="text-align:center">Error when requesting detail Robot parameters</h3> </div>
+				<div class="panel-body">
+					{% for values in error_message %}
+						<h4>{{values}}</h4>
+					{% endfor %}
+				</div> <!--  end of panel body -->
+			</div> <!--  end of panel  -->
+		</div> <!--  end of col-sm-7 -->
+	</div> <!--  end of row -->
+{% endif %}
+{% endblock %}

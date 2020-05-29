@@ -5,6 +5,54 @@ from openrobots.models import *
 from openrobots.openrobots_config import *
 
 
+def get_action_robot_detail(action_id):
+    '''
+    Description:
+        The function collect the parameter used in the robot action .
+        Information is divided for modified and not modified parameters
+    Functions:
+        get_station_and_protocol   # located at this file
+        get_station_from_template           # located at this file
+    Return:
+        detail_data
+    '''
+    detail_data = {}
+    detail_data['param_not_modified'] = []
+    detail_data['param_modified'] = []
+    detail_data['param_not_found'] = []
+    robot_action_obj = RobotsActionPost.objects.get(pk__exact = action_id)
+
+    protocol_id = robot_action_obj.get_protocol_id()
+    station, protocol = get_station_and_protocol(protocol_id)
+    if station and protocol:
+        requested_user_file_obj = get_requested_file_obj_from_station_protocol(station,protocol,protocol_id)
+        parameters_dict = get_parameters_names_defined(station, protocol)
+        detail_data['main_data'] = [robot_action_obj.get_robot_action_data()]
+
+        if ParametersRobotAction.objects.filter(robotActionPost = robot_action_obj, protocolFileID__fileID__exact = protocol_id).exists():
+            parameter_objs = ParametersRobotAction.objects.filter(robotActionPost = robot_action_obj, protocolFileID__fileID__exact = protocol_id)
+            action_robot_parameters = {}
+            for parameter_obj in parameter_objs:
+                action_par_name, action_par_value = parameter_obj.get_parameter_name_and_value()
+                action_robot_parameters[action_par_name] = action_par_value
+        for par in parameters_dict.keys():
+            try:
+                ### use the object attribute to get the value
+
+                if str(action_robot_parameters[par]) ==  str(getattr(requested_user_file_obj, parameters_dict[par])):
+                    detail_data['param_not_modified'].append([par,action_robot_parameters[par]])
+
+                else :
+                    detail_data['param_modified'].append([par,action_robot_parameters[par], str(getattr(requested_user_file_obj, parameters_dict[par]))])
+                    modified = True
+            except:
+                detail_data['param_not_found'].append([par, str(getattr(requested_user_file_obj, parameters_dict[par]))])
+                modified = True
+
+        return detail_data
+
+    return False
+
 def  build_protocol_file_name(user, template):
     '''
     Description:
@@ -15,7 +63,6 @@ def  build_protocol_file_name(user, template):
     Return:
         protocol_file_name
     '''
-
     name = [user]
 
     name.append(''.join(get_protocol_type_from_template(template).split()))
@@ -72,6 +119,34 @@ def check_valid_date_format (date):
     except:
         return False
 
+
+def get_parameters_names_defined(station, protocol):
+    '''
+    Description:
+        The function will return the parameters used for the station and protocol
+    Constans:
+        MAP_PROTOCOL_PARAMETER_TO_DATABASE_STATION_A_PROT_1
+        PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_A_PROT_2
+        PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_A_PROT_3
+        PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_B
+        PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_C_PROT_1
+        PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_C_PROT_2
+    Return:
+        dictionary with parameter and values
+    '''
+    if station == 'Station A' and protocol == '1':
+        return dict(MAP_PROTOCOL_PARAMETER_TO_DATABASE_STATION_A_PROT_1)
+    if station == 'Station A' and protocol == '2':
+        return dict(MAP_PROTOCOL_PARAMETER_TO_DATABASE_STATION_A_PROT_2)
+    if station == 'Station A' and protocol == '3':
+        return dict(MAP_PROTOCOL_PARAMETER_TO_DATABASE_STATION_A_PROT_3)
+    if station == 'Station B' and protocol == '1':
+        return dict(MAP_PROTOCOL_PARAMETER_TO_DATABASE_STATION_B)
+    if station == 'Station C' and protocol == '1':
+        return dict(MAP_PROTOCOL_PARAMETER_TO_DATABASE_STATION_C_PROT_1)
+    if station == 'Station C' and protocol == '2':
+        return dict(MAP_PROTOCOL_PARAMETER_TO_DATABASE_STATION_C_PROT_2)
+    return False
 
 def get_form_data_creation_new_robot():
     '''
@@ -429,6 +504,35 @@ def get_module_obj_from_id(module_id):
         return ModulesInLab.objects.get(pk__exact = module_id)
     return None
 
+
+def get_requested_file_obj_from_station_protocol(station,protocol, protocol_file_id):
+    '''
+    Description:
+        The function get the query object for the station. protocol, protocol_file_id
+    Return:
+        requested_file_obj
+    '''
+    if station == 'Station A' and protocol == '1':
+        if RequestForStationA_Prot1.objects.filter(protocolID__exact = protocol_file_id).exists():
+            return RequestForStationA_Prot1.objects.filter(protocolID__exact = protocol_file_id).last()
+    if station == 'Station A' and protocol == '2':
+        if RequestForStationA_Prot2.objects.filter(protocolID__exact = protocol_file_id).exists():
+            return RequestForStationA_Prot2.objects.filter(protocolID__exact = protocol_file_id).last()
+    if station == 'Station A' and protocol == '3':
+        if RequestForStationA_Prot3.objects.filter(protocolID__exact = protocol_file_id).exists():
+            return RequestForStationA_Prot3.objects.filter(protocolID__exact = protocol_file_id).last()
+    if station == 'Station B' and protocol == '1':
+        if RequestForStationB.objects.filter(protocolID__exact = protocol_file_id).exists():
+            return RequestForStationB.objects.filter(protocolID__exact = protocol_file_id).last()
+    if station == 'Station C' and protocol == '1':
+        if RequestForStationC_Prot1.objects.filter(protocolID__exact = protocol_file_id).exists():
+            return RequestForStationC_Prot1.objects.filter(protocolID__exact = protocol_file_id).last()
+    if station == 'Station C' and protocol == '2':
+        if RequestForStationC_Prot2.objects.filter(protocolID__exact = protocol_file_id).exists():
+            return RequestForStationC_Prot2.objects.filter(protocolID__exact = protocol_file_id).last()
+
+    return False
+
 def get_robot_inventory_data(robot_id):
     '''
     Description:
@@ -633,6 +737,20 @@ def get_stations_names ():
             station_names.append(s_name.get_station_name())
     return station_names
 
+def get_station_and_protocol(protocol_id):
+    '''
+    Function:
+        The function get the station number and the prototocol used for the protocol id
+    Inputs:
+        protocol_id     # protocol id for getting the station and protocol
+    Return:
+        station_name, protocol_name .None if does not exist
+    '''
+    if FileIDUserRequestMapping.objects.filter(fileID__exact = protocol_id).exists():
+        file_maping_obj = FileIDUserRequestMapping.objects.filter(fileID__exact = protocol_id).last()
+        return (file_maping_obj.get_station(), file_maping_obj.get_station_protocol())
+    return (None, None)
+
 def get_stored_protocols_files():
     '''
     Description:
@@ -827,7 +945,18 @@ def get_today_and_tomorrows_day():
 
     return (today_day, tomorrow_day)
 
-
+def robot_action_exists(action_id):
+    '''
+    Description:
+        The function check if the action id exists
+    Input:
+        action_id       # Id of the action to check
+    Return:
+        True if exists False else
+    '''
+    if RobotsActionPost.objects.filter(pk__exact = action_id).exists():
+        return True
+    return False
 
 def validate_metadata_for_protocol_template(metadata):
     '''

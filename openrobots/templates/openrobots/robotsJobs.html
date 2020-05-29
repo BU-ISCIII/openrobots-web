@@ -2,9 +2,9 @@
 {% load static %}
 {% block content %}
 {% csrf_token %}
-<script src="https://d3js.org/d3.v3.min.js"></script>
+<script src="https://d3js.org/d3.v5.min.js"></script>
 
-<script type="text/javascript" src="{% static "js/d3js_graphics/pie_donuts_3d.js"%}"></script>
+
 
 <style>
     .shadow {
@@ -78,7 +78,7 @@
             </div> <!--  end of panel  -->
         </div> <!--  end of col-sm-7 -->
     </div> <!--  end of row -->
-    <script src="https://d3js.org/d3.v5.min.js"></script>
+
     <script type="text/javascript" src="{% static "js/d3js_graphics/dj3_pie.js"%}"></script>
     <script>
         window.onload = my_pie({{display_robot_utilization.grafic|safe}}, 'Robot Actions');
@@ -88,11 +88,15 @@
     <div class="row row-space-4 margin-b-1">
         <div class="col-sm-12 ">
             <div class="tab">
-                <button class="tablinks" onclick="summaryBin(event, 'stationA')">Station A Utilization</button>
+                {% if display_robot_utilization.actions.Station_A %}
+                    <button class="tablinks" onclick="summaryBin(event, 'stationA')">Station A Utilization</button>
+                {% endif %}
                 {% if display_robot_utilization.actions.Station_B %}
                     <button class="tablinks" onclick="summaryBin(event, 'stationB')">Station B Utilization</button>
                 {% endif %}
-                <button class="tablinks" onclick="summaryBin(event, 'stationC')">Station C Utilization</button>
+                {% if display_robot_utilization.actions.Station_C %}
+                    <button class="tablinks" onclick="summaryBin(event, 'stationC')">Station C Utilization</button>
+                {% endif %}
                 {% if display_robot_utilization.actions.None %}
                     <button class="tablinks" onclick="summaryBin(event, 'stationNone')">Not defined Station</button>
                 {% endif %}
@@ -117,10 +121,10 @@
     				                            </tr>
     				                        </thead>
     										<tbody>
-                                                {% for  user, action, s_date, f_date, duration in values %}
+                                                {% for  user, action, s_date, f_date, duration ,modified, id in values %}
     											    <tr>
     				                                    <td>{{user}}</td>
-                                                        <td>{{action}}</td>
+                                                        <td><a href="/detailActionRobot={{id}}">{{action}}</a></td>
                                                         <td>{{s_date}}</td>
                                                         <td>{{f_date}}</td>
                                                         <td>{{duration}}</td>
@@ -139,32 +143,35 @@
                     <div class="row row-space-4 margin-b-4">
                         <div class="col-sm-10 col-sm-offset-1" >
                             <div class="panel panel-default">
-                                <div class="panel-heading"><h5 style="text-align:center">Robot Utilization</h5></div>
-                                <div class="panel-body">
-									<table class="table table-hover">
-				    					<thead>
-				    						<tr>
-				    							<th>User Requested</th>
-                                                <th>Action</th>
-                                                <th>Start Date</th>
-                                                <th>Finish Date</th>
-                                                <th>Execution Duration</th>
+                                {% for robot , values in display_robot_utilization.actions.Station_B.items %}
+                                    <div class="panel-heading"><h3 style="text-align:center">Robot Utilization {{robot}}</h3></div>
+                                    <div class="panel-body">
 
-				                            </tr>
-				                        </thead>
-										<tbody>
-                                            {% for  user, action, s_date, f_date, duration in display_robot_utilization.actions.Station_B %}
-											    <tr>
-				                                    <td>{{user}}</td>
-                                                    <td>{{action}}</td>
-                                                    <td>{{s_date}}</td>
-                                                    <td>{{f_date}}</td>
-                                                    <td>{{duration}}</td>
-                                                </tr>
-				                            {% endfor %}
-				    					</tbody>
-				    				</table>
-                                </div>  <!--  end of panel body  -->
+    									<table class="table table-hover">
+    				    					<thead>
+    				    						<tr>
+    				    							<th>User Requested</th>
+                                                    <th>Action</th>
+                                                    <th>Start Date</th>
+                                                    <th>Finish Date</th>
+                                                    <th>Execution Duration</th>
+
+    				                            </tr>
+    				                        </thead>
+    										<tbody>
+                                                {% for  user, action, s_date, f_date, duration ,modified, id in values %}
+    											    <tr>
+    				                                    <td>{{user}}</td>
+                                                        <td><a href="/detailActionRobot={{id}}">{{action}}</a></td>
+                                                        <td>{{s_date}}</td>
+                                                        <td>{{f_date}}</td>
+                                                        <td>{{duration}}</td>
+                                                    </tr>
+    				                            {% endfor %}
+    				    					</tbody>
+    				    				</table>
+                                    </div>  <!--  end of panel body  -->
+                                {% endfor %}
                             </div> <!--// end panel -->
                         </div> <!--// end col-sm-10  -->
                     </div> <!--  end of row -->
@@ -174,32 +181,35 @@
                     <div class="row row-space-4 margin-b-4">
                         <div class="col-sm-10 col-sm-offset-1" >
                             <div class="panel panel-default">
-                                <div class="panel-heading"><h5 style="text-align:center">Robot Utilization</h5></div>
-                                <div class="panel-body">
-									<table class="table table-hover">
-				    					<thead>
-				    						<tr>
-				    							<th>User Requested</th>
-                                                <th>Action</th>
-                                                <th>Start Date</th>
-                                                <th>Finish Date</th>
-                                                <th>Execution Duration</th>
+                                {% for robot , values in display_robot_utilization.actions.Station_C.items %}
+                                    <div class="panel-heading"><h3 style="text-align:center">Robot Utilization {{robot}}</h3></div>
+                                    <div class="panel-body">
 
-				                            </tr>
-				                        </thead>
-										<tbody>
-                                            {% for  user, action, s_date, f_date, duration in display_robot_utilization.Station_C %}
-											    <tr>
-				                                    <td>{{user}}</td>
-                                                    <td>{{action}}</td>
-                                                    <td>{{s_date}}</td>
-                                                    <td>{{f_date}}</td>
-                                                    <td>{{duration}}</td>
-                                                </tr>
-				                            {% endfor %}
-				    					</tbody>
-				    				</table>
-                                </div>  <!--  end of panel body  -->
+    									<table class="table table-hover">
+    				    					<thead>
+    				    						<tr>
+    				    							<th>User Requested</th>
+                                                    <th>Action</th>
+                                                    <th>Start Date</th>
+                                                    <th>Finish Date</th>
+                                                    <th>Execution Duration</th>
+
+    				                            </tr>
+    				                        </thead>
+    										<tbody>
+                                                {% for  user, action, s_date, f_date, duration, modified, id in values %}
+    											    <tr>
+    				                                    <td>{{user}}</td>
+                                                        <td><a href="/detailActionRobot={{id}}">{{action}}</a></td>
+                                                        <td>{{s_date}}</td>
+                                                        <td>{{f_date}}</td>
+                                                        <td>{{duration}}</td>
+                                                    </tr>
+    				                            {% endfor %}
+    				    					</tbody>
+    				    				</table>
+                                    </div>  <!--  end of panel body  -->
+                                {% endfor %}
                             </div> <!--// end panel -->
                         </div> <!--// end col-sm-10  -->
                     </div> <!--  end of row -->
@@ -225,10 +235,10 @@
     				                            </tr>
     				                        </thead>
     										<tbody>
-                                                {% for  user, action, s_date, f_date, duration in values %}
+                                                {% for  user, action, s_date, f_date, duration , modified, id in values %}
     											    <tr>
     				                                    <td>{{user}}</td>
-                                                        <td>{{action}}</td>
+                                                        <td><a href="/detailActionRobot={{id}}">{{action}}</a></td>
                                                         <td>{{s_date}}</td>
                                                         <td>{{f_date}}</td>
                                                         <td>{{duration}}</td>
@@ -299,145 +309,6 @@
             </div> <!--  end of panel  -->
         </div> <!--  end of col-sm-7 -->
     </div> <!--  end of row -->
-
-    <script src="https://d3js.org/d3.v5.min.js"></script>
-
-    <div class="row row-space-2 margin-b-4">
-        <div class="col-sm-7 col-sm-offset-3" >
-            <div class="panel panel-default">
-                <div class="panel-heading"><h3>Robot graphics</h3> </div>
-                <div class="panel-body">
-
-                        <div id="chart" width = "350" height = "300"></div>
-
-
-                </div> <!--  end of panel body -->
-            </div> <!--  end of panel  -->
-        </div> <!--  end of col-sm-7 -->
-    </div> <!--  end of row -->
-
-    <script type="text/javascript" src="{% static "js/d3js_graphics/dj3_pie.js"%}"></script>
-    <script>
-        window.onload = my_pie({{data|safe}});
-/*
-var dataset = [
-        { name: 'Direct', count: 2742 },
-        { name: 'Facebook', count: 2242 },
-        { name: 'Pinterest', count: 3112 },
-        { name: 'Search', count: 937 },
-        { name: 'Others', count: 1450 }
-    ];
-*/
-/*
-var dataset = {{data|safe}}
-
-var total=0;
-
-dataset.forEach(function(d){
-    total+= d.count;
-});
-var pie_data=d3.pie()
-            .value(function(d){return d.count})
-            .sort(null);
-var pie=d3.pie()
-        .value(function(d){return d.count})
-        .sort(null);
-var w=300,h=300;
-const adj = 60;
-
-var outerRadiusArc=w/2;
-var innerRadiusArc=100;
-var shadowWidth=10;
-
-var outerRadiusArcShadow=innerRadiusArc+1;
-var innerRadiusArcShadow=innerRadiusArc-shadowWidth;
-
-
-var color = d3.scaleOrdinal()
-    .range(['#41B787', '#6352B9', '#B65480', '#D5735A', '#D7D9DA']);
-
-//Create the svg and a group inside it.
-
-var svg=d3.select("#chart")
-    .append("svg")
-    .attr('viewBox','-' + adj + ' -' + adj + ' ' + (w + adj) + ' ' + (h + adj ))
-    .attr("width" , w)
-    .attr("height" ,h)
-    //.classed("shadow", true)
-    .attr("class","shadow")
-    .append("g")
-    .attr("transform","translate("+w/2+","+h/2+")")
-    ;
-
-var createChart=function(svg,outerRadius,innerRadius,fillFunction,className){
-
-  var arc=d3.arc()
-          .innerRadius(outerRadius)
-          .outerRadius(innerRadius);
-
-    classString = '.' + className
-
-    var path=svg.selectAll(classString).data(pie_data(dataset))
-    .enter().append("path").attr("d",arc).attr("fill",fillFunction)
-                .attr("class",className);
-
-
-    path.transition()
-            .duration(1000)
-            .attrTween('d', function(d) {
-                var interpolate = d3.interpolate({startAngle: 0, endAngle: 0}, d);
-                return function(t) {
-                    return arc(interpolate(t));
-                };
-            });
-
-  var chart={path:path,arc:arc};
-
-  return chart;
-};
-
-
-
-var mainChart=createChart(svg,outerRadiusArc,innerRadiusArc,function(d,i){
-        return color(d.data.name);
-    },'path1');
-
-var shadowChart=createChart(svg,outerRadiusArcShadow,innerRadiusArcShadow,function(d,i){
-        var c=d3.hsl(color(d.data.name));
-        return d3.hsl((c.h+5), (c.s -.07), (c.l -.15));
-    },'path2');
-
-
-//Add text
-
-function numberWithCommas(x) {
-    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-}
-
-var addText= function (text,y) {
-    svg.append('text')
-            .text(text)
-            .attr("y",y)
-            .attr("x",-35)
-            ;
-};
-
-var restOfTheData=function(){
-
-    addText(function(){
-        return numberWithCommas(total);
-    },0);
-
-
-    addText(function(){
-        return "Page View";
-    },25);
-
-};
-
-
-setTimeout(restOfTheData,1000);
-*/
 </script>
 {% endif %}
 

@@ -10,7 +10,7 @@ from django.http import QueryDict
 
 @api_view(['GET',])
 def api_usage(request):
-    import pdb; pdb.set_trace()
+
     return Response(status = status.HTTP_201_CREATED)
 
 
@@ -38,6 +38,7 @@ def api_create_usage(request):
 
         if not serializer.is_valid():
             return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
+
         robot_action_obj = serializer.save()
         # get the station type
         robot_station = get_robot_station_type(data['RobotID'])

@@ -110,12 +110,16 @@ class RequestForStationC_Prot2Admin (admin.ModelAdmin):
     list_display =['requestedCodeID','masterMixLabware', 'pcrPlateLabware', 'numberOfSamples',
                  'volumeElution', 'c_elution_Labware', 'generatedFile', 'usedTemplateFile','userRequestedBy' , 'userNotes']
 
+class FileIDUserRequestMappingAdmin (admin.ModelAdmin):
+    list_display = ['fileID', 'station', 'protocol']
 
 
 class RobotsActionPostAdmin(admin.ModelAdmin):
     list_display = ['RobotID', 'executedAction', 'ipaddress','ProtocolID', 'StartRunTime', 'FinishRunTime','modifiedParameters']
 
 
+class ParametersRobotActionAdmin(admin.ModelAdmin):
+    list_display = ['robotActionPost', 'protocolFileID','parameterName', 'parameterValue', 'modified']
 
 admin.site.register(Stations , StationsAdmin)
 admin.site.register(ProtocolsType , ProtocolsTypeAdmin)
@@ -161,4 +165,7 @@ admin.site.register(RequestForStationB , RequestForStationBAdmin)
 admin.site.register(RequestForStationC_Prot1 , RequestForStationC_Prot1Admin)
 admin.site.register(RequestForStationC_Prot2 , RequestForStationC_Prot2Admin)
 
+admin.site.register(FileIDUserRequestMapping, FileIDUserRequestMappingAdmin)
+
 admin.site.register(RobotsActionPost, RobotsActionPostAdmin)
+admin.site.register(ParametersRobotAction, ParametersRobotActionAdmin)

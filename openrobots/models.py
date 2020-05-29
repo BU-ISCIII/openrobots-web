@@ -1103,6 +1103,8 @@ class RobotsActionPost(models.Model):
         data.append(self.StartRunTime.strftime("%Y-%b-%d  %H:%M"))
         data.append(self.FinishRunTime.strftime("%Y-%b-%d %H:%M"))
         data.append(str(self.FinishRunTime - self.StartRunTime))
+        data.append(str(self.modifiedParameters))
+        data.append(str(self.pk))
         return data
 
     def update_modified_parameters(self, value):
@@ -1141,5 +1143,10 @@ class ParametersRobotAction (models.Model):
     modified = models.BooleanField(default = False)
     generatedat = models.DateTimeField(auto_now_add=True)
 
+    def __str__ (self):
+        return '%s_%s' %(self.robotActionPost, self.protocolFileID)
+
+    def get_parameter_name_and_value(self):
+        return (self.parameterName, self.parameterValue )
 
     objects = ParametersRobotActionManager()

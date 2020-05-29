@@ -204,6 +204,15 @@ def robots_jobs (request):
     return render (request, 'openrobots/robotsJobs.html',{'form_data': form_data})
 
 @login_required
+def detail_action_robot(request, action_id):
+    if robot_action_exists(action_id):
+        detail_data = get_action_robot_detail(action_id)
+        return render (request, 'openrobots/detailActionRobot.html',{'detail_data':detail_data})
+
+
+    return redirect ('/')
+
+@login_required
 def upload_protocol_templates(request):
     if request.user.username not in ADMIN_USERS :
         return render(request, 'openrobots/index.html')

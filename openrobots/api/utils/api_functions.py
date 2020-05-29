@@ -66,9 +66,14 @@ def get_owner_of_protocol(protocol_id) :
             station = file_mapping.get_station()
             protocol = file_mapping.get_station_protocol()
             if station == 'Station C':
-                if RequestForStationC.objects.filter(protocolID__exact = protocol_id).exists():
-                    station_obj = RequestForStationC.objects.filter(protocolID__exact = protocol_id).last()
-                    return station_obj.get_user_file_obj()
+                if protocol == '1':
+                    if RequestForStationC_Prot1.objects.filter(protocolID__exact = protocol_id).exists():
+                        station_obj = RequestForStationC_Prot1.objects.filter(protocolID__exact = protocol_id).last()
+                        return station_obj.get_user_file_obj()
+                else:
+                    if RequestForStationC_Prot2.objects.filter(protocolID__exact = protocol_id).exists():
+                        station_obj = RequestForStationC_Prot2.objects.filter(protocolID__exact = protocol_id).last()
+                        return station_obj.get_user_file_obj()
             elif station == 'Station B':
                 if RequestForStationB.objects.filter(protocolID__exact = protocol_id).exists():
                     station_obj = RequestForStationB.objects.filter(protocolID__exact = protocol_id).last()
@@ -135,9 +140,18 @@ def store_and_find_changes_parameter_values(parameters, robot_action_obj):
     file_mapping_obj = get_file_mapping_obj_from_protocol_id (protocol_id)
     station , station_protocol = get_station_and_protocol(protocol_id)
     if station == 'Station C':
-        pass
+        if station_protocol == '1':
+            if RequestForStationC_Prot1.objects.filter(protocolID__exact = protocol_id).exists():
+                req_station_obj = RequestForStationC_Prot1.objects.filter(protocolID__exact = protocol_id).last()
+                mapping_variables_dict = dict(MAP_PROTOCOL_PARAMETER_TO_DATABASE_STATION_C_PROT_1)
+        else:
+            if RequestForStationC_Prot2.objects.filter(protocolID__exact = protocol_id).exists():
+                req_station_obj = RequestForStationC_Prot2.objects.filter(protocolID__exact = protocol_id).last()
+                mapping_variables_dict = dict(MAP_PROTOCOL_PARAMETER_TO_DATABASE_STATION_C_PROT_2)
     elif station == 'Station B':
-        pass
+        if RequestForStationB.objects.filter(protocolID__exact = protocol_id).exists():
+            req_station_obj = RequestForStationB.objects.filter(protocolID__exact = protocol_id).last()
+            mapping_variables_dict = dict(MAP_PROTOCOL_PARAMETER_TO_DATABASE_STATION_B)
     elif station == 'Station A':
         if station_protocol == '1':
             if RequestForStationA_Prot1.objects.filter(protocolID__exact = protocol_id).exists():
@@ -169,4 +183,5 @@ def store_and_find_changes_parameter_values(parameters, robot_action_obj):
             request_data['modified'] = True
             modified = True
         new_parameter = ParametersRobotAction.objects.create_parameter(request_data)
+
     return modified
