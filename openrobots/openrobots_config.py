@@ -42,12 +42,12 @@ MAP_PROTOCOL_PARAMETER_TO_DATABASE_STATION_B = [('NUM_SAMPLES','numberOfSamples'
         ('RESET_TIPCOUNT', 'resetTipcount') ]
 
 MAP_PROTOCOL_PARAMETER_TO_DATABASE_STATION_C_PROT_1 = [('NUM_SAMPLES','numberOfSamples') , ('MM_LABWARE','masterMixLabware'),('MMTUBE_LABWARE','masterMixTubeLabware'),
-        ('PCR_LABWARE','pcrPlateLabware'), ('ELUTION_LABWARE','elutionLabware'), ('LANGUAGE','languageCode'), ('VOLUME_ELUTION', 'volumeElution'),
+        ('PCR_LABWARE','pcrPlateLabware'), ('ELUTION_LABWARE','c_elution_Labware'), ('LANGUAGE','languageCode'), ('VOLUME_ELUTION', 'volumeElution'),
         ('PREPARE_MASTERMIX','prepareMastermix'),  ('RESET_TIPCOUNT', 'resetTipcount'), ('TRANSFER_MASTERMIX','transferMastermix'),
         ('TRANSFER_SAMPLES','transferSamples'), ('MM_TYPE','masterMixType')]
 
 MAP_PROTOCOL_PARAMETER_TO_DATABASE_STATION_C_PROT_2 = [('NUM_SAMPLES','numberOfSamples') , ('MM_LABWARE','masterMixLabware'),
-        ('PCR_LABWARE','pcrPlateLabware'), ('ELUTION_LABWARE','elutionLabware'), ('LANGUAGE','languageCode'), ('VOLUME_ELUTION', 'volumeElution'),
+        ('PCR_LABWARE','pcrPlateLabware'), ('ELUTION_LABWARE','c_elution_Labware'), ('LANGUAGE','languageCode'), ('VOLUME_ELUTION', 'volumeElution'),
         ('RESET_TIPCOUNT', 'resetTipcount')]
 
 OPENROBOTS_DELIMITATION_PARAMETERS_TAGS = ['# Parameters to adapt the protocol',

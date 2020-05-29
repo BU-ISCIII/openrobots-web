@@ -836,7 +836,7 @@ class RequestForStationC_Prot1Manager(models.Manager):
         masterMixTubeLabware = MasterMixTube.objects.get(MasterMixTube__exact = request_data['masterMixTubeLabware'])
         pcrPlateLabware = PCR_plateLabware.objects.get(PCR_plateLabwareType__exact = request_data['pcrPlateLabware'])
         masterMixType = MasterMixType.objects.get(MasterMixType__exact = request_data['masterMixType'])
-        c_elution_Labware = ElutionStationC_Labware.objects.get(elutionStationC__exact = request_data['elutionLabware'])
+        c_elution_Labware = ElutionStationC_Labware.objects.get(elutionStationC__exact = request_data['c_elution_Labware'])
         station = Stations.objects.get(stationName__exact = request_data['station'])
         usedTemplateFile = ProtocolTemplateFiles.objects.get(protocolTemplateFileName__exact = request_data['usedTemplateFile'])
         languageCode = Language.objects.filter(languageCode__exact = request_data['languageCode']).last()
@@ -936,7 +936,7 @@ class RequestForStationC_Prot2Manager(models.Manager):
         #masterMixTubeLabware = MasterMixTube.objects.get(MasterMixTube__exact = request_data['masterMixTubeLabware'])
         pcrPlateLabware = PCR_plateLabware.objects.get(PCR_plateLabwareType__exact = request_data['pcrPlateLabware'])
         #masterMixType = MasterMixType.objects.get(MasterMixType__exact = request_data['masterMixType'])
-        c_elution_Labware = ElutionStationC_Labware.objects.get(elutionStationC__exact = request_data['elutionLabware'])
+        c_elution_Labware = ElutionStationC_Labware.objects.get(elutionStationC__exact = request_data['c_elution_Labware'])
 
         usedTemplateFile = ProtocolTemplateFiles.objects.get(protocolTemplateFileName__exact = request_data['usedTemplateFile'])
         languageCode = Language.objects.filter(languageCode__exact = request_data['languageCode']).last()
