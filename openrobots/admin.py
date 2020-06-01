@@ -96,7 +96,7 @@ class RequestForStationA_Prot3Admin(admin.ModelAdmin):
 
 class RequestForStationBAdmin (admin.ModelAdmin):
     list_display =['requestedCodeID','magPlateLabware', 'reagentLabware','wasteLabware',  'numberOfSamples',
-                'dispenseBeads', 'generatedFile', 'usedTemplateFile','userRequestedBy' , 'userNotes']
+                'dispenseBeads', 'reuseTips','generatedFile', 'usedTemplateFile','userRequestedBy' , 'userNotes']
 
 
 

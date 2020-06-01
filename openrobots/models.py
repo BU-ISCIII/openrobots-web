@@ -765,6 +765,7 @@ class RequestForStationBManager(models.Manager):
                     usedTemplateFile = usedTemplateFile, requestedCodeID = request_data['requestedCodeID'], numberOfSamples = request_data['numberOfSamples'],
                     dispenseBeads = util.strtobool(request_data['dispenseBeads']), languageCode = languageCode,
                     protocolID = request_data['protocolID'], resetTipcount = util.strtobool(request_data['resetTipcount']),
+                    reuseTips = util.strtobool(request_data['reuseTips']),
                     generatedFile = request_data['generatedFile'] , userNotes = request_data['userNotes'])
 
         return new_request
@@ -796,6 +797,7 @@ class RequestForStationB (models.Model):
     numberOfSamples = models.CharField(max_length = 10)
     dispenseBeads = models.BooleanField()
     resetTipcount = models.BooleanField(default=None)
+    reuseTips = models.BooleanField(default=None, null = True)
     generatedFile = models.FileField(upload_to = openrobots_config.OPENROBOTS_OUTPUT_DIRECTORY )
     userNotes = models.CharField(max_length = 255)
     generatedat = models.DateTimeField(auto_now_add=True)
