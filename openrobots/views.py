@@ -15,6 +15,7 @@ def index(request):
 def create_pcr_protocol_file(request):
     # Get data to display in form
     form_data = get_form_data_creation_run_file()
+
     if request.method == 'POST' and (request.POST['action']=='createprotocolfile'):
         template = request.POST['template']
 
@@ -25,14 +26,17 @@ def create_pcr_protocol_file(request):
         new_prot_file_id_obj = store_file_id (protocol_file_id,request.POST['station'], request.POST['protocol'])
 
         add_result = add_parameters_in_file (template, protocol_file,  parameters, protocol_file_id)
-
         if add_result != 'True':
             return render(request, 'openrobots/createPCRProtocolFile.html' ,{'form_data': form_data, 'error': add_result})
         database['generatedFile'] = protocol_file
         database['protocolID'] = protocol_file_id
         database['requestedCodeID'] = build_request_codeID (request.user, protocol_type, request.POST['station'],request.POST['protocol'] )
+
         if request.POST['station'] == 'Station C':
-            new_create_protocol = RequestForStationC.objects.create_new_request(database)
+            if request.POST['protocol'] == '1':
+                new_create_protocol = RequestForStationC_Prot1.objects.create_new_request(database)
+            else:
+                new_create_protocol = RequestForStationC_Prot2.objects.create_new_request(database)
         else:
             return render(request, 'openrobots/createPCRProtocolFile.html' ,{'form_data': form_data})
 
@@ -173,6 +177,8 @@ def list_of_requests(request):
 
 @login_required
 def robots_jobs (request):
+    form_data = get_form_data_robots_usage()
+
     if request.method == 'POST' and request.POST['action'] == 'robotsjobs':
         start_date=request.POST['startdate']
         end_date=request.POST['enddate']
@@ -184,10 +190,27 @@ def robots_jobs (request):
             if not check_valid_date_format(end_date) :
                 error_message = ERROR_INVALID_FORMAT_FOR_DATES
                 return render(request, 'openrobots/robotsJobs.html', {'error_message':error_message})
-        display_robot_utilization = get_robots_utilization(start_date, end_date)
+
+        robots_action_objs = get_robots_action_from_user_form(request.POST)
+
+        if not robots_action_objs:
+            error_message = ERROR_NOT_ROBOT_ACTION_MATCHES_FOUND
+            return render (request, 'openrobots/robotsJobs.html', {'error_message':error_message, 'form_data': form_data})
+
+        display_robot_utilization = get_robots_information_utilization (robots_action_objs)
+        #import pdb; pdb.set_trace()
         return render (request, 'openrobots/robotsJobs.html',{'display_robot_utilization': display_robot_utilization})
 
-    return render (request, 'openrobots/robotsJobs.html')
+    return render (request, 'openrobots/robotsJobs.html',{'form_data': form_data})
+
+@login_required
+def detail_action_robot(request, action_id):
+    if robot_action_exists(action_id):
+        detail_data = get_action_robot_detail(action_id)
+        return render (request, 'openrobots/detailActionRobot.html',{'detail_data':detail_data})
+
+
+    return redirect ('/')
 
 @login_required
 def upload_protocol_templates(request):

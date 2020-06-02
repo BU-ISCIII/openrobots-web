@@ -22,11 +22,11 @@ PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_A_PROT_2 = ['NUM_SAMPLES' , 'BEADS_LABW
 PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_A_PROT_3 = ['NUM_SAMPLES' , 'LYSATE_LABWARE','PLATE_LABWARE','LANGUAGE', 'RESET_TIPCOUNT', 'VOLUME_LYSATE', 'BEADS']
 
 PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_B = ['NUM_SAMPLES', 'REAGENT_LABWARE','MAGPLATE_LABWARE', 'WASTE_LABWARE', 'ELUTION_LABWARE','LANGUAGE',
-            'RESET_TIPCOUNT', 'DISPENSE_BEADS']
+            'RESET_TIPCOUNT', 'DISPENSE_BEADS', 'REUSE_TIPS']
 
-PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_C = ['NUM_SAMPLES' , 'MM_LABWARE','MMTUBE_LABWARE', 'PCR_LABWARE', 'ELUTION_LABWARE', 'LANGUAGE', 'VOLUME_ELUTION',
+PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_C_PROT_1 = ['NUM_SAMPLES' , 'MM_LABWARE','MMTUBE_LABWARE', 'PCR_LABWARE', 'ELUTION_LABWARE', 'LANGUAGE', 'VOLUME_ELUTION',
             'PREPARE_MASTERMIX', 'RESET_TIPCOUNT', 'TRANSFER_MASTERMIX', 'TRANSFER_SAMPLES', 'MM_TYPE']
-
+PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_C_PROT_2 = ['NUM_SAMPLES' , 'MM_LABWARE', 'PCR_LABWARE', 'ELUTION_LABWARE', 'LANGUAGE', 'VOLUME_ELUTION','RESET_TIPCOUNT']
 
 MAP_PROTOCOL_PARAMETER_TO_DATABASE_STATION_A_PROT_1 = [('NUM_SAMPLES','numberOfSamples') ,('BUFFER_LABWARE','bufferLabware'),('DESTINATION_LABWARE', 'destinationLabware'),
         ('DEST_TUBE', 'destinationTube'), ('LANGUAGE','languageCode'), ('RESET_TIPCOUNT', 'resetTipcount'),  ('VOLUME_BUFFER','volumeBuffer')]
@@ -39,12 +39,17 @@ MAP_PROTOCOL_PARAMETER_TO_DATABASE_STATION_A_PROT_3 = [('NUM_SAMPLES','numberOfS
 
 MAP_PROTOCOL_PARAMETER_TO_DATABASE_STATION_B = [('NUM_SAMPLES','numberOfSamples') ,('REAGENT_LABWARE','reagentLabware'),('MAGPLATE_LABWARE', 'magPlateLabware'),
         ('WASTE_LABWARE', 'wasteLabware'), ('LANGUAGE','languageCode'), ('ELUTION_LABWARE','elutionLabware'),('DISPENSE_BEADS', 'dispenseBeads'),
-        ('RESET_TIPCOUNT', 'resetTipcount') ]
+        ('RESET_TIPCOUNT', 'resetTipcount'), ('REUSE_TIPS', 'reuseTips') ]
 
-MAP_PROTOCOL_PARAMETER_TO_DATABASE_STATION_C = [('NUM_SAMPLES','numberOfSamples') , ('MM_LABWARE','masterMixLabware'),('MMTUBE_LABWARE','masterMixTubeLabware'),
-        ('PCR_LABWARE','pcrPlateLabware'), ('ELUTION_LABWARE','elutionLabware'), ('LANGUAGE','languageCode'), ('VOLUME_ELUTION', 'volumeElution'),
+MAP_PROTOCOL_PARAMETER_TO_DATABASE_STATION_C_PROT_1 = [('NUM_SAMPLES','numberOfSamples') , ('MM_LABWARE','masterMixLabware'),('MMTUBE_LABWARE','masterMixTubeLabware'),
+        ('PCR_LABWARE','pcrPlateLabware'), ('ELUTION_LABWARE','c_elution_Labware'), ('LANGUAGE','languageCode'), ('VOLUME_ELUTION', 'volumeElution'),
         ('PREPARE_MASTERMIX','prepareMastermix'),  ('RESET_TIPCOUNT', 'resetTipcount'), ('TRANSFER_MASTERMIX','transferMastermix'),
         ('TRANSFER_SAMPLES','transferSamples'), ('MM_TYPE','masterMixType')]
+
+MAP_PROTOCOL_PARAMETER_TO_DATABASE_STATION_C_PROT_2 = [('NUM_SAMPLES','numberOfSamples') , ('MM_LABWARE','masterMixLabware'),
+        ('PCR_LABWARE','pcrPlateLabware'), ('ELUTION_LABWARE','c_elution_Labware'), ('LANGUAGE','languageCode'), ('VOLUME_ELUTION', 'volumeElution'),
+        ('RESET_TIPCOUNT', 'resetTipcount')]
+
 OPENROBOTS_DELIMITATION_PARAMETERS_TAGS = ['# Parameters to adapt the protocol',
                     '# End Parameters to adapt the protocol']
 
@@ -67,3 +72,7 @@ ADMIN_USERS = ['admin']
 
 ###### ERROR TEXT #############################################
 ERROR_INVALID_FORMAT_FOR_DATES = ['Invalid date format. Use the format  (DD-MM-YYYY)']
+ERROR_NOT_ROBOT_ACTION_MATCHES_FOUND = ['There is not robot actions that matches your query']
+
+####### URL for Rest Api ######################################
+URL_FOR_REST_API_ROBOT_USAGE = '/api/robots/createUsage'

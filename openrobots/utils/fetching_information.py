@@ -1,8 +1,57 @@
 import time, re
 from datetime import datetime
+from datetime import timedelta
 from openrobots.models import *
 from openrobots.openrobots_config import *
 
+
+def get_action_robot_detail(action_id):
+    '''
+    Description:
+        The function collect the parameter used in the robot action .
+        Information is divided for modified and not modified parameters
+    Functions:
+        get_station_and_protocol   # located at this file
+        get_station_from_template           # located at this file
+    Return:
+        detail_data
+    '''
+    detail_data = {}
+    detail_data['param_not_modified'] = []
+    detail_data['param_modified'] = []
+    detail_data['param_not_found'] = []
+    robot_action_obj = RobotsActionPost.objects.get(pk__exact = action_id)
+
+    protocol_id = robot_action_obj.get_protocol_id()
+    station, protocol = get_station_and_protocol(protocol_id)
+    if station and protocol:
+        requested_user_file_obj = get_requested_file_obj_from_station_protocol(station,protocol,protocol_id)
+        parameters_dict = get_parameters_names_defined(station, protocol)
+        detail_data['main_data'] = [robot_action_obj.get_robot_action_data()]
+
+        if ParametersRobotAction.objects.filter(robotActionPost = robot_action_obj, protocolFileID__fileID__exact = protocol_id).exists():
+            parameter_objs = ParametersRobotAction.objects.filter(robotActionPost = robot_action_obj, protocolFileID__fileID__exact = protocol_id)
+            action_robot_parameters = {}
+            for parameter_obj in parameter_objs:
+                action_par_name, action_par_value = parameter_obj.get_parameter_name_and_value()
+                action_robot_parameters[action_par_name] = action_par_value
+        for par in parameters_dict.keys():
+            try:
+                ### use the object attribute to get the value
+
+                if str(action_robot_parameters[par]) ==  str(getattr(requested_user_file_obj, parameters_dict[par])):
+                    detail_data['param_not_modified'].append([par,action_robot_parameters[par]])
+
+                else :
+                    detail_data['param_modified'].append([par,action_robot_parameters[par], str(getattr(requested_user_file_obj, parameters_dict[par]))])
+                    modified = True
+            except:
+                detail_data['param_not_found'].append([par, str(getattr(requested_user_file_obj, parameters_dict[par]))])
+                modified = True
+
+        return detail_data
+
+    return False
 
 def  build_protocol_file_name(user, template):
     '''
@@ -14,7 +63,6 @@ def  build_protocol_file_name(user, template):
     Return:
         protocol_file_name
     '''
-
     name = [user]
 
     name.append(''.join(get_protocol_type_from_template(template).split()))
@@ -39,8 +87,8 @@ def build_request_codeID (user, protocol_type, station, protocol ) :
     '''
     num_times = 0
     if station == 'Station C':
-        if RequestForStationC.objects.filter(userRequestedBy = user, usedTemplateFile__typeOfProtocol__protocolTypeName__exact = protocol_type).exists():
-            num_times = RequestForStationC.objects.filter(userRequestedBy = user, usedTemplateFile__typeOfProtocol__protocolTypeName__exact = protocol_type).count()
+        if RequestForStationC_Prot1.objects.filter(userRequestedBy = user, usedTemplateFile__typeOfProtocol__protocolTypeName__exact = protocol_type).exists():
+            num_times = RequestForStationC_Prot1.objects.filter(userRequestedBy = user, usedTemplateFile__typeOfProtocol__protocolTypeName__exact = protocol_type).count()
     elif station == 'Station B':
         if RequestForStationB.objects.filter(userRequestedBy = user, usedTemplateFile__typeOfProtocol__protocolTypeName__exact = protocol_type).exists():
             num_times = RequestForStationB.objects.filter(userRequestedBy = user, usedTemplateFile__typeOfProtocol__protocolTypeName__exact = protocol_type).count()
@@ -71,6 +119,34 @@ def check_valid_date_format (date):
     except:
         return False
 
+
+def get_parameters_names_defined(station, protocol):
+    '''
+    Description:
+        The function will return the parameters used for the station and protocol
+    Constans:
+        MAP_PROTOCOL_PARAMETER_TO_DATABASE_STATION_A_PROT_1
+        PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_A_PROT_2
+        PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_A_PROT_3
+        PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_B
+        PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_C_PROT_1
+        PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_C_PROT_2
+    Return:
+        dictionary with parameter and values
+    '''
+    if station == 'Station A' and protocol == '1':
+        return dict(MAP_PROTOCOL_PARAMETER_TO_DATABASE_STATION_A_PROT_1)
+    if station == 'Station A' and protocol == '2':
+        return dict(MAP_PROTOCOL_PARAMETER_TO_DATABASE_STATION_A_PROT_2)
+    if station == 'Station A' and protocol == '3':
+        return dict(MAP_PROTOCOL_PARAMETER_TO_DATABASE_STATION_A_PROT_3)
+    if station == 'Station B' and protocol == '1':
+        return dict(MAP_PROTOCOL_PARAMETER_TO_DATABASE_STATION_B)
+    if station == 'Station C' and protocol == '1':
+        return dict(MAP_PROTOCOL_PARAMETER_TO_DATABASE_STATION_C_PROT_1)
+    if station == 'Station C' and protocol == '2':
+        return dict(MAP_PROTOCOL_PARAMETER_TO_DATABASE_STATION_C_PROT_2)
+    return False
 
 def get_form_data_creation_new_robot():
     '''
@@ -280,7 +356,37 @@ def get_form_data_creation_run_file():
     if ProtocolTemplateFiles.objects.filter(station__stationName__iexact = 'Station B').exists():
         form_data['station_b'] = ProtocolTemplateFiles.objects.filter(station__stationName__iexact = 'Station B').last().get_protocol_file_name()
     if ProtocolTemplateFiles.objects.filter(station__stationName__iexact = 'Station C').exists():
-        form_data['station_c'] = ProtocolTemplateFiles.objects.filter(station__stationName__iexact = 'Station C').last().get_protocol_file_name()
+        form_data['station_c'] = {}
+        protocol_types = ['Protocol 1', 'Protocol 2']
+        for i in range(len(protocol_types)) :
+            if ProtocolTemplateFiles.objects.filter(station__stationName__iexact = 'Station C', protocolName__icontains = protocol_types[i]).exists():
+                form_data['station_c'][i+1] = ProtocolTemplateFiles.objects.filter(station__stationName__iexact = 'Station C', protocolName__icontains = protocol_types[i]).last().get_protocol_file_name()
+
+    return form_data
+
+
+def get_form_data_robots_usage():
+    '''
+    Description:
+        The function will get information to include in the robot usage form
+    Return:
+        form_data
+    '''
+    form_data = {}
+    form_data['stations'] = []
+    if Stations.objects.all().exists():
+        stations = Stations.objects.all()
+        for station in stations:
+            form_data['stations'].append(station.get_station_name())
+    if RobotsActionPost.objects.all().exists():
+        robots_list = []
+        protocols_action_list = []
+        robot_objs = RobotsActionPost.objects.all()
+        for robot_obj in robot_objs:
+            robots_list.append(robot_obj.get_robot_name())
+            protocols_action_list.append(robot_obj.get_executed_action())
+        form_data['robots'] = list(set(robots_list))
+        form_data['protocols_action'] = list(set(protocols_action_list))
 
     return form_data
 
@@ -398,6 +504,35 @@ def get_module_obj_from_id(module_id):
         return ModulesInLab.objects.get(pk__exact = module_id)
     return None
 
+
+def get_requested_file_obj_from_station_protocol(station,protocol, protocol_file_id):
+    '''
+    Description:
+        The function get the query object for the station. protocol, protocol_file_id
+    Return:
+        requested_file_obj
+    '''
+    if station == 'Station A' and protocol == '1':
+        if RequestForStationA_Prot1.objects.filter(protocolID__exact = protocol_file_id).exists():
+            return RequestForStationA_Prot1.objects.filter(protocolID__exact = protocol_file_id).last()
+    if station == 'Station A' and protocol == '2':
+        if RequestForStationA_Prot2.objects.filter(protocolID__exact = protocol_file_id).exists():
+            return RequestForStationA_Prot2.objects.filter(protocolID__exact = protocol_file_id).last()
+    if station == 'Station A' and protocol == '3':
+        if RequestForStationA_Prot3.objects.filter(protocolID__exact = protocol_file_id).exists():
+            return RequestForStationA_Prot3.objects.filter(protocolID__exact = protocol_file_id).last()
+    if station == 'Station B' and protocol == '1':
+        if RequestForStationB.objects.filter(protocolID__exact = protocol_file_id).exists():
+            return RequestForStationB.objects.filter(protocolID__exact = protocol_file_id).last()
+    if station == 'Station C' and protocol == '1':
+        if RequestForStationC_Prot1.objects.filter(protocolID__exact = protocol_file_id).exists():
+            return RequestForStationC_Prot1.objects.filter(protocolID__exact = protocol_file_id).last()
+    if station == 'Station C' and protocol == '2':
+        if RequestForStationC_Prot2.objects.filter(protocolID__exact = protocol_file_id).exists():
+            return RequestForStationC_Prot2.objects.filter(protocolID__exact = protocol_file_id).last()
+
+    return False
+
 def get_robot_inventory_data(robot_id):
     '''
     Description:
@@ -420,6 +555,64 @@ def get_robot_inventory_data(robot_id):
             robot_data['modules'].append([module.get_module_type(), module.get_moduleID()])
 
     return robot_data
+
+def get_robots_action_from_user_form(form_data ):
+    '''
+    Description:
+        The function will the objects for the robot action that match user data
+        in the form. If start date is empty the query only check the
+        end_date. On the contrary if end_date is not given the match will be done
+        until today, If no dates are given the matches are limited to today
+    Inputs:
+        form_data      # data from user form
+    Functions:
+        get_today_and_tomorrows_day     # located at this file
+    Return:
+        robots_actions_objs or None
+    '''
+    if RobotsActionPost.objects.all().exists():
+        start_date = form_data['startdate']
+        end_date = form_data['enddate']
+
+        if start_date == '' and end_date == '':
+            #if empty values set the date to today and tomorrow
+            start_date, end_date = get_today_and_tomorrows_day()
+
+        # only end_date is defined
+        if start_date == '' and end_date != '':
+            if RobotsActionPost.objects.filter(generatedat__lte = end_date).exists():
+                robots_actions_objs = RobotsActionPost.objects.filter(generatedat__lte = end_date).order_by('generatedat')
+            else:
+                return None
+        # only start date is difined
+        if end_date == '' and start_date != '':
+            if RobotsActionPost.objects.filter(generatedat__gte = start_date).exists():
+                robots_actions_objs =  RobotsActionPost.objects.filter(generatedat__gte = start_date).order_by('generatedat')
+            else:
+                return None
+        if end_date != '' and start_date != '':
+            if  RobotsActionPost.objects.filter(generatedat__range=(start_date, end_date )).exists():
+                robots_actions_objs =  RobotsActionPost.objects.filter(generatedat__range=(start_date, end_date )).order_by('generatedat')
+            else:
+                return None
+        if form_data['robots'] != '':
+            if robots_actions_objs.filter(RobotID__exact = form_data['robots']).exists():
+                robots_actions_objs = robots_actions_objs.filter(RobotID__exact = form_data['robots'])
+            else:
+                return None
+        if form_data['stations'] != '':
+            if robots_actions_objs.filter(stationType__exact = form_data['stations']).exists():
+                robots_actions_objs = robots_actions_objs.filter(stationType__exact = form_data['stations'])
+            else:
+                return None
+        if form_data['protocolsAction'] != '':
+            if robots_actions_objs.filter(executedAction__exact = form_data['protocolsAction']).exists():
+                robots_actions_objs = robots_actions_objs.filter(executedAction__exact = form_data['protocolsAction'])
+            else:
+                return None
+        return  robots_actions_objs
+    else:
+        return None
 
 
 def get_protocol_types():
@@ -464,7 +657,7 @@ def get_protocol_type_from_template(template):
         return ProtocolTemplateFiles.objects.get(protocolTemplateFileName__exact = template).get_protocol_type()
     return 'None'
 
-def get_robots_utilization(start_date , end_date):
+def get_robots_information_utilization(robots_action_obj):
     '''
     Description:
         The function will look for robot jobs in the period of time between start_date
@@ -474,19 +667,40 @@ def get_robots_utilization(start_date , end_date):
         robot_jobs_data
     '''
     robot_jobs_data = {}
-    if RobotsActionPost.objects.filter(generatedat__range = (start_date, end_date)).exists():
-        action_objs = RobotsActionPost.objects.filter(generatedat__range = (start_date, end_date)).order_by('generatedat')
-        for action_obj in action_objs:
-            robot_name = action_obj.get_robot_name()
-            if robot_name not in robot_jobs_data :
-                robot_jobs_data[robot_name] = {}
-                robot_jobs_data[robot_name]['robot_usage'] = 0
-                robot_jobs_data[robot_name]['robot_actions'] =[]
-            robot_jobs_data[robot_name]['robot_usage'] +=1
-            robot_jobs_data[robot_name]['robot_actions'].append(action_obj.get_robot_action_and_date())
+    robot_jobs_data['actions'] = {}
+    robot_jobs_data['robot_usage'] = {}
+    robot_jobs_data['grafic'] = []
+    protocols_used = []
+    #robot_jobs_data[station_type]['robot_usage'] = 0
+    #robot_jobs_data[station_type][robot_name]['robot_actions'] =[]
+    for action_obj in robots_action_obj:
+        station_type = action_obj.get_station_type().replace(' ','_')
+        robot_name = action_obj.get_robot_name()
+        if not station_type in robot_jobs_data['actions'] :
+            robot_jobs_data['actions'][station_type] = {}
 
+        if not robot_name in robot_jobs_data['actions'][station_type] :
+            robot_jobs_data['actions'][station_type][robot_name] = []
+        if not robot_name in robot_jobs_data['robot_usage']:
+            robot_jobs_data['robot_usage'][robot_name] = 0
 
-    import pdb; pdb.set_trace()
+        robot_jobs_data['robot_usage'][robot_name] +=1
+        robot_jobs_data['actions'][station_type][robot_name].append(action_obj.get_robot_action_data())
+        protocols_used.append(action_obj.get_protocol_id())
+
+    for key, val in robot_jobs_data['robot_usage'].items():
+        temp_dict = {}
+        temp_dict['name'] = key
+        temp_dict['count'] = val
+        robot_jobs_data['grafic'].append(temp_dict)
+    # collect data for summary
+    summary = {}
+    summary['n_actions'] = sum(list(robot_jobs_data['robot_usage'].values()))
+    summary['n_robots'] = len(robot_jobs_data['robot_usage'])
+    summary['n_exec_prot'] = len(protocols_used)
+    summary['n_dif_exec_prot'] = len(set(protocols_used))
+
+    robot_jobs_data['summary'] = summary
 
     return robot_jobs_data
 
@@ -523,6 +737,20 @@ def get_stations_names ():
             station_names.append(s_name.get_station_name())
     return station_names
 
+def get_station_and_protocol(protocol_id):
+    '''
+    Function:
+        The function get the station number and the prototocol used for the protocol id
+    Inputs:
+        protocol_id     # protocol id for getting the station and protocol
+    Return:
+        station_name, protocol_name .None if does not exist
+    '''
+    if FileIDUserRequestMapping.objects.filter(fileID__exact = protocol_id).exists():
+        file_maping_obj = FileIDUserRequestMapping.objects.filter(fileID__exact = protocol_id).last()
+        return (file_maping_obj.get_station(), file_maping_obj.get_station_protocol())
+    return (None, None)
+
 def get_stored_protocols_files():
     '''
     Description:
@@ -544,7 +772,8 @@ def extract_form_data_station (request) :
     Description:
         The function extract the user form data and define a dictionnary with the values
     Constants:
-        PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_C
+        PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_C_PROT_1
+        PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_C_PROT_2
         PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_B
         PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_A_PROT_1
         PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_A_PROT_2
@@ -555,20 +784,26 @@ def extract_form_data_station (request) :
     data_for_file = {}
     data_for_file2 = {}
     data_for_database = {}
-    if request.POST['station'] == 'Station C':
-        for item in PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_C:
+    if request.POST['station'] == 'Station C' and request.POST['protocol'] == '1':
+        for item in PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_C_PROT_1:
+            data_for_file[item] = request.POST[item]
+        for item in MAP_PROTOCOL_PARAMETER_TO_DATABASE_STATION_C_PROT_1 :
+            data_for_database[item[1]] = request.POST[item[0]]
+        data_for_database['station'] = 'Station C'
+    elif request.POST['station'] == 'Station C' and request.POST['protocol'] == '2':
+        for item in PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_C_PROT_2:
             data_for_file[item] = request.POST[item]
         #[(data_for_file2[item] = request.POST[item]) for item in PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_C ]
-        for item in MAP_PROTOCOL_PARAMETER_TO_DATABASE_STATION_C :
+        for item in MAP_PROTOCOL_PARAMETER_TO_DATABASE_STATION_C_PROT_2 :
             data_for_database[item[1]] = request.POST[item[0]]
-
-        data_for_database['station'] = request.POST['station']
+        data_for_database['station'] = 'Station C'
     elif request.POST['station'] == 'Station B':
         for item in PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_B:
             data_for_file[item] = request.POST[item]
         #[(data_for_file2[item] = request.POST[item]) for item in PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_C ]
         for item in MAP_PROTOCOL_PARAMETER_TO_DATABASE_STATION_B :
             data_for_database[item[1]] = request.POST[item[0]]
+
     elif  request.POST['station'] == 'Station A' and request.POST['protocol'] == '1' :
         for item in PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_A_PROT_1:
             data_for_file[item] = request.POST[item]
@@ -618,9 +853,9 @@ def get_list_of_requests():
     '''
     request_list = {}
     # get request for Station C protocols
-    if RequestForStationC.objects.all().exists():
+    if RequestForStationC_Prot1.objects.all().exists():
         request_list['station_c'] = []
-        c_requests = RequestForStationC.objects.all().order_by('userRequestedBy').order_by('generatedat')
+        c_requests = RequestForStationC_Prot1.objects.all().order_by('userRequestedBy').order_by('generatedat')
         for request in c_requests:
             request_list['station_c'].append(request.get_request_info())
     if RequestForStationB.objects.all().exists():
@@ -646,6 +881,7 @@ def get_list_of_requests():
 
 
     return request_list
+
 
 def increase_protocol_file_id ():
     '''
@@ -696,6 +932,31 @@ def store_file_id (protocol_file_id, station, protocol):
     new_file_id = FileIDUserRequestMapping.objects.create_file_id_user(data)
     return new_file_id
 
+def get_today_and_tomorrows_day():
+    '''
+    Description:
+        Teh function get the day of today and tomorrow
+    Return:
+        today_day , tomorrow_day
+    '''
+    today = datetime.now()
+    today_day = datetime.now().strftime('%Y-%m-%d')
+    tomorrow_day = (today + timedelta(days=1)).strftime('%Y-%m-%d')
+
+    return (today_day, tomorrow_day)
+
+def robot_action_exists(action_id):
+    '''
+    Description:
+        The function check if the action id exists
+    Input:
+        action_id       # Id of the action to check
+    Return:
+        True if exists False else
+    '''
+    if RobotsActionPost.objects.filter(pk__exact = action_id).exists():
+        return True
+    return False
 
 def validate_metadata_for_protocol_template(metadata):
     '''
