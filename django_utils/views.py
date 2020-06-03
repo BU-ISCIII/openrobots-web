@@ -3,9 +3,11 @@ from .models import *
 from .forms import *
 from django.db import transaction
 from django.contrib.auth.models import User , Group
+from django.contrib.auth.decorators import login_required
 from django.conf import settings
-import pdb
+from django_utils.models import *
 
+@login_required
 def user_edit(request):
     if request.method == "POST":
         #items = request.POST.keys()
@@ -50,7 +52,7 @@ def user_edit(request):
                     group.delete()
 
 
-
+            '''
             else: # creating a new group and add user on it
                 if 'shared_list' in request.POST :
                     shared_list = request.POST.getlist('shared_list')
@@ -62,7 +64,7 @@ def user_edit(request):
                         if User.objects.filter(username__exact = user).exists():
                             user = User.objects.get(username__exact = user)
                             new_group.user_set.add(user)
-
+            '''
             return render(request,'django_utils/info_page.html',{'content':["Your user has been successfully updated"]})
         else:
             return render(request,'django_utils/error_page.html',{'content':[form1.errors,form2.errors]})
@@ -71,10 +73,13 @@ def user_edit(request):
 
         username_list = []
         form1 = UserCreationForm(instance=request.user)
-        form2 = ProfileCreationForm(instance=request.user.profile)
-
-        # get the list of users that are sharing
-        #import pdb; pdb.set_trace()
+        if Profile.objects.filter(profileUserID = request.user).exists():
+            form2 = ProfileCreationForm(instance=request.user.profile)
+        else:
+            form2 = ProfileCreationForm()
+        return render(request,'registration/user_creation.html',{'form1' : form1 ,'form2':form2})
+                # get the list of users that are sharing
+        '''
         sharing_users = []
         sharing_list = []
         if Group.objects.filter(name__exact = request.user.username).exists():
@@ -85,7 +90,7 @@ def user_edit(request):
             for user in users:
                 sharing_users.append(user.username)
                 sharing_list.append([user.username, user.first_name + ' ' + user.last_name])
-        #import pdb; pdb.set_trace()
+
         user_list = User.objects.all().exclude(username = request.user.username).exclude(username__in=sharing_users)
         for user in user_list:
             # do not include the user that are not well defined
@@ -97,7 +102,7 @@ def user_edit(request):
             return render(request,'registration/user_creation.html',{'form1' : form1 ,'form2':form2, 'username_list' : username_list})
         else:
             return render(request,'registration/user_creation.html',{'form1' : form1 ,'form2':form2, 'sharing_list':sharing_list ,'username_list' : username_list})
-
+        '''
 @transaction.atomic
 def user_creation(request):
     if request.method == "POST":
