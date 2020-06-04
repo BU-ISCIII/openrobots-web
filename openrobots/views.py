@@ -11,6 +11,7 @@ def index(request):
     #return redirect ('/createProtocolFile')
     return render(request, 'openrobots/index.html')
 
+
 @login_required
 def create_pcr_protocol_file(request):
     # Get data to display in form

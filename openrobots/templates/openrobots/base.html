@@ -90,23 +90,21 @@
         <!--========== PAGE LAYOUT ==========-->
 
         <div class="bg-color-sky-light">
-              <div class="container content-lg fill-height">
+            <div class="container content-lg fill-height">
                 <div class="row margin-b-40">
-                    <div class="row row-space-2 margin-b-4">
-                        <div class="col-sm-12">
-                            <div class="col-sm-6">
-                                <div class="text-center"> <!-- Logo -->
-                                    <a class="logo-wrap" href="/">
-                                        <img src="{% static "img/openrobotsWeb_logo.png" %}" alt="openrobotsWeb_Logo">
-                                    </a>
-                                </div>  <!-- End Logo -->
-                            </div>
-                                <div class="col-sm-6 ">  <!-- Logging pannel -->
+                    <div class="row margin-b-4">
+					<!-- <div class="col-sm-6">
+							<div class="text-center">
+								<a class="logo-wrap" href="/">
+									<img src="{% static "img/openrobotsWeb_logo.png" %}" alt="openrobotsWeb_Logo">
+								</a>
+							</div>
+						</div> -->
+						<div class="col-sm-6 col-sm-offset-6">  <!-- Logging pannel -->
 
-                                    {% include 'registration/login_inline.html' %}
-                                </div>
-                        </div>  <!-- End Loggin pannel -->
-                    </div>
+							{% include 'registration/login_inline.html' %}
+						</div>
+                    </div>  <!-- End Loggin pannel -->
                     <div class="row row-space-2 margin-b-4">
                         <div class="col-sm-12">
                             <h1 class="text-center"> OpenRobots Web Application</h1>
@@ -115,8 +113,8 @@
             {% block content %}
 	<!--========== HERE WILL BE THE INFORMATION FROM DJANGO CODE  ==========-->
             {% endblock %}
-            </div> <!--// end row -->
-        </div> <!--// end container -->
+            	</div> <!--// end row -->
+        	</div> <!--// end container -->
         </div> <!--// end bg-color -->
 
 {% include "openrobots/footer.html" %}

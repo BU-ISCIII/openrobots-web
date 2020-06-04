@@ -18,6 +18,8 @@ def add_parameters_in_file (in_file, output_file, parameters, file_id):
         file_id     # fileID
     Constans:
         OPENROBOTS_DELIMITATION_PARAMETERS_TAGS
+        DOMAIN_SERVER
+        URL_FOR_REST_API_ROBOT_USAGE
     Return:
         form_data
     '''
@@ -52,7 +54,7 @@ def add_parameters_in_file (in_file, output_file, parameters, file_id):
                         else:
                             out_fh.write(key + ' = \''+ parameters[key]+ '\'\n')
                     out_fh.write('PROTOCOL_ID = \'' + file_id + '\'\n')
-                    out_fh.write('URL =  \'' + os.uname()[1] + URL_FOR_REST_API_ROBOT_USAGE + '\'\n')
+                    out_fh.write('URL =  \'' + DOMAIN_SERVER + URL_FOR_REST_API_ROBOT_USAGE + '\'\n')
                     parameters_added = True
                     continue
                 if end_parameter_section :
@@ -137,6 +139,8 @@ def get_steps_used_in_protocol(in_file):
                         break
 
     return steps_in_file
+
+
 
 def json_file_valid_format(in_file):
     '''

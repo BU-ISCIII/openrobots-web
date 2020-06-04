@@ -4,6 +4,11 @@ from django.conf import settings
 import sys
 sys.path.append('../')
 
+try:
+    from .url_configuration import DOMAIN_SERVER
+except:
+    DOMAIN_SERVER = 'localhost'
+
 
 ############## FOLDER SETTINGS ###############################
 ## Directory settings for processing the run data files ######
@@ -53,6 +58,8 @@ MAP_PROTOCOL_PARAMETER_TO_DATABASE_STATION_C_PROT_2 = [('NUM_SAMPLES','numberOfS
 OPENROBOTS_DELIMITATION_PARAMETERS_TAGS = ['# Parameters to adapt the protocol',
                     '# End Parameters to adapt the protocol']
 
+DOMAIN_SERVER_CONFIGURATION_FILE_HEADING = '############# DOMAIN SERVER CONFIGURATION FILE ########\n#DO NOT MODIFY MANUALLY THIS FILE\n#VALUES WILL BE MODIFIED WHEN USING THE CONFIGURATION FORM\n'
+DOMAIN_SERVER_CONFIGURATION_FILE_END = '########## END DOMAIN SERVER CONFIGURATION FILE'
 
 #PROTOCOL_NAME_MAPPING_STATION_A = [('Prot1', 'buffer'), ('Prot2', 'beads'), ('Prot3', 'lysates')]
 #PROTOCOL_NAME_MAPPING_STATION_B = [('Prot1', 'extraction')]
@@ -73,6 +80,8 @@ ADMIN_USERS = ['admin']
 ###### ERROR TEXT #############################################
 ERROR_INVALID_FORMAT_FOR_DATES = ['Invalid date format. Use the format  (DD-MM-YYYY)']
 ERROR_NOT_ROBOT_ACTION_MATCHES_FOUND = ['There is not robot actions that matches your query']
+ERROR_INVALID_URL = ['Invalid domain server name']
+ERROR_UNABLE_TO_SAVE_CONFIGURATION_FILE = ['Unable to save the configuration file']
 
 ####### URL for Rest Api ######################################
 URL_FOR_REST_API_ROBOT_USAGE = '/api/robots/createUsage'

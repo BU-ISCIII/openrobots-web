@@ -10,7 +10,8 @@ virtualenv/
 openrobots_web/
 #documents/
 manage.py
-
+# URL configuration file
+url_configuration.py
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

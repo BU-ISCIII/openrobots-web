@@ -96,7 +96,7 @@ h1, h2, h3, h4, h5, h6 {
   font-family: Hind, sans-serif;
   color: #515769;
   line-height: 1.4;
-  margin: 0 0 15px;
+  margin: 0 0 0;
 }
 
 h1 > a, h2 > a, h3 > a, h4 > a, h5 > a, h6 > a {
@@ -976,7 +976,7 @@ fieldset[disabled] .btn-theme {
 
 .content-lg {
   padding-top: 100px;
-  padding-bottom: 100px;
+  /* padding-bottom: 100px; */
   height:100%;
 }
 

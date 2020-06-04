@@ -48,7 +48,16 @@
             </div> <!--  end of panel  -->
         </div> <!--  end of col-sm-7 -->
     </div> <!--  end of row -->
-
+    <div class="row row-space-2 margin-b-4">
+        <div class="col-sm-3 col-sm-offset-3">
+            <button type="button" class="btn btn-default" onclick="goBack()">Return to previous Page</button>
+        </div> <!--// end col-sm-4 -->
+    </div> <!-- end row  -->
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+    </script>
 
 {% else %}
     <div class="row row-space-4 margin-b-1">
@@ -201,7 +210,7 @@
 
                             <br>
                             <br>
-                                <input class="btn pull-left btn-primary" type="reset" value="Reset Fields">
+                                <input class="btn btn-primary" type="reset" value="Reset Fields">
                                 <input class="btn pull-right btn-primary" type="submit" value="Submit">
                             </form>
                             <p> Fields marked with <FONT COLOR="Red">*</FONT> are mandatory</p>
@@ -311,7 +320,7 @@
 
                             <br>
                             <br>
-                                <input class="btn pull-left btn-primary" type="reset" value="Reset Fields">
+                                <input class="btn btn-primary" type="reset" value="Reset Fields">
                                 <input class="btn pull-right btn-primary" type="submit" value="Submit">
                             </form>
                             <p> Fields marked with <FONT COLOR="Red">*</FONT> are mandatory</p>
