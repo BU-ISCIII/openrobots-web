@@ -3,10 +3,12 @@ from django.conf import settings
 ##### Allow to import the configuration samba files from configuration folder
 import sys
 sys.path.append('../')
+
 try:
     from .url_configuration import DOMAIN_SERVER
 except:
-    DOMAIN_SERVER = 'localhost22'
+    DOMAIN_SERVER = 'localhost'
+
 
 ############## FOLDER SETTINGS ###############################
 ## Directory settings for processing the run data files ######

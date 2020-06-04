@@ -140,64 +140,7 @@ def get_steps_used_in_protocol(in_file):
 
     return steps_in_file
 
-def get_domain_server_data_from_file(application):
-    '''
-    Description:
-        Fetch the domain server configuration file
-    Inputs:
-        application     # Application name
-    Constants:
-        DOMAIN_SERVER_CONFIGURATION_FILE_HEADING
-        DOMAIN_SERVER_CONFIGURATION_FILE_END
-    Return:
-        domain_server_data
-    '''
-    conf_file = os.path.join(settings.BASE_DIR, application,'url_configuration.py')
-    domain_server_data = ''
-    heading_found = False
-    try:
-        with open (conf_file, 'r') as fh:
-            for line in fh.readlines():
-                if not heading_found and DOMAIN_SERVER_CONFIGURATION_FILE_HEADING.split('\n')[-2] in line :
-                    heading_found = True
-                    continue
-                if DOMAIN_SERVER_CONFIGURATION_FILE_END in line:
-                    break
-                if heading_found :
-                    line = line.rstrip()
-                    key , value = line.split(' = ')
-                    domain_server_data = value.replace('\'','')
-        return domain_server_data
-    except:
-        domain_server_data
 
-def create_domain_server_conf_file(domain_server_data, application):
-    '''
-    Description:
-        create the domain server configuration file . If exists the old information is deleted
-    Input:
-        domain_server_data    #
-    Constants:
-        DOMAIN_SERVER_CONFIGURATION_FILE_HEADING
-        DOMAIN_SERVER_CONFIGURATION_FILE_END
-    Functions:
-        get_type_of_data # located at this file
-    Return:
-        True if sucessful creation
-    '''
-    conf_file = os.path.join(settings.BASE_DIR, application,'url_configuration.py')
-
-    try:
-        import pdb; pdb.set_trace()
-        with open (conf_file, 'w') as out_fh:
-
-            out_fh.write(DOMAIN_SERVER_CONFIGURATION_FILE_HEADING)
-            out_fh.write('DOMAIN_SERVER = '+ domain_server_data + '\n')
-            out_fh.write(DOMAIN_SERVER_CONFIGURATION_FILE_END)
-    except:
-        return False
-
-    return True
 
 def json_file_valid_format(in_file):
     '''

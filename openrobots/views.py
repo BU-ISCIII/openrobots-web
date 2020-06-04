@@ -11,29 +11,6 @@ def index(request):
     #return redirect ('/createProtocolFile')
     return render(request, 'openrobots/index.html')
 
-@login_required
-def configuration_url(request):
-    if request.user.username != 'admin':
-        return redirect('')
-    domain_server_data = get_domain_server_data_from_file(__package__)
-
-    if request.method == 'POST' and (request.POST['action']=='urlconfiguration'):
-        domain_server = request.POST['DOMAIN_SERVER']
-        import urllib
-        try :
-            site = urllib.request.urlopen('https://' + domain_server )
-        except:
-            try:
-                site = urllib.request.urlopen('http://' + domain_server )
-            except:
-                error_message = ERROR_INVALID_URL
-                return render (request, 'openrobots/configurationURL.html', {'error_message': error_message, 'domain_server_data':domain_server })
-        if  not create_domain_server_conf_file(domain_server, __package__):
-            error_message = ERROR_UNABLE_TO_SAVE_CONFIGURATION_FILE
-            return render (request, 'openrobots/configurationURL.html', {'error_message': error_message})
-
-        return render (request, 'openrobots/configurationURL.html', {'succesful_settings': True})
-    return render (request, 'openrobots/configurationURL.html', {'domain_server_data': domain_server_data})
 
 @login_required
 def create_pcr_protocol_file(request):

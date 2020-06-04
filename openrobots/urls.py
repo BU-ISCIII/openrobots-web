@@ -6,7 +6,6 @@ urlpatterns = [
     path('', views.index, name = 'index'),
     path('createPCRProtocolFile', views.create_pcr_protocol_file, name = 'create_pcr_protocol_file'),
     path('createExtractionProtocolFile', views.create_extraction_protocol_file, name = 'create_extraction_protocol_file'),
-    path('configurationURL', views.configuration_url, name ='configuration_url'),
     path('defineLabware', views.define_labware, name = 'define_labware'),
     path('defineRobot', views.define_robot, name = 'define_robot'),
     path('detailLabwareInventory=<int:labware_id>', views.detail_labware_inventory, name = 'detail_labware_inventory'),
