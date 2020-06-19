@@ -173,6 +173,19 @@
                                                    </select>
                                     </div>  <!-- end select input -->
                                     <br><br>
+                                    <label class="col-sm-5 control-label" for="TIPS1000" >Tips1000</label>
+                                    <div class="col-sm-5"><select class="form-control"  required = "required" name="TIPS1000" id="TIPS1000">
+                                                            {% if form_data.tips1000_default_data %}
+                                                                <option selected="{{form_data.language_default_data}}">{{form_data.tips1000_default_data}}</option>
+                                                            {% else %}
+                                                                <option value="">Choose a value</option>
+                                                            {% endif %}
+                                                            {% for value in form_data.tips1000_data %}
+                                                                <option value="{{value}}">{{value}}</option>
+                                                            {% endfor %}
+                                                   </select>
+                                    </div>  <!-- end select input -->
+                                    <br><br>
                                     <label class="col-sm-5  control-label" for="VOLUME_ELUTION" >Volume Elution</label>
                                     <div class="col-sm-6"><input class="form-control" type="text" required = "required" name="VOLUME_ELUTION" id="VOLUME_ELUTION" value="7" size="100" maxlength="100"></div>
                                     <BR><br>

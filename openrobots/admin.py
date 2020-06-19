@@ -75,6 +75,12 @@ class ElutionStationB_LabwareAdmin (admin.ModelAdmin):
 class ElutionStationC_LabwareAdmin (admin.ModelAdmin):
     list_display =['elutionStationC', 'description', 'default']
 
+class Tips300_LabwareAdmin(admin.ModelAdmin):
+    list_display= ['tips300', 'description', 'default']
+
+class Tips1000_LabwareAdmin(admin.ModelAdmin):
+    list_display= ['tips1000', 'description', 'default']
+
 class RobotsInventoryAdmin (admin.ModelAdmin):
     list_display =('userName', 'configuration',  'location','robots', 'serialNumber','IP_address','hostName',
             'computer_mac','rightPipette', 'leftPipette', 'rightPipetteID', 'leftPipetteID', 'neededPlugs','observations')
@@ -166,6 +172,9 @@ admin.site.register(RequestForStationC_Prot1 , RequestForStationC_Prot1Admin)
 admin.site.register(RequestForStationC_Prot2 , RequestForStationC_Prot2Admin)
 
 admin.site.register(FileIDUserRequestMapping, FileIDUserRequestMappingAdmin)
+
+admin.site.register(Tips300_Labware,Tips300_LabwareAdmin)
+admin.site.register(Tips1000_Labware,Tips1000_LabwareAdmin)
 
 admin.site.register(RobotsActionPost, RobotsActionPostAdmin)
 admin.site.register(ParametersRobotAction, ParametersRobotActionAdmin)
