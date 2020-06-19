@@ -189,6 +189,11 @@ def get_form_data_creation_run_file():
     form_data['plate_labware_data'] = []
     form_data['lysate_labware_data'] = []
     form_data['language_data'] = []
+    form_data['tips300_default_data'] = []
+    form_data['tips300_data'] = []
+    form_data['tips1000_default_data'] = []
+    form_data['tips1000_data'] = []
+
 
     # values for station A form
     if MasterMixLabware.objects.all().exists():
@@ -346,6 +351,26 @@ def get_form_data_creation_run_file():
             language_types = Language.objects.all()
         for language_type in language_types:
             form_data['language_data'].append(language_type.get_language_code())
+    if Tips300_Labware.objects.all().exists():
+        tips300_default_obj = Tips300_Labware.objects.filter(default = True).last()
+        if tips300_default_obj:
+            form_data['tips300_default_data'] = tips300_default_obj.get_tips300_labware()
+            tips300_types = Tips300_Labware.objects.exclude(pk__exact = tips300_default_obj.pk)
+        else:
+            tips300_types = Tips300_Labware.objects.all()
+        for tips300_type in tips300_types :
+            form_data['tips300_data'].append(tips300_type.get_tips300_labware())
+
+    if Tips1000_Labware.objects.all().exists():
+        tips1000_default_obj = Tips1000_Labware.objects.filter(default = True).last()
+        if tips1000_default_obj:
+            form_data['tips1000_default_data'] = tips1000_default_obj.get_tips1000_labware()
+            tips1000_types = Tips1000_Labware.objects.exclude(pk__exact = tips1000_default_obj.pk)
+        else:
+            tips1000_types = Tips1000_Labware.objects.all()
+        for tips1000_type in tips1000_types :
+            form_data['tips1000_data'].append(tips1000_type.get_tips1000_labware())
+
 
     if ProtocolTemplateFiles.objects.filter(station__stationName__iexact = 'Station A').exists():
         form_data['station_a'] = {}
