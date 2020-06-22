@@ -173,14 +173,14 @@
                                                    </select>
                                     </div>  <!-- end select input -->
                                     <br><br>
-                                    <label class="col-sm-5 control-label" for="TIPS1000" >Tips1000</label>
-                                    <div class="col-sm-5"><select class="form-control"  required = "required" name="TIPS1000" id="TIPS1000">
+                                    <label class="col-sm-5 control-label" for="TIPS300" >Tips300</label>
+                                    <div class="col-sm-5"><select class="form-control"  required = "required" name="TIPS300" id="TIPS300">
                                                             {% if form_data.tips1000_default_data %}
-                                                                <option selected="{{form_data.language_default_data}}">{{form_data.tips1000_default_data}}</option>
+                                                                <option selected="{{form_data.language_default_data}}">{{form_data.tips300_default_data}}</option>
                                                             {% else %}
                                                                 <option value="">Choose a value</option>
                                                             {% endif %}
-                                                            {% for value in form_data.tips1000_data %}
+                                                            {% for value in form_data.tips300_data %}
                                                                 <option value="{{value}}">{{value}}</option>
                                                             {% endfor %}
                                                    </select>
