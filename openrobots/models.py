@@ -884,7 +884,7 @@ class RequestForStationC_Prot1Manager(models.Manager):
         station = Stations.objects.get(stationName__exact = request_data['station'])
         usedTemplateFile = ProtocolTemplateFiles.objects.get(protocolTemplateFileName__exact = request_data['usedTemplateFile'])
         languageCode = Language.objects.filter(languageCode__exact = request_data['languageCode']).last()
-        tips1000 = Tips1000_Labware.objects.filter(tips1000 = request_data['tips1000']).last()
+        tips300 = Tips300_Labware.objects.filter(tips300 = request_data['tips300']).last()
 
         new_request = self.create(userRequestedBy = request_data['userRequestedBy'], masterMixLabware = masterMixLabware , masterMixTubeLabware = masterMixTubeLabware,
                     pcrPlateLabware = pcrPlateLabware, c_elution_Labware = c_elution_Labware, masterMixType = masterMixType, station = station,
@@ -894,7 +894,7 @@ class RequestForStationC_Prot1Manager(models.Manager):
                     protocolID = request_data['protocolID'], transferSamples = util.strtobool(request_data['transferSamples']),
                     resetTipcount =  util.strtobool(request_data['resetTipcount']),
                     generatedFile = request_data['generatedFile'] , userNotes = request_data['userNotes'],
-                    tips1000 = tips1000)
+                    tips300 = tips300)
 
         return new_request
 
@@ -928,8 +928,8 @@ class RequestForStationC_Prot1 (models.Model):
     languageCode = models.ForeignKey(
                         Language,
                         on_delete=models.CASCADE, null = True)
-    tips1000 = models.ForeignKey(
-                        Tips1000_Labware,
+    tips300 = models.ForeignKey(
+                        Tips300_Labware,
                         on_delete=models.CASCADE, null = True)
     requestedCodeID = models.CharField(max_length = 50)
     protocolID = models.CharField(max_length = 50, default = None)
