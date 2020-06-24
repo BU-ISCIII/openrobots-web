@@ -1,4 +1,4 @@
-import time, re
+import time, re, json
 from datetime import datetime
 from datetime import timedelta
 from openrobots.models import *
@@ -119,6 +119,20 @@ def check_valid_date_format (date):
     except:
         return False
 
+def check_empty_fields (row_data):
+    '''
+    Description:
+        The function check if row_data contains empty values.
+    Input:
+        row_data:       # data to be checked
+
+    Return:
+        True if all values are empty
+    '''
+    line = list(set(row_data))
+    if line == [''] :
+        return True
+    return False
 
 def get_parameters_names_defined(station, protocol):
     '''
@@ -389,6 +403,19 @@ def get_form_data_creation_run_file():
 
     return form_data
 
+def get_form_data_define_parameter():
+    '''
+    Description:
+        The function will get information to include in the parameter definition form
+    Return:
+        define_parameter
+    '''
+    define_parameter ={}
+    define_parameter['type_available'] = PARAMETERS_TYPE
+    define_parameter['heading'] = PARAMETER_DEFINE_HEADING
+
+    return  define_parameter
+
 
 def get_form_data_robots_usage():
     '''
@@ -414,6 +441,51 @@ def get_form_data_robots_usage():
         form_data['protocols_action'] = list(set(protocols_action_list))
 
     return form_data
+
+def get_input_define_parameter(form_data):
+    '''
+    Description:
+        The function get the parameter defined bu user for the protocol
+    Constans:
+        PARAMETER_DEFINE_IN_DDBB
+    Functions:
+        check_empty_fields      # located at this file
+    Return:
+        parameter_data and valid_form
+    '''
+    parameter_data = []
+    parameter_json_data = json.loads(form_data['parameter_data'])
+    option_parameter = False
+    valid_form = True
+    for row_index in range(len(parameter_json_data)) :
+        if check_empty_fields(parameter_json_data[row_index]):
+            continue
+        # remove empty space at start and end of the item list
+        for j in range(len(parameter_json_data[row_index])):
+            parameter_json_data[row_index][j] = parameter_json_data[row_index][j].strip()
+        if (parameter_json_data[row_index][0] == '' or parameter_json_data[row_index][1] == '') and not option_parameter :
+            valid_form = False
+            continue
+        elif (parameter_json_data[row_index][0] == '' or parameter_json_data[row_index][1] == '') and option_parameter:
+            row_data[PARAMETER_DEFINE_IN_DDBB[3]].append([parameter_json_data[row_index][3]])
+            if parameter_json_data[row_index][4].upper() == 'X' :
+                row_data[PARAMETER_DEFINE_IN_DDBB[4]] = [parameter_json_data[row_index][3]]
+            continue
+        if option_parameter:
+            parameter_data.append(row_data)
+            option_parameter = False
+        row_data = {}
+        for i in range(len(PARAMETER_DEFINE_IN_DDBB)):
+            row_data[PARAMETER_DEFINE_IN_DDBB[i]] = parameter_json_data[row_index][i]
+        if parameter_json_data[row_index][2] == 'Option':
+            row_data[PARAMETER_DEFINE_IN_DDBB[3]] = [parameter_json_data[row_index][3]]
+            if parameter_json_data[row_index][4].upper() == 'X' :
+                row_data[PARAMETER_DEFINE_IN_DDBB[4]] = [parameter_json_data[row_index][3]]
+            option_parameter = True
+            continue
+        parameter_data.append(row_data)
+    return parameter_data, valid_form
+
 
 def get_list_labware_inventory():
     '''
@@ -907,8 +979,48 @@ def get_list_of_requests():
 
     return request_list
 
+def get_pending_protocol_parameters():
+    '''
+    Description:
+        The function get the protocol templates names and ids of the protocol templates
+        which have not defined yet the parameters
+    Return:
+        pending_protocols
+    '''
+    pending_protocols = []
+    if ProtocolTemplateFiles.objects.filter(parametersDefined__exact = False).exists():
+        protocols = ProtocolTemplateFiles.objects.filter(parametersDefined__exact = False)
+        for protocol in protocols:
+            pending_protocols.append(protocol.get_main_data())
+    return pending_protocols
 
-def increase_protocol_file_id ():
+
+def get_protocol_template_obj_from_id(protocol_template_id):
+    '''
+    Description:
+        The function get the instance object from the protocol template id
+    Return:
+        protocol_template_obj
+    '''
+    if ProtocolTemplateFiles.objects.filter(pk__exact = protocol_template_id).exists():
+        return ProtocolTemplateFiles.objects.get(pk__exact = protocol_template_id)
+    return False
+
+
+def get_recorded_protocol_template(protocol_template_id) :
+    '''
+    Description:
+        The function get protocol template name and the file
+    Return:
+        created_new_file
+    '''
+    created_new_file = {}
+    protocol_obj = get_protocol_template_obj_from_id(protocol_template_id)
+    created_new_file['protocol_name'] = protocol_obj.get_protocol_name()
+    created_new_file['file_name'] = protocol_obj.get_protocol_file()
+    return created_new_file
+
+def increase_protocol_file_id (protocol_template_id):
     '''
     Description:
         The function look for the latest file id value and increment in one unit.
@@ -942,6 +1054,43 @@ def increase_protocol_file_id ():
     else:
         return '0000-AA'
 
+def set_protocol_parameters_defined(protocol_template_id):
+    '''
+    Description:
+        The function store protocol parameters in database
+    Functions:
+        get_protocol_template_obj_from_id   # located at this file
+    Return:
+        None
+    '''
+    protocol_template_obj = get_protocol_template_obj_from_id(protocol_template_id)
+    protocol_template_obj.set_parameters_defined()
+    return
+
+def store_define_parameter(define_parameter_data, template_file_id):
+    '''
+    Description:
+        The function store protocol parameters in database
+    Return:
+        None
+    '''
+    for parameter in define_parameter_data:
+        new_parameter = ProtocolParameter.objects.create_parameter(parameter, template_file_id)
+
+        if parameter['parameterType'] == 'Option':
+            default_value = new_parameter.get_default_value()
+            for option in parameter['optionValue']:
+                option_data = {}
+                option_data['parameter'] = new_parameter
+                option_data['optionValue'] = option
+                if default_value == option:
+                    option_data['default'] = 'X'
+                else:
+                    option_data['default'] = None
+                import pdb; pdb.set_trace()
+                new_parameter_option = ParameterOption.objects.create_parameter_option(option_data)
+
+    return
 
 def store_file_id (protocol_file_id, station, protocol):
     '''

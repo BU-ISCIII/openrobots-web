@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from . import openrobots_config #OPENROBOTS_TEMPLATE_DIRECTORY, OPENROBOTS_OUTPUT_DIRECTORY
 from distutils import util
 
+## vale en la nueva version
 class Stations (models.Model):
     stationName = models.CharField(max_length = 80)
     description = models.CharField(max_length = 255, null = True, blank = True )
@@ -14,7 +15,7 @@ class Stations (models.Model):
     def get_station_name(self):
         return '%s' %(self.stationName)
 
-
+## vale en la nueva version
 class ModuleType (models.Model):
     moduleType = models.CharField(max_length = 30)
     vendor = models.CharField(max_length = 30)
@@ -54,7 +55,7 @@ class ModuleType (models.Model):
         data.append(self.witePapers)
         data.append(self.manualGuide)
         return data
-
+## vale en la nueva version
 class ModulesInLab (models.Model):
     moduleType = models.ForeignKey(
                         ModuleType,
@@ -89,6 +90,8 @@ class RobotsInventoryManager (models.Manager):
                 neededPlugs = robot_data['neededPlugs'], observations = robot_data['observations'] )
         return new_robot
 
+
+## vale en la nueva version
 class RobotsInventory (models.Model):
     userName = models.ForeignKey (
                         User,
@@ -171,6 +174,7 @@ class RobotsInventory (models.Model):
 
     objects = RobotsInventoryManager()
 
+## vale en la nueva version
 class ProtocolsType (models.Model):
     protocolTypeName = models.CharField(max_length = 255)
     description = models.CharField(max_length = 255, null = True, blank = True )
@@ -191,7 +195,7 @@ class ProtocolTemplateFilesManager(models.Manager) :
                     prepareMasterMix = protocol_data['prepare_mastermix'],transferMasterMix= protocol_data['transfer_mastermix'],
                     transferSamples= protocol_data['transfer_samples'])
         return new_protocol_template
-
+## vale en la nueva version
 class ProtocolTemplateFiles (models.Model):
     userName = models.ForeignKey (
                         User,
@@ -210,6 +214,7 @@ class ProtocolTemplateFiles (models.Model):
     prepareMasterMix = models.BooleanField(default = False)
     transferMasterMix = models.BooleanField(default = False)
     transferSamples = models.BooleanField(default = False)
+    parametersDefined = models.BooleanField(default = False, null = True)
     generatedat = models.DateTimeField(auto_now_add=True)
 
     def __str__ (self):
@@ -220,6 +225,9 @@ class ProtocolTemplateFiles (models.Model):
 
     def get_protocol_name(self):
         return '%s' %(self.protocolName)
+
+    def get_protocol_file(self):
+        return '%s' %(self.protocolTemplateFileName)
 
     def get_protocol_type(self):
         return '%s' %(self.typeOfProtocol.get_name())
@@ -251,6 +259,14 @@ class ProtocolTemplateFiles (models.Model):
         data.append(self.transferMasterMix)
         data.append(self.transferSamples)
         return data
+
+    def get_protocol_template_id (self):
+        return '%s'  %(self.pk)
+
+    def set_parameters_defined (self):
+        self.parametersDefined = True
+        self.save()
+        return self
 
     objects = ProtocolTemplateFilesManager()
 
@@ -1078,6 +1094,53 @@ class RequestForStationC_Prot2 (models.Model):
 
     objects = RequestForStationC_Prot2Manager()
 
+
+
+
+class ProtocolParameterManager(models.Manager):
+    def create_parameter(self, parameter_data,template_file_id):
+        usedTemplateFile = ProtocolTemplateFiles.objects.get(pk__exact = template_file_id)
+        new_parameter = self.create(usedTemplateFile = usedTemplateFile, parameterType = parameter_data['parameterType'],
+                        parameterName = parameter_data['parameterName'], nameInForm = parameter_data['nameInForm'],
+                        defaultValue = parameter_data['defaultValue'])
+        return new_parameter
+
+
+class ProtocolParameter (models.Model):
+    usedTemplateFile = models.ForeignKey(
+                        ProtocolTemplateFiles,
+                        on_delete=models.CASCADE)
+    parameterType = models.CharField(max_length = 20)
+    parameterName = models.CharField(max_length = 50)
+    nameInForm = models.CharField(max_length = 50)
+    defaultValue = models.CharField(max_length = 50, null = True, blank = True)
+
+    def __str__ (self):
+        return '%s_%s' %(self.usedTemplateFile, self.parameterName)
+
+    def get_parameter_name (self):
+        return '%s_%s' %(self.usedTemplateFile, self.parameterName)
+
+    def get_default_value(self):
+        return '%s' %(self.defaultValue)
+
+    objects = ProtocolParameterManager()
+
+
+class ParameterOptionManager(models.Manager):
+    def create_parameter_option(self, option_data):
+        new_parameter_option = self.create( parameter = option_data['parameter'],
+                    optionValue = option_data['optionValue'],  default = option_data['default'], )
+
+
+class ParameterOption (models.Model):
+    parameter = models.ForeignKey(
+                        ProtocolParameter,
+                        on_delete=models.CASCADE)
+    optionValue = models.CharField(max_length = 80)
+    default = models.CharField(max_length = 5, null = True, blank = True)
+
+    objects = ParameterOptionManager()
 
 class FileIDUserRequestMappingManager(models.Manager):
 

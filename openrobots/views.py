@@ -5,6 +5,7 @@ from django.conf import settings
 from openrobots.utils.fetching_information import  *
 from openrobots.utils.file_utilities import  *
 from openrobots.openrobots_config import *
+import json
 
 def index(request):
     #
@@ -217,10 +218,7 @@ def detail_action_robot(request, action_id):
 def upload_protocol_templates(request):
     if request.user.username not in ADMIN_USERS :
         return render(request, 'openrobots/index.html')
-    template_data = {}
-    template_data['protocol_types'] = get_protocol_types()
-    template_data['stations'] = get_stations_names()
-    stored_protocol_file= get_stored_protocols_files()
+
     if request.method == 'POST' and request.POST['action'] == 'addtemplatefile':
         ## fetch the file from user form and  build the file name  including
         ## the date and time on now to store in database
@@ -231,8 +229,11 @@ def upload_protocol_templates(request):
         if not template_file_valid_format(saved_file):
             error_message = INVALID_TEMPLATE_FILE
             os.remove(saved_file)
+            template_data = {}
+            template_data['protocol_types'] = get_protocol_types()
+            template_data['stations'] = get_stations_names()
             return render(request, 'openrobots/uploadProtocolTemplates.html', {'error_message': error_message ,
-                        'stored_protocol_file': stored_protocol_file, 'template_data': template_data} )
+                        'template_data': template_data} )
         protocol_file_data = {}
         protocol_file_data = get_metadata_from_file(saved_file)
         protocol_file_data.update(get_steps_used_in_protocol(saved_file))
@@ -241,11 +242,41 @@ def upload_protocol_templates(request):
         protocol_file_data['file_name'] = file_name
         protocol_file_data['user'] = request.user
         new_protocol_template = ProtocolTemplateFiles.objects.create_protocol_template(protocol_file_data)
-        created_new_file = {}
-        created_new_file['protocol_name'] = request.POST['protocoltype']
-        created_new_file['file_name'] = request.FILES['newtemplatefile'].name
 
-        return render(request, 'openrobots/uploadProtocolTemplates.html' , {'template_data': template_data ,'stored_protocol_file': stored_protocol_file,
-                                'created_new_file': created_new_file  })
+
+
+        #return render(request, 'openrobots/uploadProtocolTemplates.html' , {'template_data': template_data ,'stored_protocol_file': stored_protocol_file,
+        #                            'created_new_file': created_new_file  })
+
+        define_parameter = get_form_data_define_parameter()
+        define_parameter['protocol_template_id'] = new_protocol_template.get_protocol_template_id()
+        return render(request, 'openrobots/uploadProtocolTemplates.html' , {'define_parameter': define_parameter  })
+
+    elif request.method == 'POST' and request.POST['action'] == 'defineParameter':
+
+        define_parameter_data, valid_parameters = get_input_define_parameter(request.POST)
+        if not valid_parameters:
+            define_parameter = get_form_data_define_parameter()
+            define_parameter['parameter_values'] = json.loads(request.POST['parameter_data'])
+            define_parameter['protocol_template_id'] = request.POST['protocol_template_id']
+            return render(request, 'openrobots/uploadProtocolTemplates.html' , {'define_parameter': define_parameter  })
+        protocol_template_id = request.POST['protocol_template_id']
+        store_define_parameter(define_parameter_data, protocol_template_id )
+        # Update template file with paramteres defined
+        set_protocol_parameters_defined(protocol_template_id)
+        created_new_file = get_recorded_protocol_template(protocol_template_id)
+        return render(request, 'openrobots/uploadProtocolTemplates.html' , {'created_new_file': created_new_file  })
+
+    elif request.method == 'POST' and request.POST['action'] == 'addParameter':
+
+        define_parameter = get_form_data_define_parameter()
+        define_parameter['protocol_template_id'] = request.POST['protocol_template_id']
+        return render(request, 'openrobots/uploadProtocolTemplates.html' , {'define_parameter': define_parameter  })
     else:
-        return render(request, 'openrobots/uploadProtocolTemplates.html' , {'template_data': template_data, 'stored_protocol_file': stored_protocol_file})
+        template_data = {}
+        template_data['protocol_types'] = get_protocol_types()
+        template_data['stations'] = get_stations_names()
+        stored_protocol_file= get_stored_protocols_files()
+        pending_protocols = get_pending_protocol_parameters()
+        return render(request, 'openrobots/uploadProtocolTemplates.html' , {'template_data': template_data, 'stored_protocol_file': stored_protocol_file,
+                                'pending_protocols': pending_protocols})
