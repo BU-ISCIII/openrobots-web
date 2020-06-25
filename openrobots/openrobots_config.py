@@ -89,5 +89,5 @@ URL_FOR_REST_API_ROBOT_USAGE = '/api/robots/createUsage'
 
 ############# NEW WEB  #######################
 PARAMETERS_TYPE = ['String', 'Boolean','Option']
-PARAMETER_DEFINE_HEADING = ['Name in protocol file', 'Name in the Form', 'Type', 'Option values', 'Default']
-PARAMETER_DEFINE_IN_DDBB = ['parameterName', 'nameInForm', 'parameterType', 'optionValue', 'defaultValue']
+PARAMETER_DEFINE_HEADING = ['Name in protocol file', 'Name in the Form', 'Type', 'Option values', 'Option Description' 'Default']
+PARAMETER_DEFINE_IN_DDBB = ['parameterName', 'nameInForm', 'parameterType', 'optionValue', 'optionDescription' 'defaultValue']

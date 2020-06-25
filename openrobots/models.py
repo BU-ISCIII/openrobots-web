@@ -192,8 +192,7 @@ class ProtocolTemplateFilesManager(models.Manager) :
         new_protocol_template = self.create(userName = protocol_data ['user'],station = station_obj,  typeOfProtocol = protocol_obj,
                     protocolTemplateFileName = protocol_data['file_name'], protocolName = protocol_data['protocolName'],
                     authors= protocol_data['author'], source = protocol_data['source'], apiLevel= protocol_data['apiLevel'],
-                    prepareMasterMix = protocol_data['prepare_mastermix'],transferMasterMix= protocol_data['transfer_mastermix'],
-                    transferSamples= protocol_data['transfer_samples'])
+                    protocolNameInForm = protocol_data['prottype'])
         return new_protocol_template
 ## vale en la nueva version
 class ProtocolTemplateFiles (models.Model):
@@ -206,15 +205,19 @@ class ProtocolTemplateFiles (models.Model):
     typeOfProtocol = models.ForeignKey(
                         ProtocolsType,
                         on_delete=models.CASCADE)
+    protocolNameInForm = models.CharField(max_length = 80, null = True)
     protocolTemplateFileName = models.FileField(upload_to = openrobots_config.OPENROBOTS_TEMPLATE_DIRECTORY )
     protocolName = models.CharField(max_length = 255)
+    protocolNumber =  models.CharField(max_length = 10, null = True, blank = True)
+    protocolVersion =  models.CharField(max_length = 10, null = True, blank = True)
     authors = models.CharField(max_length = 255)
     source = models.CharField(max_length = 255)
     apiLevel = models.CharField(max_length = 50)
-    prepareMasterMix = models.BooleanField(default = False)
-    transferMasterMix = models.BooleanField(default = False)
-    transferSamples = models.BooleanField(default = False)
+    #prepareMasterMix = models.BooleanField(default = False)
+    #transferMasterMix = models.BooleanField(default = False)
+    #transferSamples = models.BooleanField(default = False)
     parametersDefined = models.BooleanField(default = False, null = True)
+    protocolTemplateBeUsed = models.BooleanField(default = False, null = True)
     generatedat = models.DateTimeField(auto_now_add=True)
 
     def __str__ (self):
@@ -252,13 +255,9 @@ class ProtocolTemplateFiles (models.Model):
         data.append(self.source)
         data.append(self.apiLevel)
         return data
+    def get_name_in_form(self):
+        return '%s' %(self.ProtocolNameInForm)
 
-    def get_functions(self):
-        data = []
-        data.append(self.prepareMasterMix)
-        data.append(self.transferMasterMix)
-        data.append(self.transferSamples)
-        return data
 
     def get_protocol_template_id (self):
         return '%s'  %(self.pk)
@@ -1123,14 +1122,25 @@ class ProtocolParameter (models.Model):
 
     def get_default_value(self):
         return '%s' %(self.defaultValue)
+    def get_parameter_info(self):
+        data = []
+        data.append(self.parameterName)
+        data.append(self.nameInForm)
+        data.append(self.defaultValue)
+        return data
 
     objects = ProtocolParameterManager()
 
 
 class ParameterOptionManager(models.Manager):
     def create_parameter_option(self, option_data):
+        if option_data['optionDescription'] == '':
+            optionDescription = None
+        else:
+            optionDescription = option_data['optionDescription']
         new_parameter_option = self.create( parameter = option_data['parameter'],
-                    optionValue = option_data['optionValue'],  default = option_data['default'], )
+                    optionValue = option_data['optionValue'],  default = option_data['default'],
+                    optionDescription = optionDescription )
 
 
 class ParameterOption (models.Model):
@@ -1138,6 +1148,7 @@ class ParameterOption (models.Model):
                         ProtocolParameter,
                         on_delete=models.CASCADE)
     optionValue = models.CharField(max_length = 80)
+    optionDescription = models.CharField(max_length = 80, null = True)
     default = models.CharField(max_length = 5, null = True, blank = True)
 
     objects = ParameterOptionManager()

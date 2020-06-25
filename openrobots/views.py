@@ -178,6 +178,12 @@ def list_of_requests(request):
 
 
 @login_required
+def request_protocol_station_B (request):
+
+    data_form_station_b = get_form_data_station_B ()
+    return render(request, 'openrobots/requestProtocolStationB.html' ,{'data_form_station_b': data_form_station_b} )
+
+@login_required
 def robots_jobs (request):
     form_data = get_form_data_robots_usage()
 
@@ -236,17 +242,12 @@ def upload_protocol_templates(request):
                         'template_data': template_data} )
         protocol_file_data = {}
         protocol_file_data = get_metadata_from_file(saved_file)
-        protocol_file_data.update(get_steps_used_in_protocol(saved_file))
         protocol_file_data['station'] = request.POST['station']
+        protocol_file_data['prottype'] = request.POST['prottype']
         protocol_file_data['typeOfProtocol'] = request.POST['protocoltype']
         protocol_file_data['file_name'] = file_name
         protocol_file_data['user'] = request.user
         new_protocol_template = ProtocolTemplateFiles.objects.create_protocol_template(protocol_file_data)
-
-
-
-        #return render(request, 'openrobots/uploadProtocolTemplates.html' , {'template_data': template_data ,'stored_protocol_file': stored_protocol_file,
-        #                            'created_new_file': created_new_file  })
 
         define_parameter = get_form_data_define_parameter()
         define_parameter['protocol_template_id'] = new_protocol_template.get_protocol_template_id()
@@ -265,6 +266,7 @@ def upload_protocol_templates(request):
         # Update template file with paramteres defined
         set_protocol_parameters_defined(protocol_template_id)
         created_new_file = get_recorded_protocol_template(protocol_template_id)
+        
         return render(request, 'openrobots/uploadProtocolTemplates.html' , {'created_new_file': created_new_file  })
 
     elif request.method == 'POST' and request.POST['action'] == 'addParameter':

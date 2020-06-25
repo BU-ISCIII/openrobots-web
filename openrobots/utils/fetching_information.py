@@ -468,8 +468,9 @@ def get_input_define_parameter(form_data):
             continue
         elif (parameter_json_data[row_index][0] == '' or parameter_json_data[row_index][1] == '') and option_parameter:
             row_data[PARAMETER_DEFINE_IN_DDBB[3]].append([parameter_json_data[row_index][3]])
-            if parameter_json_data[row_index][4].upper() == 'X' :
-                row_data[PARAMETER_DEFINE_IN_DDBB[4]] = [parameter_json_data[row_index][3]]
+            row_data[PARAMETER_DEFINE_IN_DDBB[4]].append([parameter_json_data[row_index][4]])
+            if parameter_json_data[row_index][5].upper() == 'X' :
+                row_data[PARAMETER_DEFINE_IN_DDBB[5]] = [parameter_json_data[row_index][3]]
             continue
         if option_parameter:
             parameter_data.append(row_data)
@@ -479,8 +480,9 @@ def get_input_define_parameter(form_data):
             row_data[PARAMETER_DEFINE_IN_DDBB[i]] = parameter_json_data[row_index][i]
         if parameter_json_data[row_index][2] == 'Option':
             row_data[PARAMETER_DEFINE_IN_DDBB[3]] = [parameter_json_data[row_index][3]]
-            if parameter_json_data[row_index][4].upper() == 'X' :
-                row_data[PARAMETER_DEFINE_IN_DDBB[4]] = [parameter_json_data[row_index][3]]
+            row_data[PARAMETER_DEFINE_IN_DDBB[4]] = [parameter_json_data[row_index][4]]
+            if parameter_json_data[row_index][5].upper() == 'X' :
+                row_data[PARAMETER_DEFINE_IN_DDBB[5]] = [parameter_json_data[row_index][3]]
             option_parameter = True
             continue
         parameter_data.append(row_data)
@@ -1057,7 +1059,8 @@ def increase_protocol_file_id (protocol_template_id):
 def set_protocol_parameters_defined(protocol_template_id):
     '''
     Description:
-        The function store protocol parameters in database
+        The function update the protocol template with parameter defined and
+
     Functions:
         get_protocol_template_obj_from_id   # located at this file
     Return:
@@ -1065,6 +1068,7 @@ def set_protocol_parameters_defined(protocol_template_id):
     '''
     protocol_template_obj = get_protocol_template_obj_from_id(protocol_template_id)
     protocol_template_obj.set_parameters_defined()
+    protocol_template_obj
     return
 
 def store_define_parameter(define_parameter_data, template_file_id):
@@ -1149,3 +1153,58 @@ def validate_metadata_for_protocol_template(metadata):
         else:
             valid_metadata[item] = ''
     return valid_metadata
+
+def get_protocol_parameters(protocol, parameter_type):
+    '''
+    Description:
+        The function get the parameter filter by type of parameters, used in the protocol.
+    Input:
+        protocol    # protocol object
+        parameter_type      # type to filter the parameters used in the protocol
+    Constants:
+
+    Return:
+        parameter_data
+    '''
+    parameter_data = []
+    import pdb; pdb.set_trace()
+    if ProtocolParameter.objects.filter(usedTemplateFile = protocol, parameterType__exact = parameter_type).exists():
+        parameters = ProtocolParameter.objects.filter(usedTemplateFile = protocol, parameterType__exact = parameter_type).order_by('parameterName')
+        for parameter in parameters:
+            parameter_data.append(parameter.get_parameter_info())
+    return parameter_data
+
+def get_protocol_data_for_form (protocol):
+    '''
+    Description:
+        The function get the information to display in the form
+    Constants:
+        PARAMETERS_TYPE
+    Return:
+        data_form_protocol
+    '''
+    data_form_protocol ={}
+    data_form_protocol['name_in_form'] = protocol.get_name_in_form()
+    for parameter_type in PARAMETERS_TYPE :
+        data_form_protocol[parameter_type] = get_protocol_parameters(protocol, parameter_type)
+    return data_form_protocol
+
+
+
+def get_form_data_station_B():
+    '''
+    Description:
+        The function get the available protocols and parameters for station B
+    Constants:
+        METADATA_FIELDS_FOR_PROTOCOL_TEMPLATE
+    Return:
+        data_form_station_b
+    '''
+    data_form_station_b = []
+    if ProtocolTemplateFiles.objects.filter(station__stationName__exact = 'Station B', protocolTemplateBeUsed__exact = True).exists():
+        protocols = ProtocolTemplateFiles.objects.filter(station__stationName__exact = 'Station B', protocolTemplateBeUsed__exact = True)
+        for protocol in protocols:
+            data_form_station_b.append(get_protocol_data_for_form(protocol))
+
+    import pdb; pdb.set_trace()
+    return data_form_station_b

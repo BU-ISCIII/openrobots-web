@@ -17,6 +17,7 @@ urlpatterns = [
     path('modulesInventory', views.modules_inventory, name = 'modules_inventory'),
     path('uploadProtocolTemplates', views.upload_protocol_templates, name = 'upload_protocol_templates'),
     path('listOfRequests', views.list_of_requests, name = 'list_of_requests'),
+    path('requestProtocolStationB', views.request_protocol_station_B, name = 'request_protocol_station_B'),
     path('robotInventory', views.robot_inventory, name = 'robot_inventory'),
     path('robotsJobs', views.robots_jobs, name ='robots_jobs'),
 	]
