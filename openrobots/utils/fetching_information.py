@@ -420,7 +420,7 @@ def get_parameters_values_from_template(reference_template):
         param_data[1] = data[1]
         param_data[2] = parameter_type
         if parameter_type != 'Option':
-            param_data[5] = data[3]
+            param_data[5] = data[2]
             parameter_values.append(param_data)
         else:
             if ParameterOption.objects.filter(parameter = parameter).exists():
@@ -433,10 +433,11 @@ def get_parameters_values_from_template(reference_template):
                         option_first_line = False
                     param_data[3] = param_option.get_option_value()
                     param_data[4] = param_option.get_option_description()
-                    if param_data[3] == data[3]:
+                    if param_data[3] == data[2]:
                         param_data[5] = 'X'
                     parameter_values.append(param_data)
-    
+
+
     return parameter_values
 
 def get_form_data_define_parameter(template_obj):
@@ -451,10 +452,10 @@ def get_form_data_define_parameter(template_obj):
     define_parameter['heading'] = PARAMETER_DEFINE_HEADING
     if not template_obj :
         return define_parameter
-    protocol = template_obj.get_protocol_name()
+    protocol = template_obj.get_protocol_number()
     version = template_obj.get_protocol_version()
     if ProtocolTemplateFiles.objects.filter(protocolTemplateBeUsed = True, protocolNumber__exact = protocol, protocolVersion__exact = version).exists():
-        reference_template = ProtocolTemplateFiles.objects.last(protocolTemplateBeUsed = True, protocolNumber__exact = protocol, protocolVersion__exact = version)
+        reference_template = ProtocolTemplateFiles.objects.filter(protocolTemplateBeUsed = True, protocolNumber__exact = protocol, protocolVersion__exact = version).last()
         define_parameter['parameter_values'] = get_parameters_values_from_template(reference_template)
 
     return  define_parameter
@@ -510,10 +511,10 @@ def get_input_define_parameter(form_data):
             valid_form = False
             continue
         elif (parameter_json_data[row_index][0] == '' or parameter_json_data[row_index][1] == '') and option_parameter:
-            row_data[PARAMETER_DEFINE_IN_DDBB[3]].append([parameter_json_data[row_index][3]])
-            row_data[PARAMETER_DEFINE_IN_DDBB[4]].append([parameter_json_data[row_index][4]])
+            row_data[PARAMETER_DEFINE_IN_DDBB[3]].append(parameter_json_data[row_index][3])
+            row_data[PARAMETER_DEFINE_IN_DDBB[4]].append(parameter_json_data[row_index][4])
             if parameter_json_data[row_index][5].upper() == 'X' :
-                row_data[PARAMETER_DEFINE_IN_DDBB[5]] = [parameter_json_data[row_index][3]]
+                row_data[PARAMETER_DEFINE_IN_DDBB[5]] = parameter_json_data[row_index][3]
             continue
         if option_parameter:
             parameter_data.append(row_data)
@@ -525,7 +526,7 @@ def get_input_define_parameter(form_data):
             row_data[PARAMETER_DEFINE_IN_DDBB[3]] = [parameter_json_data[row_index][3]]
             row_data[PARAMETER_DEFINE_IN_DDBB[4]] = [parameter_json_data[row_index][4]]
             if parameter_json_data[row_index][5].upper() == 'X' :
-                row_data[PARAMETER_DEFINE_IN_DDBB[5]] = [parameter_json_data[row_index][3]]
+                row_data[PARAMETER_DEFINE_IN_DDBB[5]] = parameter_json_data[row_index][3]
             option_parameter = True
             continue
         parameter_data.append(row_data)
@@ -1065,7 +1066,7 @@ def get_recorded_protocol_template(protocol_template_id) :
     created_new_file['file_name'] = protocol_obj.get_protocol_file()
     return created_new_file
 
-def increase_protocol_file_id (protocol_template_id):
+def increase_protocol_file_id ():
     '''
     Description:
         The function look for the latest file id value and increment in one unit.
@@ -1111,7 +1112,7 @@ def set_protocol_parameters_defined(protocol_template_id):
     '''
     protocol_template_obj = get_protocol_template_obj_from_id(protocol_template_id)
     protocol_template_obj.set_parameters_defined()
-    protocol_template_obj
+    protocol_template_obj.set_template_to_be_used()
     return
 
 def store_define_parameter(define_parameter_data, template_file_id):
@@ -1126,15 +1127,15 @@ def store_define_parameter(define_parameter_data, template_file_id):
 
         if parameter['parameterType'] == 'Option':
             default_value = new_parameter.get_default_value()
-            for option in parameter['optionValue']:
+            for i in range(len(parameter['optionValue'])):
                 option_data = {}
                 option_data['parameter'] = new_parameter
-                option_data['optionValue'] = option
-                if default_value == option:
+                option_data['optionValue'] = parameter['optionValue'][i]
+                option_data['optionDescription'] = parameter['optionDescription'][i]
+                if default_value == parameter['optionValue'][i]:
                     option_data['default'] = 'X'
                 else:
                     option_data['default'] = None
-                import pdb; pdb.set_trace()
                 new_parameter_option = ParameterOption.objects.create_parameter_option(option_data)
 
     return
@@ -1210,7 +1211,6 @@ def get_protocol_parameters(protocol, parameter_type):
         parameter_data
     '''
     parameter_data = []
-    import pdb; pdb.set_trace()
     if ProtocolParameter.objects.filter(usedTemplateFile = protocol, parameterType__exact = parameter_type).exists():
         parameters = ProtocolParameter.objects.filter(usedTemplateFile = protocol, parameterType__exact = parameter_type).order_by('parameterName')
         for parameter in parameters:
@@ -1249,5 +1249,4 @@ def get_form_data_station_B():
         for protocol in protocols:
             data_form_station_b.append(get_protocol_data_for_form(protocol))
 
-    import pdb; pdb.set_trace()
     return data_form_station_b

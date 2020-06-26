@@ -79,11 +79,12 @@
                             mySpreadsheet = $('#spreadsheet').jexcel({
                                 data:data,
                                 columns: [
-                                    { type: 'text', title:'{{define_parameter.heading.0}}', width:250 },
-                                    { type: 'text', title:'{{define_parameter.heading.1}}', width:250 },
+                                    { type: 'text', title:'{{define_parameter.heading.0}}', width:200 },
+                                    { type: 'text', title:'{{define_parameter.heading.1}}', width:200 },
                                     { type: 'dropdown', title:'{{define_parameter.heading.2}}', width:100 , source :[{% for value in define_parameter.type_available %}{'id':'{{value}}','name':'{{value}}'}, {% endfor %}]},
-                                    { type: 'text', title:'{{define_parameter.heading.3}}', width:300 },
-                                    { type: 'text', title:'{{define_parameter.heading.4}}', width:100 },
+                                    { type: 'text', title:'{{define_parameter.heading.3}}', width:200 },
+                                    { type: 'text', title:'{{define_parameter.heading.4}}', width:200 },
+                                    { type: 'text', title:'{{define_parameter.heading.5}}', width:100 }
 
                                 ],
                                 allowInsertColumn:false,

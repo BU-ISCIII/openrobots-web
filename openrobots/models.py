@@ -230,6 +230,9 @@ class ProtocolTemplateFiles (models.Model):
     def get_protocol_name(self):
         return '%s' %(self.protocolName)
 
+    def get_protocol_number(self):
+        return '%s'  %(self.protocolNumber)
+
     def get_protocol_version(self):
         return '%s' %(self.protocolVersion)
 
@@ -268,6 +271,11 @@ class ProtocolTemplateFiles (models.Model):
 
     def set_parameters_defined (self):
         self.parametersDefined = True
+        self.save()
+        return self
+
+    def set_template_to_be_used(self):
+        self.protocolTemplateBeUsed = True
         self.save()
         return self
 

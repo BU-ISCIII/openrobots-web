@@ -249,15 +249,16 @@ def upload_protocol_templates(request):
         protocol_file_data['user'] = request.user
         new_protocol_template = ProtocolTemplateFiles.objects.create_protocol_template(protocol_file_data)
 
-        define_parameter = get_form_data_define_parameter()
+        define_parameter = get_form_data_define_parameter(new_protocol_template)
         define_parameter['protocol_template_id'] = new_protocol_template.get_protocol_template_id()
+        import pdb; pdb.set_trace()
         return render(request, 'openrobots/uploadProtocolTemplates.html' , {'define_parameter': define_parameter  })
 
     elif request.method == 'POST' and request.POST['action'] == 'defineParameter':
 
         define_parameter_data, valid_parameters = get_input_define_parameter(request.POST)
         if not valid_parameters:
-            define_parameter = get_form_data_define_parameter()
+            define_parameter = get_form_data_define_parameter(None)
             define_parameter['parameter_values'] = json.loads(request.POST['parameter_data'])
             define_parameter['protocol_template_id'] = request.POST['protocol_template_id']
             return render(request, 'openrobots/uploadProtocolTemplates.html' , {'define_parameter': define_parameter  })
@@ -266,12 +267,12 @@ def upload_protocol_templates(request):
         # Update template file with paramteres defined
         set_protocol_parameters_defined(protocol_template_id)
         created_new_file = get_recorded_protocol_template(protocol_template_id)
-        
+
         return render(request, 'openrobots/uploadProtocolTemplates.html' , {'created_new_file': created_new_file  })
 
     elif request.method == 'POST' and request.POST['action'] == 'addParameter':
-
-        define_parameter = get_form_data_define_parameter()
+        protocol_template_obj = get_protocol_template_obj_from_id(request.POST['protocol_template_id'])
+        define_parameter = get_form_data_define_parameter(protocol_template_obj)
         define_parameter['protocol_template_id'] = request.POST['protocol_template_id']
         return render(request, 'openrobots/uploadProtocolTemplates.html' , {'define_parameter': define_parameter  })
     else:
