@@ -403,7 +403,43 @@ def get_form_data_creation_run_file():
 
     return form_data
 
-def get_form_data_define_parameter():
+def get_parameters_values_from_template(reference_template):
+    '''
+    Description:
+        The function will get the parameters defined on the protocol template
+    Return:
+        parameter_values
+    '''
+    parameter_values = []
+    parameters = ProtocolParameter.objects.filter(usedTemplateFile = reference_template)
+    for parameter in parameters:
+        parameter_type = parameter.get_parameter_type()
+        param_data = ['']*len(PARAMETER_DEFINE_HEADING)
+        data = parameter.get_parameter_info()
+        param_data[0] = data[0]
+        param_data[1] = data[1]
+        param_data[2] = parameter_type
+        if parameter_type != 'Option':
+            param_data[5] = data[3]
+            parameter_values.append(param_data)
+        else:
+            if ParameterOption.objects.filter(parameter = parameter).exists():
+                param_options = ParameterOption.objects.filter(parameter = parameter)
+                option_first_line = True
+                for param_option in param_options:
+                    if not option_first_line :
+                        param_data = ['']*len(PARAMETER_DEFINE_HEADING)
+                    else:
+                        option_first_line = False
+                    param_data[3] = param_option.get_option_value()
+                    param_data[4] = param_option.get_option_description()
+                    if param_data[3] == data[3]:
+                        param_data[5] = 'X'
+                    parameter_values.append(param_data)
+    
+    return parameter_values
+
+def get_form_data_define_parameter(template_obj):
     '''
     Description:
         The function will get information to include in the parameter definition form
@@ -413,6 +449,13 @@ def get_form_data_define_parameter():
     define_parameter ={}
     define_parameter['type_available'] = PARAMETERS_TYPE
     define_parameter['heading'] = PARAMETER_DEFINE_HEADING
+    if not template_obj :
+        return define_parameter
+    protocol = template_obj.get_protocol_name()
+    version = template_obj.get_protocol_version()
+    if ProtocolTemplateFiles.objects.filter(protocolTemplateBeUsed = True, protocolNumber__exact = protocol, protocolVersion__exact = version).exists():
+        reference_template = ProtocolTemplateFiles.objects.last(protocolTemplateBeUsed = True, protocolNumber__exact = protocol, protocolVersion__exact = version)
+        define_parameter['parameter_values'] = get_parameters_values_from_template(reference_template)
 
     return  define_parameter
 

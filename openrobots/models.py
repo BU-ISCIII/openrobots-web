@@ -192,7 +192,8 @@ class ProtocolTemplateFilesManager(models.Manager) :
         new_protocol_template = self.create(userName = protocol_data ['user'],station = station_obj,  typeOfProtocol = protocol_obj,
                     protocolTemplateFileName = protocol_data['file_name'], protocolName = protocol_data['protocolName'],
                     authors= protocol_data['author'], source = protocol_data['source'], apiLevel= protocol_data['apiLevel'],
-                    protocolNameInForm = protocol_data['prottype'])
+                    protocolNameInForm = protocol_data['prottype'] , protocolNumber = protocol_data['protocolNumber'],
+                    protocolVersion = protocol_data['protocolVersion'])
         return new_protocol_template
 ## vale en la nueva version
 class ProtocolTemplateFiles (models.Model):
@@ -228,6 +229,9 @@ class ProtocolTemplateFiles (models.Model):
 
     def get_protocol_name(self):
         return '%s' %(self.protocolName)
+
+    def get_protocol_version(self):
+        return '%s' %(self.protocolVersion)
 
     def get_protocol_file(self):
         return '%s' %(self.protocolTemplateFileName)
@@ -1129,6 +1133,9 @@ class ProtocolParameter (models.Model):
         data.append(self.defaultValue)
         return data
 
+    def get_parameter_type(self):
+        return '%s' %(self.parameterType)
+
     objects = ProtocolParameterManager()
 
 
@@ -1150,6 +1157,19 @@ class ParameterOption (models.Model):
     optionValue = models.CharField(max_length = 80)
     optionDescription = models.CharField(max_length = 80, null = True)
     default = models.CharField(max_length = 5, null = True, blank = True)
+
+    def __str__ (self):
+        return '%s' %(self.optionValue)
+
+    def get_option_value (self):
+        return '%s' %(self.optionValue)
+
+    def get_option_description(self):
+        if self.optionDescription == None:
+            description = ''
+        else:
+            description = self.optionDescription
+        return  description
 
     objects = ParameterOptionManager()
 
