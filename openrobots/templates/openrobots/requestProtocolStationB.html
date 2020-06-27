@@ -72,141 +72,64 @@
                 <br><br>
                 <h3 style="text-align:center">Protocol for Station B</h3>
                 <div class="tab">
-                    <button class= " tablinks" onclick="summaryBin(event, 'prot1')">{{data_form_station_b.0.name_in_form}}RNA extraction</button>
+                    <button class= " tablinks" onclick="summaryBin(event, 'prot1')"  id="defaultOpen">{{data_form_station_b.0.name_in_form}}</button>
                 </div> <!--  end tabs -->
             </div> <!--  end of col-sm-12 -->
         </div> <!--  end of col-sm-5 -->
-
-        <div id="prot1" class="tabcontent">
+        <div class="col-sm-7 ">
+            <div id="prot1" class="tabcontent">
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h5 style="text-align:center">Station B Protocol:{{data_form_station_b.0.name_in_form}}.</h5>
                     </div>
                     <div class="panel-body">
-                        {% if data_form_station_b %}
+                        {% if data_form_station_b.0 %}
                         <!-- FORM for Station B -->
                             <form method="post" enctype="multipart/form-data" name="createfile" id="createfile" class="form-horizontal well">
                                 {% csrf_token %}
                                 <input type="hidden" name="action" value="createprotocolfile"/>
                                 <input type="hidden" name="station" value="Station B"/>
                                 <input type="hidden" name="protocol" value="1"/>
-                                <input type="hidden" name="template" value="{{data_form_station_b.template_id}}"/>
+                                <input type="hidden" name="template_id" value="{{data_form_station_b.0.template_id}}"/>
                                 <div class="form-group required">
                                     {% for name, form_text , default in data_form_station_b.0.String %}
                                         <label class="col-sm-5  control-label" for="{{name}}" >{{form_text}} </label>
                                     <div class="col-sm-5"><input class="form-control" type="text" required = "required" name="{{name}}" id="{{name}}"  value="{{default}}" size="100" maxlength="100"></div>
                                     <BR><br>
                                     {% endfor %}
-                                    <label class="col-sm-5 control-label" for="REAGENT_LABWARE" >Reagent labware</label>
-                                    <div class="col-sm-5"><select class="form-control"  required = "required" name="REAGENT_LABWARE" id="REAGENT_LABWARE">
-                                                            {% if form_data.reagent_labware_default_data %}
-                                                                <option selected="{{form_data.reagent_labware_default_data}}">{{form_data.reagent_labware_default_data}}</option>
-                                                            {% else %}
-                                                                <option value="">Choose a value</option>
-                                                            {% endif %}
-                                                            {% for value in form_data.reagent_labware_data %}
-                                                                <option value="{{value}}">{{value}}</option>
-                                                            {% endfor %}
-                                                   </select>
-                                    </div>  <!-- end select input -->
-                                    <BR><br>
-                                    <label class="col-sm-5 control-label" for="MAGPLATE_LABWARE" >Magnate Plate</label>
-                                    <div class="col-sm-5"><select class="form-control"  required = "required" name="MAGPLATE_LABWARE" id="MAGPLATE_LABWARE">
-                                                            {% if form_data.mag_plate_default_data %}
-                                                                <option selected="{{form_data.mag_plate_default_data}}">{{form_data.mag_plate_default_data}}</option>
-                                                            {% else %}
-                                                                <option value="">Choose a value</option>
-                                                            {% endif %}
-                                                            {% for value in form_data.mag_plate_data %}
-                                                                <option value="{{value}}">{{value}}</option>
-                                                            {% endfor %}
-                                                   </select>
-                                    </div>  <!-- end select input -->
-                                    <br><br>
-                                    <label class="col-sm-5 control-label" for="WASTE_LABWARE" >Waste Plate</label>
-                                    <div class="col-sm-5"><select class="form-control"  required = "required" name="WASTE_LABWARE" id="WASTE_LABWARE">
-                                                            {% if form_data.waste_plate_default_data %}
-                                                                <option selected="{{form_data.waste_plate_default_data}}">{{form_data.waste_plate_default_data}}</option>
-                                                            {% else %}
-                                                                <option value="">Choose a value</option>
-                                                            {% endif %}
-                                                            {% for value in form_data.waste_plate_data %}
-                                                                <option value="{{value}}">{{value}}</option>
-                                                            {% endfor %}
-                                                   </select>
-                                    </div>  <!-- end select input -->
-                                    <BR><br>
-                                    <label class="col-sm-5 control-label" for="ELUTION_LABWARE" >Elution labware</label>
-                                    <div class="col-sm-5"><select class="form-control"  required = "required" name="ELUTION_LABWARE" id="ELUTION_LABWARE">
-                                                            {% if form_data.elution_station_b_default_data %}
-                                                                <option selected="{{form_data.elution_station_b_default_data}}">{{form_data.elution_station_b_default_data}}</option>
-                                                            {% else %}
-                                                                <option value="">Choose a value</option>
-                                                            {% endif %}
-                                                            {% for value in form_data.elution_station_b_data %}
-                                                                <option value="{{value}}">{{value}}</option>
-                                                            {% endfor %}
-                                                   </select>
-                                    </div>  <!-- end select input -->
-                                    <BR><br>
-                                    <label class="col-sm-5 control-label" for="LANGUAGE" >Language for notifications</label>
-                                    <div class="col-sm-5"><select class="form-control"  required = "required" name="LANGUAGE" id="LANGUAGE">
-                                                            {% if form_data.language_default_data %}
-                                                                <option selected="{{form_data.language_default_data}}">{{form_data.language_default_data}}</option>
-                                                            {% else %}
-                                                                <option value="">Choose a value</option>
-                                                            {% endif %}
-                                                            {% for value in form_data.language_data %}
-                                                                <option value="{{value}}">{{value}}</option>
-                                                            {% endfor %}
-                                                   </select>
-                                    </div>  <!-- end select input -->
-                                    <br><br>
-                                    <label class="col-sm-5 control-label" for="TIPS300" >Tips300</label>
-                                    <div class="col-sm-5"><select class="form-control"  required = "required" name="TIPS300" id="TIPS300">
-                                                            {% if form_data.tips300_default_data %}
-                                                                <option selected="{{form_data.language_default_data}}">{{form_data.tips300_default_data}}</option>
-                                                            {% else %}
-                                                                <option value="">Choose a value</option>
-                                                            {% endif %}
-                                                            {% for value in form_data.tips300_data %}
-                                                                <option value="{{value}}">{{value}}</option>
-                                                            {% endfor %}
-                                                   </select>
-                                    </div>  <!-- end select input -->
-                                    <br><br>
-                                    <label class="col-sm-5 control-label" for="TIPS1000" >Tips1000</label>
-                                    <div class="col-sm-5"><select class="form-control"  required = "required" name="TIPS1000" id="TIPS1000">
-                                                            {% if form_data.tips1000_default_data %}
-                                                                <option selected="{{form_data.language_default_data}}">{{form_data.tips1000_default_data}}</option>
-                                                            {% else %}
-                                                                <option value="">Choose a value</option>
-                                                            {% endif %}
-                                                            {% for value in form_data.tips1000_data %}
-                                                                <option value="{{value}}">{{value}}</option>
-                                                            {% endfor %}
-                                                   </select>
-                                    </div>  <!-- end select input -->
-                                    <br><br>
-                                    <label class="col-sm-5 control-label" for="DISPENSE_BEADS" >Dipense beads</label>
-                                    <div class="col-sm-4">
-                                        <label class="radio-inline"><input type="radio" name="DISPENSE_BEADS" required = "required" value="True">YES</label>
-                                        <label class="radio-inline"><input type="radio" name="DISPENSE_BEADS" required = "required" value="False" checked>NO</label>
-                                    </div>  <!-- end  radio -->
-                                    <br><br>
 
-                                    <label class="col-sm-5 control-label" for="RESET_TIPCOUNT" >Reset Tip Count</label>
-                                    <div class="col-sm-4">
-                                        <label class="radio-inline"><input type="radio" name="RESET_TIPCOUNT" required = "required" value="True" >YES</label>
-                                        <label class="radio-inline"><input type="radio" name="RESET_TIPCOUNT" required = "required" value="False" checked>NO</label>
-                                    </div>  <!-- end  radio -->
-                                    <br><br>
-                                    <label class="col-sm-5 control-label" for="REUSE_TIPS" >Reuse Tip</label>
-                                    <div class="col-sm-4">
-                                        <label class="radio-inline"><input type="radio" name="REUSE_TIPS" required = "required" value="True" >YES</label>
-                                        <label class="radio-inline"><input type="radio" name="REUSE_TIPS" required = "required" value="False" checked>NO</label>
-                                    </div>  <!-- end  radio -->
-                                    <br><br>
+
+                                    {% for name, form_text , default, select_values in data_form_station_b.0.Option %}
+                                        <label class="col-sm-5  control-label" for="{{name}}" >{{form_text}} </label>
+                                        <div class="col-sm-5"><select class="form-control"  required = "required" name="{{name}}" id="{{name}}">
+                                                                {% if default %}
+                                                                    <option selected="{{default}}">{{default}}</option>
+                                                                {% else %}
+                                                                    <option value="">Choose a value</option>
+                                                                {% endif %}
+                                                                {% for value in select_values %}
+                                                                    <option value="{{value}}">{{value}}</option>
+                                                                {% endfor %}
+                                                       </select>
+                                        </div>  <!-- end select input -->
+
+                                        <BR><br>
+                                    {% endfor %}
+
+                                    {% for name, form_text , default in data_form_station_b.0.Boolean %}
+                                        <label class="col-sm-5  control-label" for="{{name}}" >{{form_text}} </label>
+                                        <div class="col-sm-4">
+                                            {% if default == 'True' %}
+                                                <label class="radio-inline"><input type="radio" required = "required" name="{{name}}"  value="True" checked> YES</label>
+                                                <label class="radio-inline"><input type="radio" required = "required" name="{{name}}"  value="False"> NO</label>
+                                            {% else %}
+                                                <label class="radio-inline"><input type="radio" required = "required" name="{{name}}"  value="True" > YES</label>
+                                                <label class="radio-inline"><input type="radio" required = "required" name="{{name}}"  value="False" checked> NO</label>
+                                            {% endif %}
+
+                                        </div>  <!-- end  radio -->
+                                        <BR><br>
+                                    {% endfor %}
                                 </div>  <!-- end from-group   -->
                                 <div class="form-group">
                                     <label class="col-sm-5 control-label" for="notes" >User Notes</label>
@@ -216,13 +139,12 @@
                                     <br>
                                 </div>  <!-- end from-group   -->
                                 <br>
-                                <br>
                                 <input class="btn btn-primary" type="reset" value="Reset Fields">
                                 <input class="btn pull-right btn-primary" type="submit" value="Submit">
                             </form>
                             <p> Fields marked with <FONT COLOR="Red">*</FONT> are mandatory</p>
                         {% else %}
-                        <h5>There is no  Protocol template defined for Station B </h5>
+                            <h5>There is no  Protocol template defined for Station B </h5>
                         {% endif %}
                     </div>  <!--  end of panel body  -->
                 </div> <!--// end panel -->

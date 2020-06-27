@@ -179,9 +179,48 @@ def list_of_requests(request):
 
 @login_required
 def request_protocol_station_B (request):
+    if request.method =='POST' and request.POST['action'] == 'createprotocolfile':
+        template_id = request.POST['template_id']
 
-    data_form_station_b = get_form_data_station_B ()
-    return render(request, 'openrobots/requestProtocolStationB.html' ,{'data_form_station_b': data_form_station_b} )
+
+        parameters = extract_data_from_request_protocol(request)
+
+        #parameters, database = extract_form_data_station(request)
+
+        #    protocol_type = get_protocol_type_from_template(template_id)
+        protocol_file_name = build_protocol_request_file_name(request.user.username,template_id)
+
+        protocol_file_id = increase_protocol_file_id()
+
+        new_prot_file_id_obj = store_file_id (protocol_file_id,request.POST['station'], request.POST['protocol'])
+        template_file = get_template_file_name(template_id)
+
+        add_result = add_parameters_in_file (template_file, protocol_file_name,  parameters, protocol_file_id)
+
+        if add_result != 'True':
+            data_form_station_b = get_form_data_station_B ()
+            return render(request, 'openrobots/requestProtocolStationB.html' ,{'data_form_station_b': data_form_station_b, 'error': add_result})
+        protocol_request_data = {}
+        protocol_request_data['user'] = request.user
+        protocol_request_data['generatedFile'] = protocol_file_name
+        protocol_request_data['protocolID'] = protocol_file_id
+        protocol_request_data['station'] = request.POST['station']
+        protocol_request_data['usernotes'] = request.POST['usernotes']
+        protocol_request_data['template_id'] = template_id
+        protocol_request_data['requestedCodeID'] = new_build_request_codeID (request.user, request.POST['station'] )
+        import pdb; pdb.set_trace()
+        new_create_protocol_request = ProtocolRequest.objects.create_protocol_request(protocol_request_data)
+        store_protocol_request_parameter_values(new_create_protocol_request, parameters)
+
+        import pdb; pdb.set_trace()
+        display_result = new_create_protocol_request.get_result_data()
+        return render(request, 'openrobots/requestProtocolStationB.html' ,{'display_result': display_result} )
+
+
+
+    else:
+        data_form_station_b = get_form_data_station_B ()
+        return render(request, 'openrobots/requestProtocolStationB.html' ,{'data_form_station_b': data_form_station_b} )
 
 @login_required
 def robots_jobs (request):

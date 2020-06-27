@@ -72,6 +72,25 @@ def  build_protocol_file_name(user, template):
 
     return '_'.join(name) + '.py'
 
+def  build_protocol_request_file_name(user, template_id):
+    '''
+    Description:
+        The function build the protocol file name by joining the user, protocol_type, station and time
+    Functions:
+        get_protocol_type_from_template_id   # located at this file
+        get_station_from_template_id           # located at this file
+    Return:
+        protocol_file_name
+    '''
+    name = [user]
+
+    name.append(''.join(get_protocol_type_from_template_id(template_id).split()))
+    name.append(''.join(get_station_from_template_id(template_id).split()))
+
+    name.append(time.strftime("%Y%m%d-%H%M%S"))
+
+    return '_'.join(name) + '.py'
+
 def build_request_codeID (user, protocol_type, station, protocol ) :
     '''
     Description:
@@ -788,6 +807,16 @@ def get_protocol_template_information(p_template_id):
         protocol_data['functions'] = p_template.get_functions()
     return protocol_data
 
+def get_protocol_type_from_template_id(template_id):
+    '''
+    Description:
+        The function will fetch the protocol type from protocol template id
+    Return:
+        protocol_type
+    '''
+    if ProtocolTemplateFiles.objects.filter(pk__exact = template_id).exists() :
+        return ProtocolTemplateFiles.objects.get(pk__exact = template_id).get_protocol_type()
+    return 'None'
 
 def get_protocol_type_from_template(template):
     '''
@@ -846,6 +875,26 @@ def get_robots_information_utilization(robots_action_obj):
     robot_jobs_data['summary'] = summary
 
     return robot_jobs_data
+
+def get_station_from_template_id(template_id):
+    '''
+    Description:
+        The function will fetch the station name from protocol template
+    Return:
+        station name
+    '''
+    if ProtocolTemplateFiles.objects.filter(pk__exact = template_id).exists() :
+        protocol_template_obj = ProtocolTemplateFiles.objects.get(pk__exact = template_id)
+        protocol_name = protocol_template_obj.get_protocol_name()
+        try:
+            prot_fields = re.search(r'.*Station [A|B|C] Protocol (\d+) (\w+) .*',protocol_name).groups()
+            prot = '_'.join(prot_fields)
+        except:
+            prot = '1_Unkonwn'
+
+        return protocol_template_obj.get_station() + '_Prot' + prot
+    return 'None'
+
 
 def get_station_from_template(template):
     '''
@@ -1211,16 +1260,37 @@ def get_protocol_parameters(protocol, parameter_type):
         parameter_data
     '''
     parameter_data = []
+
     if ProtocolParameter.objects.filter(usedTemplateFile = protocol, parameterType__exact = parameter_type).exists():
         parameters = ProtocolParameter.objects.filter(usedTemplateFile = protocol, parameterType__exact = parameter_type).order_by('parameterName')
         for parameter in parameters:
-            parameter_data.append(parameter.get_parameter_info())
+            data = parameter.get_parameter_info()
+            if parameter_type == 'Option':
+                if ParameterOption.objects.filter(parameter = parameter).exists():
+                    param_options = ParameterOption.objects.filter(parameter = parameter)
+                    option_values =[]
+                    default_value = parameter.get_default_value()
+                    for param_option in param_options:
+                        value = param_option.get_option_value()
+                        if value != default_value:
+                            option_values.append(value)
+
+                    if len(option_values) == 0 :
+                        option_values = ['']
+                    data.append(option_values)
+                else:
+                    data.append([''])
+            parameter_data.append(data)
+
+
     return parameter_data
 
 def get_protocol_data_for_form (protocol):
     '''
     Description:
-        The function get the information to display in the form
+        The function get the input fields to display in the form
+    Input:
+        protocol        # protocol instance
     Constants:
         PARAMETERS_TYPE
     Return:
@@ -1230,9 +1300,27 @@ def get_protocol_data_for_form (protocol):
     data_form_protocol['name_in_form'] = protocol.get_name_in_form()
     for parameter_type in PARAMETERS_TYPE :
         data_form_protocol[parameter_type] = get_protocol_parameters(protocol, parameter_type)
+    data_form_protocol['template_id'] = protocol.get_protocol_template_id()
     return data_form_protocol
 
-
+def get_defined_parameters_protocol_template (template_id):
+    '''
+    Description:
+        The function get the parameter names defined in the protocol template
+    Input:
+        template_id     # protocol template id for the request
+    Functions:
+        get_protocol_template_obj_from_id   # Located at ths file
+    Return:
+        parameter_names
+    '''
+    parameter_names = []
+    protocol_template_obj = get_protocol_template_obj_from_id(template_id)
+    if ProtocolParameter.objects.filter(usedTemplateFile = protocol_template_obj).exists():
+        parameters = ProtocolParameter.objects.filter(usedTemplateFile = protocol_template_obj).order_by('parameterName')
+        for parameter in parameters:
+            parameter_names.append(parameter.get_parameter_name())
+    return parameter_names
 
 def get_form_data_station_B():
     '''
@@ -1250,3 +1338,83 @@ def get_form_data_station_B():
             data_form_station_b.append(get_protocol_data_for_form(protocol))
 
     return data_form_station_b
+
+
+def extract_data_from_request_protocol (request):
+    '''
+    Description:
+        The function extract the user form data and define a dictionnary with the values
+    Input:
+        request     # contains the user form data
+    Functions:
+        get_defined_parameters_protocol_template
+    Constants:
+
+    Return:
+        parameter_values
+    '''
+    parameter_values = {}
+    template_id = request.POST['template_id']
+    parameter_names = get_defined_parameters_protocol_template (template_id)
+    for parameter in parameter_names :
+        parameter_values[parameter] = request.POST[parameter]
+    import pdb; pdb.set_trace()
+    return parameter_values
+
+def get_template_file_name(template_id):
+    '''
+    Description:
+        The function get the protocol template file name for the tempalte id
+    Input:
+        template_id     # id of the template
+    Functions:
+        get_protocol_template_obj_from_id
+    Return:
+        template_file_name
+    '''
+
+    protocol_template_obj = get_protocol_template_obj_from_id(template_id)
+    template_file_name = protocol_template_obj.get_protocol_file_name()
+    return template_file_name
+
+def store_protocol_request_parameter_values(protocol_request, parameters ):
+        '''
+        Description:
+            The function store on database the parameter values used when protocol request
+            is created.
+        Input:
+            protocol_request  # protocol request object
+            paramters           # dictionary with the values used in protocol
+
+
+        Functions:
+            get_protocol_template_obj_from_id
+        Return:
+            template_file_name
+        '''
+        for name, value in parameters.items():
+            data = {}
+            data['parameterName'] = name
+            data['parameterValue'] = value
+            data['protocolRequest'] = protocol_request
+            new_parameter_value = ProtocolParameterValues.objects.create_parameter_value(data)
+        return
+
+
+def new_build_request_codeID (user, station ) :
+    '''
+    Description:
+        The function build the request codeID by joining the user, station and
+        the number of times that this combination is used
+    Input :
+        user                # user objects
+        station             # station used in the protocol
+    Return:
+        request codeID string
+    '''
+    num_times = 0
+    if ProtocolRequest.objects.filter(stationName__exact = station, userRequestedBy = user).exists():
+        num_times = ProtocolRequest.objects.filter(stationName__exact = station, userRequestedBy = user).count()
+    station = station.replace(' ', '')
+    num_times += 1
+    return user.username +'_' + station + '_' +str(num_times)

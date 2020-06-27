@@ -222,7 +222,7 @@ class ProtocolTemplateFiles (models.Model):
     generatedat = models.DateTimeField(auto_now_add=True)
 
     def __str__ (self):
-        return '%s' %(self.protocolTemplateFileName)
+        return '%s' %(self.protocolNameInForm)
 
     def get_protocol_file_name(self):
         return '%s' %(self.protocolTemplateFileName)
@@ -263,7 +263,7 @@ class ProtocolTemplateFiles (models.Model):
         data.append(self.apiLevel)
         return data
     def get_name_in_form(self):
-        return '%s' %(self.ProtocolNameInForm)
+        return '%s' %(self.protocolNameInForm)
 
 
     def get_protocol_template_id (self):
@@ -1127,10 +1127,10 @@ class ProtocolParameter (models.Model):
     defaultValue = models.CharField(max_length = 50, null = True, blank = True)
 
     def __str__ (self):
-        return '%s_%s' %(self.usedTemplateFile, self.parameterName)
+        return '%s__%s' %(self.usedTemplateFile, self.parameterName)
 
     def get_parameter_name (self):
-        return '%s_%s' %(self.usedTemplateFile, self.parameterName)
+        return '%s' %(self.parameterName)
 
     def get_default_value(self):
         return '%s' %(self.defaultValue)
@@ -1180,6 +1180,60 @@ class ParameterOption (models.Model):
         return  description
 
     objects = ParameterOptionManager()
+
+
+class ProtocolRequestManager(models.Manager):
+    def create_protocol_request(self,request_data):
+        protocolTemplate = ProtocolTemplateFiles.objects.get(pk__exact = request_data['template_id'])
+        new_protocol_request = self.create( protocolTemplate = protocolTemplate,
+                            userRequestedBy = request_data['user'], requestedCodeID = request_data['requestedCodeID'],
+                            generatedFile = request_data['generatedFile'], protocolID = request_data['protocolID'],
+                            stationName = request_data['station'], userNotes = request_data['usernotes'])
+        return new_protocol_request
+
+
+class ProtocolRequest(models.Model):
+    protocolTemplate = models.ForeignKey(
+                        ProtocolTemplateFiles,
+                        on_delete=models.CASCADE)
+    userRequestedBy = models.ForeignKey (
+                        User,
+                        on_delete=models.CASCADE, null = True, blank = True )
+    requestedCodeID = models.CharField(max_length = 50)
+    protocolID = models.CharField(max_length = 50)
+    generatedFile = models.FileField(upload_to = openrobots_config.OPENROBOTS_OUTPUT_DIRECTORY )
+    stationName = models.CharField(max_length = 25)
+    templateProtocolNumber = models.CharField(max_length = 10)
+
+    userNotes = models.CharField(max_length = 255)
+    generatedat = models.DateTimeField(auto_now_add=True)
+
+
+    def get_result_data(self):
+        data = []
+        data.append(self.requestedCodeID)
+        data.append(self.protocolTemplate.get_protocol_type())
+        data.append(self.generatedFile)
+        return data
+
+    objects = ProtocolRequestManager()
+
+class ProtocolParameterValuesManager(models.Manager):
+    def create_parameter_value (self, param_value):
+        new_parameter_value = self.create(protocolRequest = param_value['protocolRequest'],
+                        parameterName = param_value['parameterName'],  parameterValue = param_value['parameterValue'])
+        return new_parameter_value
+
+class ProtocolParameterValues(models.Model):
+    protocolRequest = models.ForeignKey(
+                        ProtocolRequest,
+                        on_delete=models.CASCADE)
+    parameterName = models.CharField(max_length = 60)
+    parameterValue = models.CharField(max_length = 60)
+
+    objects = ProtocolParameterValuesManager()
+
+
 
 class FileIDUserRequestMappingManager(models.Manager):
 
