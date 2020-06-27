@@ -1152,14 +1152,23 @@ def increase_protocol_file_id ():
 def set_protocol_parameters_defined(protocol_template_id):
     '''
     Description:
-        The function update the protocol template with parameter defined and
-
+        The function update the protocol template with parameter defined and set to be used
+        If an older version of the protocol template it is set to not used
     Functions:
         get_protocol_template_obj_from_id   # located at this file
     Return:
         None
     '''
+
     protocol_template_obj = get_protocol_template_obj_from_id(protocol_template_id)
+    station = protocol_template_obj.get_station()
+    type_of_protocol = protocol_template_obj.get_protocol_type()
+    protocol_number = protocol_template_obj.get_protocol_number()
+
+    if ProtocolTemplateFiles.objects.filter(protocolTemplateBeUsed = True, station__stationName__exact = station, typeOfProtocol__protocolTypeName__exact = type_of_protocol, protocolNumber__exact = protocol_number).exists():
+        old_protocol_template = ProtocolTemplateFiles.objects.filter(protocolTemplateBeUsed = True, station__stationName__exact = station, typeOfProtocol__protocolTypeName__exact = type_of_protocol, protocolNumber__exact = protocol_number).last()
+        old_protocol_template.set_template_do_not_use()
+
     protocol_template_obj.set_parameters_defined()
     protocol_template_obj.set_template_to_be_used()
     return
@@ -1340,6 +1349,23 @@ def get_form_data_station_B():
     return data_form_station_b
 
 
+def get_form_data_station_C():
+    '''
+    Description:
+        The function get the available protocols and parameters for station C
+    Constants:
+        METADATA_FIELDS_FOR_PROTOCOL_TEMPLATE
+    Return:
+        data_form_station_b
+    '''
+    data_form_station_c = []
+    if ProtocolTemplateFiles.objects.filter(station__stationName__exact = 'Station C', protocolTemplateBeUsed__exact = True).exists():
+        protocols = ProtocolTemplateFiles.objects.filter(station__stationName__exact = 'Station C', protocolTemplateBeUsed__exact = True)
+        for protocol in protocols:
+            data_form_station_c.append(get_protocol_data_for_form(protocol))
+    import pdb; pdb.set_trace()
+    return data_form_station_c
+
 def extract_data_from_request_protocol (request):
     '''
     Description:
@@ -1418,3 +1444,62 @@ def new_build_request_codeID (user, station ) :
     station = station.replace(' ', '')
     num_times += 1
     return user.username +'_' + station + '_' +str(num_times)
+
+def extract_protocol_request_form_data_and_save_to_file (request):
+    '''
+    Description:
+        The function collect the request protocol data form and save the information in the file
+
+    Input :
+        request                # full data of the form
+    Functions:
+        extract_data_from_request_protocol  #Located at this file
+        build_protocol_request_file_name    #Located at this file
+        increase_protocol_file_id           #Located at this file
+        store_file_id                       #Located at this file
+        get_template_file_name              #Located at this file
+        add_parameters_in_file              #Located at this file
+    Return:
+        add_result
+    '''
+    template_id = request.POST['template_id']
+
+    parameters = extract_data_from_request_protocol(request)
+    protocol_file_name = build_protocol_request_file_name(request.user.username,template_id)
+    protocol_file_id = increase_protocol_file_id()
+
+    new_prot_file_id_obj = store_file_id (protocol_file_id,request.POST['station'], request.POST['protocol'])
+    template_file = get_template_file_name(template_id)
+
+    result = add_parameters_in_file (template_file, protocol_file_name,  parameters, protocol_file_id)
+    return result, protocol_file_name, protocol_file_id, template_id
+
+def save_protocol_request_values (request, protocol_file_name, protocol_file_id, template_id):
+    '''
+    Description:
+        The function collect the request protocol data form and save the information in the file
+
+    Input :
+        request                # full data of the form
+    Functions:
+        extract_data_from_request_protocol  #Located at this file
+        build_protocol_request_file_name    #Located at this file
+        increase_protocol_file_id           #Located at this file
+        store_file_id                       #Located at this file
+        get_template_file_name              #Located at this file
+        add_parameters_in_file              #Located at this file
+    Return:
+        new_create_protocol_request
+    '''
+    protocol_request_data = {}
+    protocol_request_data['user'] = request.user
+    protocol_request_data['generatedFile'] = protocol_file_name
+    protocol_request_data['protocolID'] = protocol_file_id
+    protocol_request_data['station'] = request.POST['station']
+    protocol_request_data['usernotes'] = request.POST['usernotes']
+    protocol_request_data['template_id'] = template_id
+    protocol_request_data['requestedCodeID'] = new_build_request_codeID (request.user, request.POST['station'] )
+
+    new_create_protocol_request = ProtocolRequest.objects.create_protocol_request(protocol_request_data)
+    store_protocol_request_parameter_values(new_create_protocol_request, parameters)
+    return new_create_protocol_request

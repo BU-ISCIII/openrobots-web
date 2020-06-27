@@ -1,0 +1,169 @@
+{% extends 'openrobots/base.html' %}
+{% load static %}
+{% block content %}
+{% csrf_token %}
+<style>
+    .tab-content-color{
+    background-color:#FFA07A !important;
+    color:FA07A;
+    padding:5px
+}
+</style>
+
+
+{% if error_message %}
+    <div class="row row-space-2 margin-b-4">
+        <div class="col-sm-7 col-sm-offset-3">
+            <div class="panel panel-danger">
+                <div class="panel-heading"><h3 style="text-align:center">ERROR</h3> </div>
+                <div class="panel-body">
+                    {% for values in error_message %}
+                        <h4>{{values}}</h4>
+                    {% endfor %}
+                </div> <!--  end of panel body -->
+            </div> <!--  end of panel  -->
+        </div> <!--  end of col-sm-7 -->
+    </div> <!--  end of row -->
+{% endif %}
+
+
+{%if display_result %}
+    <div class="row row-space-2 margin-b-4">
+        <div class="col-sm-7 col-sm-offset-3">
+            <div class="panel panel-default">
+                <div class="panel-heading"><h3 style="text-align:center">Successful protocol file creation</h3> </div>
+                <div class="panel-body">
+                    <table class="table ">
+    					<tbody>
+    						<tr>
+    							<td>Request CodeID</td>
+                                <td>{{ display_result.0 }}</td>
+                            </tr>
+                            <tr>
+    							<td>Protocol Type</td>
+                                <td>{{ display_result.1 }}</td>
+                            </tr>
+
+                            <tr>
+    							<td>Protocol_file</td>
+                                <td><a href="/documents/protocol_files/{{display_result.2}}" download>Download the Protocol File<span class="glyphicon glyphicon-download-alt"></span></a></td>
+                            </tr>
+
+    					</tbody>
+    				</table>
+                </div> <!--  end of panel body -->
+            </div> <!--  end of panel  -->
+        </div> <!--  end of col-sm-7 -->
+    </div> <!--  end of row -->
+    <div class="row row-space-2 margin-b-4">
+        <div class="col-sm-3 col-sm-offset-3">
+            <button type="button" class="btn btn-default" onclick="goBack()">Return to previous Page</button>
+        </div> <!--// end col-sm-4 -->
+    </div> <!-- end row  -->
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+{% elif data_form_station_c %}
+    <div class="row row-space-4 margin-b-1">
+        <div class="col-sm-5 ">
+            <div class="col-sm-12 ">
+                <br><br>
+                <h3 style="text-align:center">Protocol for Station C</h3>
+                <div class="tab">
+                    <button class= " tablinks" onclick="summaryBin(event, 'prot1')"  id="defaultOpen">{{data_form_station_c.0.name_in_form}}</button>
+                </div> <!--  end tabs -->
+            </div> <!--  end of col-sm-12 -->
+        </div> <!--  end of col-sm-5 -->
+        <div class="col-sm-7 ">
+            <div id="prot1" class="tabcontent">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h5 style="text-align:center">Station C Protocol:{{data_form_station_c.0.name_in_form}}.</h5>
+                    </div>
+                    <div class="panel-body">
+                        {% if data_form_station_c.0 %}
+                        <!-- FORM for Station C -->
+                            <form method="post" enctype="multipart/form-data" name="createfile" id="createfile" class="form-horizontal well">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="createprotocolfile"/>
+                                <input type="hidden" name="station" value="Station C"/>
+                                <input type="hidden" name="protocol" value="1"/>
+                                <input type="hidden" name="template_id" value="{{data_form_station_c.0.template_id}}"/>
+                                <div class="form-group required">
+                                    {% for name, form_text , default in data_form_station_c.0.String %}
+                                        <label class="col-sm-5  control-label" for="{{name}}" >{{form_text}} </label>
+                                    <div class="col-sm-5"><input class="form-control" type="text" required = "required" name="{{name}}" id="{{name}}"  value="{{default}}" size="100" maxlength="100"></div>
+                                    <BR><br>
+                                    {% endfor %}
+
+
+                                    {% for name, form_text , default, select_values in data_form_station_c.0.Option %}
+                                        <label class="col-sm-5  control-label" for="{{name}}" >{{form_text}} </label>
+                                        <div class="col-sm-5"><select class="form-control"  required = "required" name="{{name}}" id="{{name}}">
+                                                                {% if default %}
+                                                                    <option selected="{{default}}">{{default}}</option>
+                                                                {% else %}
+                                                                    <option value="">Choose a value</option>
+                                                                {% endif %}
+                                                                {% for value in select_values %}
+                                                                    <option value="{{value}}">{{value}}</option>
+                                                                {% endfor %}
+                                                       </select>
+                                        </div>  <!-- end select input -->
+
+                                        <BR><br>
+                                    {% endfor %}
+
+                                    {% for name, form_text , default in data_form_station_c.0.Boolean %}
+                                        <label class="col-sm-5  control-label" for="{{name}}" >{{form_text}} </label>
+                                        <div class="col-sm-4">
+                                            {% if default == 'True' %}
+                                                <label class="radio-inline"><input type="radio" required = "required" name="{{name}}"  value="True" checked> YES</label>
+                                                <label class="radio-inline"><input type="radio" required = "required" name="{{name}}"  value="False"> NO</label>
+                                            {% else %}
+                                                <label class="radio-inline"><input type="radio" required = "required" name="{{name}}"  value="True" > YES</label>
+                                                <label class="radio-inline"><input type="radio" required = "required" name="{{name}}"  value="False" checked> NO</label>
+                                            {% endif %}
+
+                                        </div>  <!-- end  radio -->
+                                        <BR><br>
+                                    {% endfor %}
+                                </div>  <!-- end from-group   -->
+                                <div class="form-group">
+                                    <label class="col-sm-5 control-label" for="notes" >User Notes</label>
+                                    <div class="col-sm-6">
+                                        <textarea class="form-control" name="usernotes" value="" id="usernotes" rows="4" cols="60" maxlength="220"></textarea>
+                                    </div>  <!-- end textarea input -->
+                                    <br>
+                                </div>  <!-- end from-group   -->
+                                <br>
+                                <input class="btn btn-primary" type="reset" value="Reset Fields">
+                                <input class="btn pull-right btn-primary" type="submit" value="Submit">
+                            </form>
+                            <p> Fields marked with <FONT COLOR="Red">*</FONT> are mandatory</p>
+                        {% else %}
+                            <h5>There is no  Protocol template defined for Station B </h5>
+                        {% endif %}
+                    </div>  <!--  end of panel body  -->
+                </div> <!--// end panel -->
+        </div><!-- // end of tab stationB -->
+    </div><!-- // end of row -->
+    <script>
+        // Get the element with id="defaultOpen" and click on it
+        document.getElementById("defaultOpen").click();
+    </script>
+{% else %}
+    <div class="row row-space-2 margin-b-4">
+        <div class="col-sm-7 col-sm-offset-3">
+            <div class="panel panel-default">
+                <div class="panel-heading"><h3 style="text-align:center">No protocols for Station C</h3> </div>
+                <div class="panel-body">
+                    <h5 style="text-align:center">There are not Protocols defined for Station C.</h5>
+                </div> <!--  end of panel body -->
+            </div> <!--  end of panel  -->
+        </div> <!--  end of col-sm-7 -->
+    </div> <!--  end of row -->
+{% endif %}
+{% endblock %}

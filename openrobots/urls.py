@@ -18,6 +18,7 @@ urlpatterns = [
     path('uploadProtocolTemplates', views.upload_protocol_templates, name = 'upload_protocol_templates'),
     path('listOfRequests', views.list_of_requests, name = 'list_of_requests'),
     path('requestProtocolStationB', views.request_protocol_station_B, name = 'request_protocol_station_B'),
+    path('requestProtocolStationC', views.request_protocol_station_C, name = 'request_protocol_station_C'),
     path('robotInventory', views.robot_inventory, name = 'robot_inventory'),
     path('robotsJobs', views.robots_jobs, name ='robots_jobs'),
 	]

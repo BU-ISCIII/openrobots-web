@@ -274,6 +274,11 @@ class ProtocolTemplateFiles (models.Model):
         self.save()
         return self
 
+    def set_template_do_not_use(self):
+        self.protocolTemplateBeUsed = False
+        self.save()
+        return self
+
     def set_template_to_be_used(self):
         self.protocolTemplateBeUsed = True
         self.save()
