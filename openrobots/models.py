@@ -1224,6 +1224,9 @@ class ProtocolRequest(models.Model):
         data.append(self.generatedFile)
         return data
 
+    def get_user_requested(self):
+        return '%s' %(self.userRequestedBy.username)
+
     objects = ProtocolRequestManager()
 
 class ProtocolParameterValuesManager(models.Manager):

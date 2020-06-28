@@ -60,6 +60,11 @@ def get_owner_of_protocol(protocol_id) :
     Return:
         usr_obj. None if not match
     '''
+
+    if ProtocolRequest.objects.filter(protocolID__exact = protocol_id).exits():
+        return ProtocolRequest.objects.filter(protocolID__exact = protocol_id).last().get_user_requested()
+    return None
+    '''
     if protocol_id :
         if FileIDUserRequestMapping.objects.filter(fileID__exact = protocol_id).exists():
             file_mapping = FileIDUserRequestMapping.objects.filter(fileID__exact = protocol_id).last()
@@ -92,7 +97,7 @@ def get_owner_of_protocol(protocol_id) :
                         station_obj = RequestForStationA_Prot3.objects.filter(protocolID__exact = protocol_id).last()
                         return station_obj.get_user_file_obj()
     return None
-
+    '''
 
 def get_robot_station_type(robot_id):
     '''
