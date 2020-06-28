@@ -17,13 +17,28 @@ def get_action_robot_detail(action_id):
         detail_data
     '''
     detail_data = {}
-    detail_data['param_not_modified'] = []
-    detail_data['param_modified'] = []
-    detail_data['param_not_found'] = []
+
     robot_action_obj = RobotsActionPost.objects.get(pk__exact = action_id)
 
+    detail_data['main_data'] = [robot_action_obj.get_robot_action_data()]
+
     protocol_id = robot_action_obj.get_protocol_id()
-    station, protocol = get_station_and_protocol(protocol_id)
+    
+    if ParametersRobotAction.objects.filter(robotActionPost = robot_action_obj).exists():
+        parameters = ParametersRobotAction.objects.filter(robotActionPost = robot_action_obj).order_by('parameterName')
+        detail_data['param_not_modified'] = []
+        detail_data['param_modified'] = []
+        for parameter in parameters:
+            if parameter.get_modified_field():
+                detail_data['param_modified'].append(parameter.get_parameter_name_and_value())
+            else:
+                detail_data['param_not_modified'].append(parameter.get_parameter_name_and_value())
+        return detail_data
+    return None
+
+
+    '''
+    #station, protocol = get_station_and_protocol(protocol_id)
     if station and protocol:
         requested_user_file_obj = get_requested_file_obj_from_station_protocol(station,protocol,protocol_id)
         parameters_dict = get_parameters_names_defined(station, protocol)
@@ -52,6 +67,8 @@ def get_action_robot_detail(action_id):
         return detail_data
 
     return False
+    '''
+
 
 def  build_protocol_file_name(user, template):
     '''
@@ -1381,7 +1398,6 @@ def get_form_data_station_C():
         protocols = ProtocolTemplateFiles.objects.filter(station__stationName__exact = 'Station C', protocolTemplateBeUsed__exact = True).order_by('protocolNumber')
         for protocol in protocols:
             data_form_station_c.append(get_protocol_data_for_form(protocol))
-    import pdb; pdb.set_trace()
     return data_form_station_c
 
 def extract_data_from_request_protocol (request):
@@ -1402,7 +1418,7 @@ def extract_data_from_request_protocol (request):
     parameter_names = get_defined_parameters_protocol_template (template_id)
     for parameter in parameter_names :
         parameter_values[parameter] = request.POST[parameter]
-    import pdb; pdb.set_trace()
+
     return parameter_values
 
 def get_template_file_name(template_id):

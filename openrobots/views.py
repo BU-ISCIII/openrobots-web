@@ -248,7 +248,7 @@ def robots_jobs (request):
             return render (request, 'openrobots/robotsJobs.html', {'error_message':error_message, 'form_data': form_data})
 
         display_robot_utilization = get_robots_information_utilization (robots_action_objs)
-        #import pdb; pdb.set_trace()
+
         return render (request, 'openrobots/robotsJobs.html',{'display_robot_utilization': display_robot_utilization})
 
     return render (request, 'openrobots/robotsJobs.html',{'form_data': form_data})
@@ -258,7 +258,6 @@ def detail_action_robot(request, action_id):
     if robot_action_exists(action_id):
         detail_data = get_action_robot_detail(action_id)
         return render (request, 'openrobots/detailActionRobot.html',{'detail_data':detail_data})
-
 
     return redirect ('/')
 

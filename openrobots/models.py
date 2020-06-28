@@ -1242,6 +1242,9 @@ class ProtocolParameterValues(models.Model):
     def __str__ (self):
         return '%s' %(self.protocolRequest)
 
+    def get_name_and_value(self):
+        return (self.parameterName, self.parameterValue)
+
     objects = ProtocolParameterValuesManager()
 
 
@@ -1340,9 +1343,9 @@ class RobotsActionPost(models.Model):
 
 class ParametersRobotActionManager(models.Manager):
     def create_parameter(self, request_data):
-        new_parameter = self.create( robotActionPost = request_data['robotActionPost'],  protocolFileID= request_data['protocolFileID'],
+        new_parameter = self.create( robotActionPost = request_data['robotActionPost'],  ProtocolRequest= request_data['ProtocolRequest'],
                     parameterName = request_data['parameterName'], parameterValue = request_data['parameterValue'],
-                    modified = request_data['modified'])
+                    protocolID = request_data['protocolID'],  modified = request_data['modified'])
 
         return new_parameter
 
@@ -1351,9 +1354,13 @@ class ParametersRobotAction (models.Model):
     robotActionPost = models.ForeignKey (
                         RobotsActionPost,
                         on_delete=models.CASCADE )
+    ProtocolRequest = models.ForeignKey (
+                        ProtocolRequest,
+                        on_delete=models.CASCADE, null = True, blank = True )
     protocolFileID = models.ForeignKey (
                         FileIDUserRequestMapping,
-                        on_delete=models.CASCADE )
+                        on_delete=models.CASCADE , null = True)
+    protocolID = models.CharField(max_length = 20, null = True)
     parameterName = models.CharField(max_length = 80)
     parameterValue = models.CharField(max_length = 80)
     modified = models.BooleanField(default = False)
@@ -1364,5 +1371,8 @@ class ParametersRobotAction (models.Model):
 
     def get_parameter_name_and_value(self):
         return (self.parameterName, self.parameterValue )
+
+    def get_modified_field(self):
+        return self.modified
 
     objects = ParametersRobotActionManager()

@@ -47,7 +47,7 @@ def api_create_usage(request):
         # get the owner of the protocol
         protocol_owner = get_owner_of_protocol(robot_action_obj.get_protocol_id())
         robot_action_obj.update_protocol_owner(protocol_owner)
-
+        
         if 'parameters' in data :
             if isinstance(data['parameters'], dict) :
                 if  store_and_find_changes_parameter_values(data['parameters'], robot_action_obj):

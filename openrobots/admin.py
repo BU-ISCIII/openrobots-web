@@ -125,7 +125,7 @@ class RobotsActionPostAdmin(admin.ModelAdmin):
 
 
 class ParametersRobotActionAdmin(admin.ModelAdmin):
-    list_display = ['robotActionPost', 'protocolFileID','parameterName', 'parameterValue', 'modified']
+    list_display = ['robotActionPost', 'protocolID','parameterName', 'parameterValue', 'modified']
 
 class ProtocolParameterAdmin(admin.ModelAdmin):
     list_display = ['usedTemplateFile', 'parameterType', 'parameterName', 'nameInForm', 'defaultValue']

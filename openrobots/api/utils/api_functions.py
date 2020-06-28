@@ -137,8 +137,24 @@ def store_and_find_changes_parameter_values(parameters, robot_action_obj):
         True if all parameters remains unchanged. False at least one parameter was changed
     '''
     protocol_id = robot_action_obj.get_protocol_id()
+    parameters_values_in_protocol_request = {}
+    if ProtocolRequest.objects.filter(protocolID__exact = protocol_id).exists():
+        protocol_request_obj = ProtocolRequest.objects.filter(protocolID__exact = protocol_id).last()
+        if ProtocolParameterValues.objects.filter(protocolRequest = protocol_request_obj).exists():
+            param_values = ProtocolParameterValues.objects.filter(protocolRequest = protocol_request_obj)
+
+            for param_value in param_values:
+                parameter, value = param_value.get_name_and_value()
+                parameters_values_in_protocol_request[parameter] = value
+
+    else:
+        protocol_request_obj = None
+
+    '''
     file_mapping_obj = get_file_mapping_obj_from_protocol_id (protocol_id)
     station , station_protocol = get_station_and_protocol(protocol_id)
+
+
     if station == 'Station C':
         if station_protocol == '1':
             if RequestForStationC_Prot1.objects.filter(protocolID__exact = protocol_id).exists():
@@ -165,16 +181,20 @@ def store_and_find_changes_parameter_values(parameters, robot_action_obj):
             if RequestForStationA_Prot3.objects.filter(protocolID__exact = protocol_id).exists():
                 req_station_obj = RequestForStationA_Prot3.objects.filter(protocolID__exact = protocol_id).last()
                 mapping_variables_dict = dict(MAP_PROTOCOL_PARAMETER_TO_DATABASE_STATION_A_PROT_3)
+    '''
     modified = False
+    parameters_values_in_protocol_request
     for par in parameters.keys():
         request_data = {}
         request_data['robotActionPost'] = robot_action_obj
-        request_data['protocolFileID'] = file_mapping_obj
+        request_data['protocolID'] = protocol_id
         request_data['parameterName'] = par
         request_data['parameterValue'] = parameters[par]
+        request_data['ProtocolRequest'] = protocol_request_obj
+
         try:
             ### use the object attribute to get the value
-            if str(parameters[par]) ==  str(getattr(req_station_obj, mapping_variables_dict[par])):
+            if str(parameters[par]) ==  str(parameters_values_in_protocol_request[par]):
                 request_data['modified'] = False
             else :
                 request_data['modified'] = True
