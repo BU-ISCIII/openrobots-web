@@ -178,11 +178,27 @@ def list_of_requests(request):
 
 
 @login_required
+def request_protocol_station_A (request):
+    if request.method =='POST' and request.POST['action'] == 'createprotocolfile':
+        result, new_create_protocol_request = extract_protocol_request_form_data_and_save_to_file (request)
+
+        if result != 'True':
+            data_form_station_a = get_form_data_station_A ()
+            return render(request, 'openrobots/requestProtocolStationA.html' ,{'data_form_station_a': data_form_station_a, 'error': add_result})
+
+        display_result = new_create_protocol_request.get_result_data()
+        return render(request, 'openrobots/requestProtocolStationA.html' ,{'display_result': display_result} )
+
+    else:
+        data_form_station_a = get_form_data_station_A ()
+        return render(request, 'openrobots/requestProtocolStationA.html' ,{'data_form_station_a': data_form_station_a} )
+
+@login_required
 def request_protocol_station_B (request):
     if request.method =='POST' and request.POST['action'] == 'createprotocolfile':
         result, new_create_protocol_request = extract_protocol_request_form_data_and_save_to_file (request)
 
-        if add_result != 'True':
+        if result != 'True':
             data_form_station_b = get_form_data_station_B ()
             return render(request, 'openrobots/requestProtocolStationB.html' ,{'data_form_station_b': data_form_station_b, 'error': add_result})
 

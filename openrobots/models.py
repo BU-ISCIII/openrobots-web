@@ -1193,7 +1193,8 @@ class ProtocolRequestManager(models.Manager):
         new_protocol_request = self.create( protocolTemplate = protocolTemplate,
                             userRequestedBy = request_data['user'], requestedCodeID = request_data['requestedCodeID'],
                             generatedFile = request_data['generatedFile'], protocolID = request_data['protocolID'],
-                            stationName = request_data['station'], userNotes = request_data['usernotes'])
+                            stationName = request_data['station'], templateProtocolNumber = request_data['templateProtocolNumber'],
+                            userNotes = request_data['usernotes'])
         return new_protocol_request
 
 
@@ -1215,7 +1216,7 @@ class ProtocolRequest(models.Model):
 
     def __str__ (self):
         return '%s' %(self.requestedCodeID)
-        
+
     def get_result_data(self):
         data = []
         data.append(self.requestedCodeID)

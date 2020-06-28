@@ -473,8 +473,9 @@ def get_form_data_define_parameter(template_obj):
         return define_parameter
     protocol = template_obj.get_protocol_number()
     version = template_obj.get_protocol_version()
-    if ProtocolTemplateFiles.objects.filter(protocolTemplateBeUsed = True, protocolNumber__exact = protocol, protocolVersion__exact = version).exists():
-        reference_template = ProtocolTemplateFiles.objects.filter(protocolTemplateBeUsed = True, protocolNumber__exact = protocol, protocolVersion__exact = version).last()
+    station = template_obj.get_station()
+    if ProtocolTemplateFiles.objects.filter(protocolTemplateBeUsed = True, station__stationName__exact = station,  protocolNumber__exact = protocol, protocolVersion__exact = version).exists():
+        reference_template = ProtocolTemplateFiles.objects.filter(protocolTemplateBeUsed = True, station__stationName__exact = station, protocolNumber__exact = protocol, protocolVersion__exact = version).last()
         define_parameter['parameter_values'] = get_parameters_values_from_template(reference_template)
 
     return  define_parameter
@@ -1331,6 +1332,23 @@ def get_defined_parameters_protocol_template (template_id):
             parameter_names.append(parameter.get_parameter_name())
     return parameter_names
 
+def get_form_data_station_A():
+    '''
+    Description:
+        The function get the available protocols and parameters for station A
+    Constants:
+        METADATA_FIELDS_FOR_PROTOCOL_TEMPLATE
+    Return:
+        data_form_station_a
+    '''
+    data_form_station_a = []
+    if ProtocolTemplateFiles.objects.filter(station__stationName__exact = 'Station A', protocolTemplateBeUsed__exact = True).exists():
+        protocols = ProtocolTemplateFiles.objects.filter(station__stationName__exact = 'Station A', protocolTemplateBeUsed__exact = True).order_by('protocolNumber')
+        for protocol in protocols:
+            data_form_station_a.append(get_protocol_data_for_form(protocol))
+
+    return data_form_station_a
+
 def get_form_data_station_B():
     '''
     Description:
@@ -1342,7 +1360,7 @@ def get_form_data_station_B():
     '''
     data_form_station_b = []
     if ProtocolTemplateFiles.objects.filter(station__stationName__exact = 'Station B', protocolTemplateBeUsed__exact = True).exists():
-        protocols = ProtocolTemplateFiles.objects.filter(station__stationName__exact = 'Station B', protocolTemplateBeUsed__exact = True)
+        protocols = ProtocolTemplateFiles.objects.filter(station__stationName__exact = 'Station B', protocolTemplateBeUsed__exact = True).order_by('protocolNumber')
         for protocol in protocols:
             data_form_station_b.append(get_protocol_data_for_form(protocol))
 
@@ -1360,7 +1378,7 @@ def get_form_data_station_C():
     '''
     data_form_station_c = []
     if ProtocolTemplateFiles.objects.filter(station__stationName__exact = 'Station C', protocolTemplateBeUsed__exact = True).exists():
-        protocols = ProtocolTemplateFiles.objects.filter(station__stationName__exact = 'Station C', protocolTemplateBeUsed__exact = True)
+        protocols = ProtocolTemplateFiles.objects.filter(station__stationName__exact = 'Station C', protocolTemplateBeUsed__exact = True).order_by('protocolNumber')
         for protocol in protocols:
             data_form_station_c.append(get_protocol_data_for_form(protocol))
     import pdb; pdb.set_trace()
@@ -1483,6 +1501,7 @@ def extract_protocol_request_form_data_and_save_to_file (request):
     protocol_request_data['station'] = request.POST['station']
     protocol_request_data['usernotes'] = request.POST['usernotes']
     protocol_request_data['template_id'] = template_id
+    protocol_request_data['templateProtocolNumber'] = request.POST ['protocol']
     protocol_request_data['requestedCodeID'] = new_build_request_codeID (request.user, request.POST['station'] )
 
     new_create_protocol_request = ProtocolRequest.objects.create_protocol_request(protocol_request_data)
