@@ -1213,7 +1213,9 @@ class ProtocolRequest(models.Model):
     userNotes = models.CharField(max_length = 255)
     generatedat = models.DateTimeField(auto_now_add=True)
 
-
+    def __str__ (self):
+        return '%s' %(self.requestedCodeID)
+        
     def get_result_data(self):
         data = []
         data.append(self.requestedCodeID)
@@ -1235,6 +1237,9 @@ class ProtocolParameterValues(models.Model):
                         on_delete=models.CASCADE)
     parameterName = models.CharField(max_length = 60)
     parameterValue = models.CharField(max_length = 60)
+
+    def __str__ (self):
+        return '%s' %(self.protocolRequest)
 
     objects = ProtocolParameterValuesManager()
 

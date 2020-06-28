@@ -133,7 +133,12 @@ class ProtocolParameterAdmin(admin.ModelAdmin):
 class ParameterOptionAdmin(admin.ModelAdmin):
     list_display = ['parameter', 'optionValue', 'optionDescription', 'default']
 
+class ProtocolRequestAdmin(admin.ModelAdmin):
+    list_display = ['protocolTemplate', 'userRequestedBy', 'requestedCodeID','protocolID', 'generatedFile','stationName', 'templateProtocolNumber', 'userNotes']
 
+
+class ProtocolParameterValuesAdmin(admin.ModelAdmin):
+    list_display = ['protocolRequest', 'parameterName', 'parameterValue']
 
 
 admin.site.register(Stations , StationsAdmin)
@@ -190,3 +195,6 @@ admin.site.register(ParametersRobotAction, ParametersRobotActionAdmin)
 
 admin.site.register(ProtocolParameter, ProtocolParameterAdmin)
 admin.site.register(ParameterOption, ParameterOptionAdmin)
+
+admin.site.register(ProtocolRequest,ProtocolRequestAdmin)
+admin.site.register(ProtocolParameterValues,ProtocolParameterValuesAdmin)

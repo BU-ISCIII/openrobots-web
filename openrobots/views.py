@@ -180,36 +180,14 @@ def list_of_requests(request):
 @login_required
 def request_protocol_station_B (request):
     if request.method =='POST' and request.POST['action'] == 'createprotocolfile':
-        template_id = request.POST['template_id']
-
-        parameters = extract_data_from_request_protocol(request)
-        protocol_file_name = build_protocol_request_file_name(request.user.username,template_id)
-        protocol_file_id = increase_protocol_file_id()
-
-        new_prot_file_id_obj = store_file_id (protocol_file_id,request.POST['station'], request.POST['protocol'])
-        template_file = get_template_file_name(template_id)
-
-        add_result = add_parameters_in_file (template_file, protocol_file_name,  parameters, protocol_file_id)
+        result, new_create_protocol_request = extract_protocol_request_form_data_and_save_to_file (request)
 
         if add_result != 'True':
             data_form_station_b = get_form_data_station_B ()
             return render(request, 'openrobots/requestProtocolStationB.html' ,{'data_form_station_b': data_form_station_b, 'error': add_result})
-        protocol_request_data = {}
-        protocol_request_data['user'] = request.user
-        protocol_request_data['generatedFile'] = protocol_file_name
-        protocol_request_data['protocolID'] = protocol_file_id
-        protocol_request_data['station'] = request.POST['station']
-        protocol_request_data['usernotes'] = request.POST['usernotes']
-        protocol_request_data['template_id'] = template_id
-        protocol_request_data['requestedCodeID'] = new_build_request_codeID (request.user, request.POST['station'] )
-
-        new_create_protocol_request = ProtocolRequest.objects.create_protocol_request(protocol_request_data)
-        store_protocol_request_parameter_values(new_create_protocol_request, parameters)
 
         display_result = new_create_protocol_request.get_result_data()
         return render(request, 'openrobots/requestProtocolStationB.html' ,{'display_result': display_result} )
-
-
 
     else:
         data_form_station_b = get_form_data_station_B ()
@@ -220,17 +198,12 @@ def request_protocol_station_B (request):
 @login_required
 def request_protocol_station_C (request):
     if request.method =='POST' and request.POST['action'] == 'createprotocolfile':
-
-        result, protocol_file_name, protocol_file_id, template_id = extract_protocol_request_form_data_and_save_to_file (request)
-
+        result, new_create_protocol_request = extract_protocol_request_form_data_and_save_to_file (request)
         if result != 'True':
             data_form_station_c = get_form_data_station_C ()
-            return render(request, 'openrobots/requestProtocolStationC.html' ,{'data_form_station_c': data_form_station_c, 'error': add_result})
-        new_create_protocol_request = save_protocol_request_values (request,protocol_file_name, protocol_file_id, template_id)
-        
-
+            return render(request, 'openrobots/requestProtocolStationC.html' ,{'data_form_station_c': data_form_station_c, 'error': result})
         display_result = new_create_protocol_request.get_result_data()
-        return render(request, 'openrobots/requestProtocolStationB.html' ,{'display_result': display_result} )
+        return render(request, 'openrobots/requestProtocolStationC.html' ,{'display_result': display_result} )
 
     else:
         data_form_station_c = get_form_data_station_C ()

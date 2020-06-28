@@ -3,7 +3,7 @@ from datetime import datetime
 from datetime import timedelta
 from openrobots.models import *
 from openrobots.openrobots_config import *
-
+from openrobots.utils.file_utilities import add_parameters_in_file
 
 def get_action_robot_detail(action_id):
     '''
@@ -1458,7 +1458,8 @@ def extract_protocol_request_form_data_and_save_to_file (request):
         increase_protocol_file_id           #Located at this file
         store_file_id                       #Located at this file
         get_template_file_name              #Located at this file
-        add_parameters_in_file              #Located at this file
+        store_protocol_request_parameter_values  #Located at this file
+        add_parameters_in_file              #Located at utils.file_utilities
     Return:
         add_result
     '''
@@ -1472,25 +1473,9 @@ def extract_protocol_request_form_data_and_save_to_file (request):
     template_file = get_template_file_name(template_id)
 
     result = add_parameters_in_file (template_file, protocol_file_name,  parameters, protocol_file_id)
-    return result, protocol_file_name, protocol_file_id, template_id
+    if result != 'True':
+        return result, None
 
-def save_protocol_request_values (request, protocol_file_name, protocol_file_id, template_id):
-    '''
-    Description:
-        The function collect the request protocol data form and save the information in the file
-
-    Input :
-        request                # full data of the form
-    Functions:
-        extract_data_from_request_protocol  #Located at this file
-        build_protocol_request_file_name    #Located at this file
-        increase_protocol_file_id           #Located at this file
-        store_file_id                       #Located at this file
-        get_template_file_name              #Located at this file
-        add_parameters_in_file              #Located at this file
-    Return:
-        new_create_protocol_request
-    '''
     protocol_request_data = {}
     protocol_request_data['user'] = request.user
     protocol_request_data['generatedFile'] = protocol_file_name
@@ -1502,4 +1487,4 @@ def save_protocol_request_values (request, protocol_file_name, protocol_file_id,
 
     new_create_protocol_request = ProtocolRequest.objects.create_protocol_request(protocol_request_data)
     store_protocol_request_parameter_values(new_create_protocol_request, parameters)
-    return new_create_protocol_request
+    return 'True' , new_create_protocol_request
