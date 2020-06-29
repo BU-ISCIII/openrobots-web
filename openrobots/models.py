@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from . import openrobots_config #OPENROBOTS_TEMPLATE_DIRECTORY, OPENROBOTS_OUTPUT_DIRECTORY
 from distutils import util
 
+## vale en la nueva version
 class Stations (models.Model):
     stationName = models.CharField(max_length = 80)
     description = models.CharField(max_length = 255, null = True, blank = True )
@@ -14,7 +15,7 @@ class Stations (models.Model):
     def get_station_name(self):
         return '%s' %(self.stationName)
 
-
+## vale en la nueva version
 class ModuleType (models.Model):
     moduleType = models.CharField(max_length = 30)
     vendor = models.CharField(max_length = 30)
@@ -54,7 +55,7 @@ class ModuleType (models.Model):
         data.append(self.witePapers)
         data.append(self.manualGuide)
         return data
-
+## vale en la nueva version
 class ModulesInLab (models.Model):
     moduleType = models.ForeignKey(
                         ModuleType,
@@ -89,6 +90,8 @@ class RobotsInventoryManager (models.Manager):
                 neededPlugs = robot_data['neededPlugs'], observations = robot_data['observations'] )
         return new_robot
 
+
+## vale en la nueva version
 class RobotsInventory (models.Model):
     userName = models.ForeignKey (
                         User,
@@ -171,6 +174,7 @@ class RobotsInventory (models.Model):
 
     objects = RobotsInventoryManager()
 
+## vale en la nueva version
 class ProtocolsType (models.Model):
     protocolTypeName = models.CharField(max_length = 255)
     description = models.CharField(max_length = 255, null = True, blank = True )
@@ -188,10 +192,10 @@ class ProtocolTemplateFilesManager(models.Manager) :
         new_protocol_template = self.create(userName = protocol_data ['user'],station = station_obj,  typeOfProtocol = protocol_obj,
                     protocolTemplateFileName = protocol_data['file_name'], protocolName = protocol_data['protocolName'],
                     authors= protocol_data['author'], source = protocol_data['source'], apiLevel= protocol_data['apiLevel'],
-                    prepareMasterMix = protocol_data['prepare_mastermix'],transferMasterMix= protocol_data['transfer_mastermix'],
-                    transferSamples= protocol_data['transfer_samples'])
+                    protocolNameInForm = protocol_data['prottype'] , protocolNumber = protocol_data['protocolNumber'],
+                    protocolVersion = protocol_data['protocolVersion'])
         return new_protocol_template
-
+## vale en la nueva version
 class ProtocolTemplateFiles (models.Model):
     userName = models.ForeignKey (
                         User,
@@ -202,24 +206,38 @@ class ProtocolTemplateFiles (models.Model):
     typeOfProtocol = models.ForeignKey(
                         ProtocolsType,
                         on_delete=models.CASCADE)
+    protocolNameInForm = models.CharField(max_length = 80, null = True)
     protocolTemplateFileName = models.FileField(upload_to = openrobots_config.OPENROBOTS_TEMPLATE_DIRECTORY )
     protocolName = models.CharField(max_length = 255)
+    protocolNumber =  models.CharField(max_length = 10, null = True, blank = True)
+    protocolVersion =  models.CharField(max_length = 10, null = True, blank = True)
     authors = models.CharField(max_length = 255)
     source = models.CharField(max_length = 255)
     apiLevel = models.CharField(max_length = 50)
-    prepareMasterMix = models.BooleanField(default = False)
-    transferMasterMix = models.BooleanField(default = False)
-    transferSamples = models.BooleanField(default = False)
+    #prepareMasterMix = models.BooleanField(default = False)
+    #transferMasterMix = models.BooleanField(default = False)
+    #transferSamples = models.BooleanField(default = False)
+    parametersDefined = models.BooleanField(default = False, null = True)
+    protocolTemplateBeUsed = models.BooleanField(default = False, null = True)
     generatedat = models.DateTimeField(auto_now_add=True)
 
     def __str__ (self):
-        return '%s' %(self.protocolTemplateFileName)
+        return '%s' %(self.protocolNameInForm)
 
     def get_protocol_file_name(self):
         return '%s' %(self.protocolTemplateFileName)
 
     def get_protocol_name(self):
         return '%s' %(self.protocolName)
+
+    def get_protocol_number(self):
+        return '%s'  %(self.protocolNumber)
+
+    def get_protocol_version(self):
+        return '%s' %(self.protocolVersion)
+
+    def get_protocol_file(self):
+        return '%s' %(self.protocolTemplateFileName)
 
     def get_protocol_type(self):
         return '%s' %(self.typeOfProtocol.get_name())
@@ -244,13 +262,27 @@ class ProtocolTemplateFiles (models.Model):
         data.append(self.source)
         data.append(self.apiLevel)
         return data
+    def get_name_in_form(self):
+        return '%s' %(self.protocolNameInForm)
 
-    def get_functions(self):
-        data = []
-        data.append(self.prepareMasterMix)
-        data.append(self.transferMasterMix)
-        data.append(self.transferSamples)
-        return data
+
+    def get_protocol_template_id (self):
+        return '%s'  %(self.pk)
+
+    def set_parameters_defined (self):
+        self.parametersDefined = True
+        self.save()
+        return self
+
+    def set_template_do_not_use(self):
+        self.protocolTemplateBeUsed = False
+        self.save()
+        return self
+
+    def set_template_to_be_used(self):
+        self.protocolTemplateBeUsed = True
+        self.save()
+        return self
 
     objects = ProtocolTemplateFilesManager()
 
@@ -1079,6 +1111,147 @@ class RequestForStationC_Prot2 (models.Model):
     objects = RequestForStationC_Prot2Manager()
 
 
+
+
+class ProtocolParameterManager(models.Manager):
+    def create_parameter(self, parameter_data,template_file_id):
+        usedTemplateFile = ProtocolTemplateFiles.objects.get(pk__exact = template_file_id)
+        new_parameter = self.create(usedTemplateFile = usedTemplateFile, parameterType = parameter_data['parameterType'],
+                        parameterName = parameter_data['parameterName'], nameInForm = parameter_data['nameInForm'],
+                        defaultValue = parameter_data['defaultValue'])
+        return new_parameter
+
+
+class ProtocolParameter (models.Model):
+    usedTemplateFile = models.ForeignKey(
+                        ProtocolTemplateFiles,
+                        on_delete=models.CASCADE)
+    parameterType = models.CharField(max_length = 20)
+    parameterName = models.CharField(max_length = 50)
+    nameInForm = models.CharField(max_length = 50)
+    defaultValue = models.CharField(max_length = 50, null = True, blank = True)
+
+    def __str__ (self):
+        return '%s__%s' %(self.usedTemplateFile, self.parameterName)
+
+    def get_parameter_name (self):
+        return '%s' %(self.parameterName)
+
+    def get_default_value(self):
+        return '%s' %(self.defaultValue)
+    def get_parameter_info(self):
+        data = []
+        data.append(self.parameterName)
+        data.append(self.nameInForm)
+        data.append(self.defaultValue)
+        return data
+
+    def get_parameter_type(self):
+        return '%s' %(self.parameterType)
+
+    objects = ProtocolParameterManager()
+
+
+class ParameterOptionManager(models.Manager):
+    def create_parameter_option(self, option_data):
+        if option_data['optionDescription'] == '':
+            optionDescription = None
+        else:
+            optionDescription = option_data['optionDescription']
+        new_parameter_option = self.create( parameter = option_data['parameter'],
+                    optionValue = option_data['optionValue'],  default = option_data['default'],
+                    optionDescription = optionDescription )
+
+
+class ParameterOption (models.Model):
+    parameter = models.ForeignKey(
+                        ProtocolParameter,
+                        on_delete=models.CASCADE)
+    optionValue = models.CharField(max_length = 80)
+    optionDescription = models.CharField(max_length = 80, null = True)
+    default = models.CharField(max_length = 5, null = True, blank = True)
+
+    def __str__ (self):
+        return '%s' %(self.optionValue)
+
+    def get_option_value (self):
+        return '%s' %(self.optionValue)
+
+    def get_option_description(self):
+        if self.optionDescription == None:
+            description = ''
+        else:
+            description = self.optionDescription
+        return  description
+
+    objects = ParameterOptionManager()
+
+
+class ProtocolRequestManager(models.Manager):
+    def create_protocol_request(self,request_data):
+        protocolTemplate = ProtocolTemplateFiles.objects.get(pk__exact = request_data['template_id'])
+        new_protocol_request = self.create( protocolTemplate = protocolTemplate,
+                            userRequestedBy = request_data['user'], requestedCodeID = request_data['requestedCodeID'],
+                            generatedFile = request_data['generatedFile'], protocolID = request_data['protocolID'],
+                            stationName = request_data['station'], templateProtocolNumber = request_data['templateProtocolNumber'],
+                            userNotes = request_data['usernotes'])
+        return new_protocol_request
+
+
+class ProtocolRequest(models.Model):
+    protocolTemplate = models.ForeignKey(
+                        ProtocolTemplateFiles,
+                        on_delete=models.CASCADE)
+    userRequestedBy = models.ForeignKey (
+                        User,
+                        on_delete=models.CASCADE, null = True, blank = True )
+    requestedCodeID = models.CharField(max_length = 50)
+    protocolID = models.CharField(max_length = 50)
+    generatedFile = models.FileField(upload_to = openrobots_config.OPENROBOTS_OUTPUT_DIRECTORY )
+    stationName = models.CharField(max_length = 25)
+    templateProtocolNumber = models.CharField(max_length = 10)
+
+    userNotes = models.CharField(max_length = 255)
+    generatedat = models.DateTimeField(auto_now_add=True)
+
+    def __str__ (self):
+        return '%s' %(self.requestedCodeID)
+
+    def get_result_data(self):
+        data = []
+        data.append(self.requestedCodeID)
+        data.append(self.protocolTemplate.get_protocol_type())
+        data.append(self.generatedFile)
+        return data
+
+    def get_user_requested(self):
+        return '%s' %(self.userRequestedBy.username)
+
+    objects = ProtocolRequestManager()
+
+class ProtocolParameterValuesManager(models.Manager):
+    def create_parameter_value (self, param_value):
+        new_parameter_value = self.create(protocolRequest = param_value['protocolRequest'],
+                        parameterName = param_value['parameterName'],  parameterValue = param_value['parameterValue'])
+        return new_parameter_value
+
+class ProtocolParameterValues(models.Model):
+    protocolRequest = models.ForeignKey(
+                        ProtocolRequest,
+                        on_delete=models.CASCADE)
+    parameterName = models.CharField(max_length = 60)
+    parameterValue = models.CharField(max_length = 60)
+
+    def __str__ (self):
+        return '%s' %(self.protocolRequest)
+
+    def get_name_and_value(self):
+        return (self.parameterName, self.parameterValue)
+
+    objects = ProtocolParameterValuesManager()
+
+
+
 class FileIDUserRequestMappingManager(models.Manager):
 
     def create_file_id_user (self, request_data):
@@ -1173,9 +1346,9 @@ class RobotsActionPost(models.Model):
 
 class ParametersRobotActionManager(models.Manager):
     def create_parameter(self, request_data):
-        new_parameter = self.create( robotActionPost = request_data['robotActionPost'],  protocolFileID= request_data['protocolFileID'],
+        new_parameter = self.create( robotActionPost = request_data['robotActionPost'],  ProtocolRequest= request_data['ProtocolRequest'],
                     parameterName = request_data['parameterName'], parameterValue = request_data['parameterValue'],
-                    modified = request_data['modified'])
+                    protocolID = request_data['protocolID'],  modified = request_data['modified'])
 
         return new_parameter
 
@@ -1184,9 +1357,13 @@ class ParametersRobotAction (models.Model):
     robotActionPost = models.ForeignKey (
                         RobotsActionPost,
                         on_delete=models.CASCADE )
+    ProtocolRequest = models.ForeignKey (
+                        ProtocolRequest,
+                        on_delete=models.CASCADE, null = True, blank = True )
     protocolFileID = models.ForeignKey (
                         FileIDUserRequestMapping,
-                        on_delete=models.CASCADE )
+                        on_delete=models.CASCADE , null = True)
+    protocolID = models.CharField(max_length = 20, null = True)
     parameterName = models.CharField(max_length = 80)
     parameterValue = models.CharField(max_length = 80)
     modified = models.BooleanField(default = False)
@@ -1197,5 +1374,8 @@ class ParametersRobotAction (models.Model):
 
     def get_parameter_name_and_value(self):
         return (self.parameterName, self.parameterValue )
+
+    def get_modified_field(self):
+        return self.modified
 
     objects = ParametersRobotActionManager()

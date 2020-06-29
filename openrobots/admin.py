@@ -9,7 +9,7 @@ class ProtocolsTypeAdmin (admin.ModelAdmin):
 
 class ProtocolTemplateFilesAdmin (admin.ModelAdmin):
     list_display =['station', 'typeOfProtocol', 'protocolTemplateFileName', 'protocolTemplateFileName',
-                'authors', 'source', 'apiLevel', 'prepareMasterMix', 'transferMasterMix', 'transferSamples']
+                'authors', 'source', 'apiLevel', 'protocolNameInForm', 'parametersDefined', 'protocolTemplateBeUsed']
 
 
 class ElutionHardwareAdmin (admin.ModelAdmin):
@@ -125,7 +125,21 @@ class RobotsActionPostAdmin(admin.ModelAdmin):
 
 
 class ParametersRobotActionAdmin(admin.ModelAdmin):
-    list_display = ['robotActionPost', 'protocolFileID','parameterName', 'parameterValue', 'modified']
+    list_display = ['robotActionPost', 'protocolID','parameterName', 'parameterValue', 'modified']
+
+class ProtocolParameterAdmin(admin.ModelAdmin):
+    list_display = ['usedTemplateFile', 'parameterType', 'parameterName', 'nameInForm', 'defaultValue']
+
+class ParameterOptionAdmin(admin.ModelAdmin):
+    list_display = ['parameter', 'optionValue', 'optionDescription', 'default']
+
+class ProtocolRequestAdmin(admin.ModelAdmin):
+    list_display = ['protocolTemplate', 'userRequestedBy', 'requestedCodeID','protocolID', 'generatedFile','stationName', 'templateProtocolNumber', 'userNotes']
+
+
+class ProtocolParameterValuesAdmin(admin.ModelAdmin):
+    list_display = ['protocolRequest', 'parameterName', 'parameterValue']
+
 
 admin.site.register(Stations , StationsAdmin)
 admin.site.register(ProtocolsType , ProtocolsTypeAdmin)
@@ -178,3 +192,9 @@ admin.site.register(Tips1000_Labware,Tips1000_LabwareAdmin)
 
 admin.site.register(RobotsActionPost, RobotsActionPostAdmin)
 admin.site.register(ParametersRobotAction, ParametersRobotActionAdmin)
+
+admin.site.register(ProtocolParameter, ProtocolParameterAdmin)
+admin.site.register(ParameterOption, ParameterOptionAdmin)
+
+admin.site.register(ProtocolRequest,ProtocolRequestAdmin)
+admin.site.register(ProtocolParameterValues,ProtocolParameterValuesAdmin)

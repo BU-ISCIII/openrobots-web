@@ -76,15 +76,13 @@
 									<tr>
 										<th>Parameter Name</th>
 										<th>Parameter value in robot execution</th>
-										<th>Parameter value in original request</th>
 		                            </tr>
 		                        </thead>
 								<tbody>
-									{% for name, value, original in detail_data.param_modified %}
+									{% for name, value  in detail_data.param_modified %}
 										<tr>
 											<td>{{name}}</td>
 											<td>{{value}}</td>
-											<td>{{original}}</td>
 										</tr>
 									{% endfor %}
 								</tbody>
@@ -122,10 +120,6 @@
 			{% endif %}
 		</div> <!--// end col-sm-7  -->
 	</div> <!--  end of row -->
-
-
-
-
 
 {% else %}
 	<div class="row row-space-2 margin-b-4">

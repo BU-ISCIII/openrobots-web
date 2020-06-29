@@ -1,9 +1,9 @@
-import time, re
+import time, re, json
 from datetime import datetime
 from datetime import timedelta
 from openrobots.models import *
 from openrobots.openrobots_config import *
-
+from openrobots.utils.file_utilities import add_parameters_in_file
 
 def get_action_robot_detail(action_id):
     '''
@@ -17,13 +17,28 @@ def get_action_robot_detail(action_id):
         detail_data
     '''
     detail_data = {}
-    detail_data['param_not_modified'] = []
-    detail_data['param_modified'] = []
-    detail_data['param_not_found'] = []
+
     robot_action_obj = RobotsActionPost.objects.get(pk__exact = action_id)
 
+    detail_data['main_data'] = [robot_action_obj.get_robot_action_data()]
+
     protocol_id = robot_action_obj.get_protocol_id()
-    station, protocol = get_station_and_protocol(protocol_id)
+    
+    if ParametersRobotAction.objects.filter(robotActionPost = robot_action_obj).exists():
+        parameters = ParametersRobotAction.objects.filter(robotActionPost = robot_action_obj).order_by('parameterName')
+        detail_data['param_not_modified'] = []
+        detail_data['param_modified'] = []
+        for parameter in parameters:
+            if parameter.get_modified_field():
+                detail_data['param_modified'].append(parameter.get_parameter_name_and_value())
+            else:
+                detail_data['param_not_modified'].append(parameter.get_parameter_name_and_value())
+        return detail_data
+    return None
+
+
+    '''
+    #station, protocol = get_station_and_protocol(protocol_id)
     if station and protocol:
         requested_user_file_obj = get_requested_file_obj_from_station_protocol(station,protocol,protocol_id)
         parameters_dict = get_parameters_names_defined(station, protocol)
@@ -52,6 +67,8 @@ def get_action_robot_detail(action_id):
         return detail_data
 
     return False
+    '''
+
 
 def  build_protocol_file_name(user, template):
     '''
@@ -67,6 +84,25 @@ def  build_protocol_file_name(user, template):
 
     name.append(''.join(get_protocol_type_from_template(template).split()))
     name.append(''.join(get_station_from_template(template).split()))
+
+    name.append(time.strftime("%Y%m%d-%H%M%S"))
+
+    return '_'.join(name) + '.py'
+
+def  build_protocol_request_file_name(user, template_id):
+    '''
+    Description:
+        The function build the protocol file name by joining the user, protocol_type, station and time
+    Functions:
+        get_protocol_type_from_template_id   # located at this file
+        get_station_from_template_id           # located at this file
+    Return:
+        protocol_file_name
+    '''
+    name = [user]
+
+    name.append(''.join(get_protocol_type_from_template_id(template_id).split()))
+    name.append(''.join(get_station_from_template_id(template_id).split()))
 
     name.append(time.strftime("%Y%m%d-%H%M%S"))
 
@@ -119,6 +155,20 @@ def check_valid_date_format (date):
     except:
         return False
 
+def check_empty_fields (row_data):
+    '''
+    Description:
+        The function check if row_data contains empty values.
+    Input:
+        row_data:       # data to be checked
+
+    Return:
+        True if all values are empty
+    '''
+    line = list(set(row_data))
+    if line == [''] :
+        return True
+    return False
 
 def get_parameters_names_defined(station, protocol):
     '''
@@ -389,6 +439,64 @@ def get_form_data_creation_run_file():
 
     return form_data
 
+def get_parameters_values_from_template(reference_template):
+    '''
+    Description:
+        The function will get the parameters defined on the protocol template
+    Return:
+        parameter_values
+    '''
+    parameter_values = []
+    parameters = ProtocolParameter.objects.filter(usedTemplateFile = reference_template)
+    for parameter in parameters:
+        parameter_type = parameter.get_parameter_type()
+        param_data = ['']*len(PARAMETER_DEFINE_HEADING)
+        data = parameter.get_parameter_info()
+        param_data[0] = data[0]
+        param_data[1] = data[1]
+        param_data[2] = parameter_type
+        if parameter_type != 'Option':
+            param_data[5] = data[2]
+            parameter_values.append(param_data)
+        else:
+            if ParameterOption.objects.filter(parameter = parameter).exists():
+                param_options = ParameterOption.objects.filter(parameter = parameter)
+                option_first_line = True
+                for param_option in param_options:
+                    if not option_first_line :
+                        param_data = ['']*len(PARAMETER_DEFINE_HEADING)
+                    else:
+                        option_first_line = False
+                    param_data[3] = param_option.get_option_value()
+                    param_data[4] = param_option.get_option_description()
+                    if param_data[3] == data[2]:
+                        param_data[5] = 'X'
+                    parameter_values.append(param_data)
+
+
+    return parameter_values
+
+def get_form_data_define_parameter(template_obj):
+    '''
+    Description:
+        The function will get information to include in the parameter definition form
+    Return:
+        define_parameter
+    '''
+    define_parameter ={}
+    define_parameter['type_available'] = PARAMETERS_TYPE
+    define_parameter['heading'] = PARAMETER_DEFINE_HEADING
+    if not template_obj :
+        return define_parameter
+    protocol = template_obj.get_protocol_number()
+    version = template_obj.get_protocol_version()
+    station = template_obj.get_station()
+    if ProtocolTemplateFiles.objects.filter(protocolTemplateBeUsed = True, station__stationName__exact = station,  protocolNumber__exact = protocol, protocolVersion__exact = version).exists():
+        reference_template = ProtocolTemplateFiles.objects.filter(protocolTemplateBeUsed = True, station__stationName__exact = station, protocolNumber__exact = protocol, protocolVersion__exact = version).last()
+        define_parameter['parameter_values'] = get_parameters_values_from_template(reference_template)
+
+    return  define_parameter
+
 
 def get_form_data_robots_usage():
     '''
@@ -414,6 +522,53 @@ def get_form_data_robots_usage():
         form_data['protocols_action'] = list(set(protocols_action_list))
 
     return form_data
+
+def get_input_define_parameter(form_data):
+    '''
+    Description:
+        The function get the parameter defined bu user for the protocol
+    Constans:
+        PARAMETER_DEFINE_IN_DDBB
+    Functions:
+        check_empty_fields      # located at this file
+    Return:
+        parameter_data and valid_form
+    '''
+    parameter_data = []
+    parameter_json_data = json.loads(form_data['parameter_data'])
+    option_parameter = False
+    valid_form = True
+    for row_index in range(len(parameter_json_data)) :
+        if check_empty_fields(parameter_json_data[row_index]):
+            continue
+        # remove empty space at start and end of the item list
+        for j in range(len(parameter_json_data[row_index])):
+            parameter_json_data[row_index][j] = parameter_json_data[row_index][j].strip()
+        if (parameter_json_data[row_index][0] == '' or parameter_json_data[row_index][1] == '') and not option_parameter :
+            valid_form = False
+            continue
+        elif (parameter_json_data[row_index][0] == '' or parameter_json_data[row_index][1] == '') and option_parameter:
+            row_data[PARAMETER_DEFINE_IN_DDBB[3]].append(parameter_json_data[row_index][3])
+            row_data[PARAMETER_DEFINE_IN_DDBB[4]].append(parameter_json_data[row_index][4])
+            if parameter_json_data[row_index][5].upper() == 'X' :
+                row_data[PARAMETER_DEFINE_IN_DDBB[5]] = parameter_json_data[row_index][3]
+            continue
+        if option_parameter:
+            parameter_data.append(row_data)
+            option_parameter = False
+        row_data = {}
+        for i in range(len(PARAMETER_DEFINE_IN_DDBB)):
+            row_data[PARAMETER_DEFINE_IN_DDBB[i]] = parameter_json_data[row_index][i]
+        if parameter_json_data[row_index][2] == 'Option':
+            row_data[PARAMETER_DEFINE_IN_DDBB[3]] = [parameter_json_data[row_index][3]]
+            row_data[PARAMETER_DEFINE_IN_DDBB[4]] = [parameter_json_data[row_index][4]]
+            if parameter_json_data[row_index][5].upper() == 'X' :
+                row_data[PARAMETER_DEFINE_IN_DDBB[5]] = parameter_json_data[row_index][3]
+            option_parameter = True
+            continue
+        parameter_data.append(row_data)
+    return parameter_data, valid_form
+
 
 def get_list_labware_inventory():
     '''
@@ -670,6 +825,16 @@ def get_protocol_template_information(p_template_id):
         protocol_data['functions'] = p_template.get_functions()
     return protocol_data
 
+def get_protocol_type_from_template_id(template_id):
+    '''
+    Description:
+        The function will fetch the protocol type from protocol template id
+    Return:
+        protocol_type
+    '''
+    if ProtocolTemplateFiles.objects.filter(pk__exact = template_id).exists() :
+        return ProtocolTemplateFiles.objects.get(pk__exact = template_id).get_protocol_type()
+    return 'None'
 
 def get_protocol_type_from_template(template):
     '''
@@ -728,6 +893,26 @@ def get_robots_information_utilization(robots_action_obj):
     robot_jobs_data['summary'] = summary
 
     return robot_jobs_data
+
+def get_station_from_template_id(template_id):
+    '''
+    Description:
+        The function will fetch the station name from protocol template
+    Return:
+        station name
+    '''
+    if ProtocolTemplateFiles.objects.filter(pk__exact = template_id).exists() :
+        protocol_template_obj = ProtocolTemplateFiles.objects.get(pk__exact = template_id)
+        protocol_name = protocol_template_obj.get_protocol_name()
+        try:
+            prot_fields = re.search(r'.*Station [A|B|C] Protocol (\d+) (\w+) .*',protocol_name).groups()
+            prot = '_'.join(prot_fields)
+        except:
+            prot = '1_Unkonwn'
+
+        return protocol_template_obj.get_station() + '_Prot' + prot
+    return 'None'
+
 
 def get_station_from_template(template):
     '''
@@ -907,6 +1092,46 @@ def get_list_of_requests():
 
     return request_list
 
+def get_pending_protocol_parameters():
+    '''
+    Description:
+        The function get the protocol templates names and ids of the protocol templates
+        which have not defined yet the parameters
+    Return:
+        pending_protocols
+    '''
+    pending_protocols = []
+    if ProtocolTemplateFiles.objects.filter(parametersDefined__exact = False).exists():
+        protocols = ProtocolTemplateFiles.objects.filter(parametersDefined__exact = False)
+        for protocol in protocols:
+            pending_protocols.append(protocol.get_main_data())
+    return pending_protocols
+
+
+def get_protocol_template_obj_from_id(protocol_template_id):
+    '''
+    Description:
+        The function get the instance object from the protocol template id
+    Return:
+        protocol_template_obj
+    '''
+    if ProtocolTemplateFiles.objects.filter(pk__exact = protocol_template_id).exists():
+        return ProtocolTemplateFiles.objects.get(pk__exact = protocol_template_id)
+    return False
+
+
+def get_recorded_protocol_template(protocol_template_id) :
+    '''
+    Description:
+        The function get protocol template name and the file
+    Return:
+        created_new_file
+    '''
+    created_new_file = {}
+    protocol_obj = get_protocol_template_obj_from_id(protocol_template_id)
+    created_new_file['protocol_name'] = protocol_obj.get_protocol_name()
+    created_new_file['file_name'] = protocol_obj.get_protocol_file()
+    return created_new_file
 
 def increase_protocol_file_id ():
     '''
@@ -942,6 +1167,54 @@ def increase_protocol_file_id ():
     else:
         return '0000-AA'
 
+def set_protocol_parameters_defined(protocol_template_id):
+    '''
+    Description:
+        The function update the protocol template with parameter defined and set to be used
+        If an older version of the protocol template it is set to not used
+    Functions:
+        get_protocol_template_obj_from_id   # located at this file
+    Return:
+        None
+    '''
+
+    protocol_template_obj = get_protocol_template_obj_from_id(protocol_template_id)
+    station = protocol_template_obj.get_station()
+    type_of_protocol = protocol_template_obj.get_protocol_type()
+    protocol_number = protocol_template_obj.get_protocol_number()
+
+    if ProtocolTemplateFiles.objects.filter(protocolTemplateBeUsed = True, station__stationName__exact = station, typeOfProtocol__protocolTypeName__exact = type_of_protocol, protocolNumber__exact = protocol_number).exists():
+        old_protocol_template = ProtocolTemplateFiles.objects.filter(protocolTemplateBeUsed = True, station__stationName__exact = station, typeOfProtocol__protocolTypeName__exact = type_of_protocol, protocolNumber__exact = protocol_number).last()
+        old_protocol_template.set_template_do_not_use()
+
+    protocol_template_obj.set_parameters_defined()
+    protocol_template_obj.set_template_to_be_used()
+    return
+
+def store_define_parameter(define_parameter_data, template_file_id):
+    '''
+    Description:
+        The function store protocol parameters in database
+    Return:
+        None
+    '''
+    for parameter in define_parameter_data:
+        new_parameter = ProtocolParameter.objects.create_parameter(parameter, template_file_id)
+
+        if parameter['parameterType'] == 'Option':
+            default_value = new_parameter.get_default_value()
+            for i in range(len(parameter['optionValue'])):
+                option_data = {}
+                option_data['parameter'] = new_parameter
+                option_data['optionValue'] = parameter['optionValue'][i]
+                option_data['optionDescription'] = parameter['optionDescription'][i]
+                if default_value == parameter['optionValue'][i]:
+                    option_data['default'] = 'X'
+                else:
+                    option_data['default'] = None
+                new_parameter_option = ParameterOption.objects.create_parameter_option(option_data)
+
+    return
 
 def store_file_id (protocol_file_id, station, protocol):
     '''
@@ -1000,3 +1273,253 @@ def validate_metadata_for_protocol_template(metadata):
         else:
             valid_metadata[item] = ''
     return valid_metadata
+
+def get_protocol_parameters(protocol, parameter_type):
+    '''
+    Description:
+        The function get the parameter filter by type of parameters, used in the protocol.
+    Input:
+        protocol    # protocol object
+        parameter_type      # type to filter the parameters used in the protocol
+    Constants:
+
+    Return:
+        parameter_data
+    '''
+    parameter_data = []
+
+    if ProtocolParameter.objects.filter(usedTemplateFile = protocol, parameterType__exact = parameter_type).exists():
+        parameters = ProtocolParameter.objects.filter(usedTemplateFile = protocol, parameterType__exact = parameter_type).order_by('parameterName')
+        for parameter in parameters:
+            data = parameter.get_parameter_info()
+            if parameter_type == 'Option':
+                if ParameterOption.objects.filter(parameter = parameter).exists():
+                    param_options = ParameterOption.objects.filter(parameter = parameter)
+                    option_values =[]
+                    default_value = parameter.get_default_value()
+                    for param_option in param_options:
+                        value = param_option.get_option_value()
+                        if value != default_value:
+                            option_values.append(value)
+
+                    if len(option_values) == 0 :
+                        option_values = ['']
+                    data.append(option_values)
+                else:
+                    data.append([''])
+            parameter_data.append(data)
+
+
+    return parameter_data
+
+def get_protocol_data_for_form (protocol):
+    '''
+    Description:
+        The function get the input fields to display in the form
+    Input:
+        protocol        # protocol instance
+    Constants:
+        PARAMETERS_TYPE
+    Return:
+        data_form_protocol
+    '''
+    data_form_protocol ={}
+    data_form_protocol['name_in_form'] = protocol.get_name_in_form()
+    for parameter_type in PARAMETERS_TYPE :
+        data_form_protocol[parameter_type] = get_protocol_parameters(protocol, parameter_type)
+    data_form_protocol['template_id'] = protocol.get_protocol_template_id()
+    return data_form_protocol
+
+def get_defined_parameters_protocol_template (template_id):
+    '''
+    Description:
+        The function get the parameter names defined in the protocol template
+    Input:
+        template_id     # protocol template id for the request
+    Functions:
+        get_protocol_template_obj_from_id   # Located at ths file
+    Return:
+        parameter_names
+    '''
+    parameter_names = []
+    protocol_template_obj = get_protocol_template_obj_from_id(template_id)
+    if ProtocolParameter.objects.filter(usedTemplateFile = protocol_template_obj).exists():
+        parameters = ProtocolParameter.objects.filter(usedTemplateFile = protocol_template_obj).order_by('parameterName')
+        for parameter in parameters:
+            parameter_names.append(parameter.get_parameter_name())
+    return parameter_names
+
+def get_form_data_station_A():
+    '''
+    Description:
+        The function get the available protocols and parameters for station A
+    Constants:
+        METADATA_FIELDS_FOR_PROTOCOL_TEMPLATE
+    Return:
+        data_form_station_a
+    '''
+    data_form_station_a = []
+    if ProtocolTemplateFiles.objects.filter(station__stationName__exact = 'Station A', protocolTemplateBeUsed__exact = True).exists():
+        protocols = ProtocolTemplateFiles.objects.filter(station__stationName__exact = 'Station A', protocolTemplateBeUsed__exact = True).order_by('protocolNumber')
+        for protocol in protocols:
+            data_form_station_a.append(get_protocol_data_for_form(protocol))
+
+    return data_form_station_a
+
+def get_form_data_station_B():
+    '''
+    Description:
+        The function get the available protocols and parameters for station B
+    Constants:
+        METADATA_FIELDS_FOR_PROTOCOL_TEMPLATE
+    Return:
+        data_form_station_b
+    '''
+    data_form_station_b = []
+    if ProtocolTemplateFiles.objects.filter(station__stationName__exact = 'Station B', protocolTemplateBeUsed__exact = True).exists():
+        protocols = ProtocolTemplateFiles.objects.filter(station__stationName__exact = 'Station B', protocolTemplateBeUsed__exact = True).order_by('protocolNumber')
+        for protocol in protocols:
+            data_form_station_b.append(get_protocol_data_for_form(protocol))
+
+    return data_form_station_b
+
+
+def get_form_data_station_C():
+    '''
+    Description:
+        The function get the available protocols and parameters for station C
+    Constants:
+        METADATA_FIELDS_FOR_PROTOCOL_TEMPLATE
+    Return:
+        data_form_station_b
+    '''
+    data_form_station_c = []
+    if ProtocolTemplateFiles.objects.filter(station__stationName__exact = 'Station C', protocolTemplateBeUsed__exact = True).exists():
+        protocols = ProtocolTemplateFiles.objects.filter(station__stationName__exact = 'Station C', protocolTemplateBeUsed__exact = True).order_by('protocolNumber')
+        for protocol in protocols:
+            data_form_station_c.append(get_protocol_data_for_form(protocol))
+    return data_form_station_c
+
+def extract_data_from_request_protocol (request):
+    '''
+    Description:
+        The function extract the user form data and define a dictionnary with the values
+    Input:
+        request     # contains the user form data
+    Functions:
+        get_defined_parameters_protocol_template
+    Constants:
+
+    Return:
+        parameter_values
+    '''
+    parameter_values = {}
+    template_id = request.POST['template_id']
+    parameter_names = get_defined_parameters_protocol_template (template_id)
+    for parameter in parameter_names :
+        parameter_values[parameter] = request.POST[parameter]
+
+    return parameter_values
+
+def get_template_file_name(template_id):
+    '''
+    Description:
+        The function get the protocol template file name for the tempalte id
+    Input:
+        template_id     # id of the template
+    Functions:
+        get_protocol_template_obj_from_id
+    Return:
+        template_file_name
+    '''
+
+    protocol_template_obj = get_protocol_template_obj_from_id(template_id)
+    template_file_name = protocol_template_obj.get_protocol_file_name()
+    return template_file_name
+
+def store_protocol_request_parameter_values(protocol_request, parameters ):
+        '''
+        Description:
+            The function store on database the parameter values used when protocol request
+            is created.
+        Input:
+            protocol_request  # protocol request object
+            paramters           # dictionary with the values used in protocol
+
+
+        Functions:
+            get_protocol_template_obj_from_id
+        Return:
+            template_file_name
+        '''
+        for name, value in parameters.items():
+            data = {}
+            data['parameterName'] = name
+            data['parameterValue'] = value
+            data['protocolRequest'] = protocol_request
+            new_parameter_value = ProtocolParameterValues.objects.create_parameter_value(data)
+        return
+
+
+def new_build_request_codeID (user, station ) :
+    '''
+    Description:
+        The function build the request codeID by joining the user, station and
+        the number of times that this combination is used
+    Input :
+        user                # user objects
+        station             # station used in the protocol
+    Return:
+        request codeID string
+    '''
+    num_times = 0
+    if ProtocolRequest.objects.filter(stationName__exact = station, userRequestedBy = user).exists():
+        num_times = ProtocolRequest.objects.filter(stationName__exact = station, userRequestedBy = user).count()
+    station = station.replace(' ', '')
+    num_times += 1
+    return user.username +'_' + station + '_' +str(num_times)
+
+def extract_protocol_request_form_data_and_save_to_file (request):
+    '''
+    Description:
+        The function collect the request protocol data form and save the information in the file
+
+    Input :
+        request                # full data of the form
+    Functions:
+        extract_data_from_request_protocol  #Located at this file
+        build_protocol_request_file_name    #Located at this file
+        increase_protocol_file_id           #Located at this file
+        store_file_id                       #Located at this file
+        get_template_file_name              #Located at this file
+        store_protocol_request_parameter_values  #Located at this file
+        add_parameters_in_file              #Located at utils.file_utilities
+    Return:
+        add_result
+    '''
+    template_id = request.POST['template_id']
+
+    parameters = extract_data_from_request_protocol(request)
+    protocol_file_name = build_protocol_request_file_name(request.user.username,template_id)
+    protocol_file_id = increase_protocol_file_id()
+
+    new_prot_file_id_obj = store_file_id (protocol_file_id,request.POST['station'], request.POST['protocol'])
+    template_file = get_template_file_name(template_id)
+
+    result = add_parameters_in_file (template_file, protocol_file_name,  parameters, protocol_file_id)
+    if result != 'True':
+        return result, None
+
+    protocol_request_data = {}
+    protocol_request_data['user'] = request.user
+    protocol_request_data['generatedFile'] = protocol_file_name
+    protocol_request_data['protocolID'] = protocol_file_id
+    protocol_request_data['station'] = request.POST['station']
+    protocol_request_data['usernotes'] = request.POST['usernotes']
+    protocol_request_data['template_id'] = template_id
+    protocol_request_data['templateProtocolNumber'] = request.POST ['protocol']
+    protocol_request_data['requestedCodeID'] = new_build_request_codeID (request.user, request.POST['station'] )
+
+    new_create_protocol_request = ProtocolRequest.objects.create_protocol_request(protocol_request_data)
+    store_protocol_request_parameter_values(new_create_protocol_request, parameters)
+    return 'True' , new_create_protocol_request
