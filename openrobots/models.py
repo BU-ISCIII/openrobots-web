@@ -265,7 +265,6 @@ class ProtocolTemplateFiles (models.Model):
     def get_name_in_form(self):
         return '%s' %(self.protocolNameInForm)
 
-
     def get_protocol_template_id (self):
         return '%s'  %(self.pk)
 
@@ -286,6 +285,16 @@ class ProtocolTemplateFiles (models.Model):
 
     objects = ProtocolTemplateFilesManager()
 
+class ElutionHardware (models.Model):
+    hardwareType = models.CharField(max_length = 80)
+
+    def __str__ (self):
+        return '%s' %(self.hardwareType)
+
+    def get_hardware_type(self):
+        return '%s' %(self.hardwareType)
+
+
 class InventoryLabwareManager(models.Manager):
     def create_inventory_labware(self,data):
 
@@ -300,9 +309,6 @@ class InventoryLabwareManager(models.Manager):
         return new_inventory_labware
 
 class InventoryLabware (models.Model):
-    #elutionHW_type =  models.ForeignKey (
-    #                   ElutionHardware,
-    #                    on_delete=models.CASCADE, max_length = 80, null = True, blank = True )
     elution_LabwareType = models.CharField(max_length = 80)
     valueInCode = models.CharField(max_length = 255)
     brand = models.CharField(max_length = 80)
@@ -377,13 +383,6 @@ class InventoryLabware (models.Model):
         return data
 
     objects = InventoryLabwareManager()
-
-
-class FileIDUserRequestMapping(models.Model):
-    fileID = models.CharField(max_length = 50)
-    station = models.CharField(max_length = 20)
-    protocol = models.CharField(max_length = 50)
-    generatedat = models.DateTimeField(auto_now_add=True)
 
 
 class ProtocolParameterManager(models.Manager):
@@ -499,6 +498,14 @@ class ProtocolRequest(models.Model):
 
     def get_user_requested(self):
         return '%s' %(self.userRequestedBy.username)
+
+    def get_request_info(self):
+        data = []
+        data.append(self.userRequestedBy.username)
+        data.append(self.requestedCodeID)
+        data.append(self.generatedat.strftime("%Y-%b-%d"))
+        data.append(self.generatedFile)
+        return data
 
     objects = ProtocolRequestManager()
 

@@ -23,7 +23,7 @@ def get_action_robot_detail(action_id):
     detail_data['main_data'] = [robot_action_obj.get_robot_action_data()]
 
     protocol_id = robot_action_obj.get_protocol_id()
-    
+
     if ParametersRobotAction.objects.filter(robotActionPost = robot_action_obj).exists():
         parameters = ParametersRobotAction.objects.filter(robotActionPost = robot_action_obj).order_by('parameterName')
         detail_data['param_not_modified'] = []
@@ -70,7 +70,7 @@ def get_action_robot_detail(action_id):
     '''
 
 
-def  build_protocol_file_name(user, template):
+# def  build_protocol_file_name(user, template):
     '''
     Description:
         The function build the protocol file name by joining the user, protocol_type, station and time
@@ -80,6 +80,7 @@ def  build_protocol_file_name(user, template):
     Return:
         protocol_file_name
     '''
+    '''
     name = [user]
 
     name.append(''.join(get_protocol_type_from_template(template).split()))
@@ -88,6 +89,7 @@ def  build_protocol_file_name(user, template):
     name.append(time.strftime("%Y%m%d-%H%M%S"))
 
     return '_'.join(name) + '.py'
+    '''
 
 def  build_protocol_request_file_name(user, template_id):
     '''
@@ -170,7 +172,7 @@ def check_empty_fields (row_data):
         return True
     return False
 
-def get_parameters_names_defined(station, protocol):
+# def get_parameters_names_defined(station, protocol):
     '''
     Description:
         The function will return the parameters used for the station and protocol
@@ -183,6 +185,7 @@ def get_parameters_names_defined(station, protocol):
         PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_C_PROT_2
     Return:
         dictionary with parameter and values
+    '''
     '''
     if station == 'Station A' and protocol == '1':
         return dict(MAP_PROTOCOL_PARAMETER_TO_DATABASE_STATION_A_PROT_1)
@@ -197,7 +200,7 @@ def get_parameters_names_defined(station, protocol):
     if station == 'Station C' and protocol == '2':
         return dict(MAP_PROTOCOL_PARAMETER_TO_DATABASE_STATION_C_PROT_2)
     return False
-
+    '''
 def get_form_data_creation_new_robot():
     '''
     Description:
@@ -213,7 +216,7 @@ def get_form_data_creation_new_robot():
     form_data['modules'] = get_defined_modules()
     return form_data
 
-def get_form_data_creation_run_file():
+# def get_form_data_creation_run_file():
     '''
     Description:
         The function will get the Labware information used in the form to create the files
@@ -221,6 +224,7 @@ def get_form_data_creation_run_file():
 
     Return:
         form_data
+    '''
     '''
     form_data = {}
     form_data['mag_plate_data'] = []
@@ -438,7 +442,7 @@ def get_form_data_creation_run_file():
                 form_data['station_c'][i+1] = ProtocolTemplateFiles.objects.filter(station__stationName__iexact = 'Station C', protocolName__icontains = protocol_types[i]).last().get_protocol_file_name()
 
     return form_data
-
+    '''
 def get_parameters_values_from_template(reference_template):
     '''
     Description:
@@ -685,12 +689,13 @@ def get_module_obj_from_id(module_id):
     return None
 
 
-def get_requested_file_obj_from_station_protocol(station,protocol, protocol_file_id):
+# def get_requested_file_obj_from_station_protocol(station,protocol, protocol_file_id):
     '''
     Description:
         The function get the query object for the station. protocol, protocol_file_id
     Return:
         requested_file_obj
+    '''
     '''
     if station == 'Station A' and protocol == '1':
         if RequestForStationA_Prot1.objects.filter(protocolID__exact = protocol_file_id).exists():
@@ -712,7 +717,7 @@ def get_requested_file_obj_from_station_protocol(station,protocol, protocol_file
             return RequestForStationC_Prot2.objects.filter(protocolID__exact = protocol_file_id).last()
 
     return False
-
+    '''
 def get_robot_inventory_data(robot_id):
     '''
     Description:
@@ -977,7 +982,7 @@ def get_stored_protocols_files():
     return protocol_file_data
 
 
-def extract_form_data_station (request) :
+# def extract_form_data_station (request) :
     '''
     Description:
         The function extract the user form data and define a dictionnary with the values
@@ -990,6 +995,7 @@ def extract_form_data_station (request) :
         PROTOCOL_PARAMETERS_REQUIRED_FOR_STATION_A_PROT_3
     Return:
         valid_metadata
+    '''
     '''
     data_for_file = {}
     data_for_file2 = {}
@@ -1036,7 +1042,7 @@ def extract_form_data_station (request) :
     data_for_database['userRequestedBy'] = request.user
 
     return data_for_file , data_for_database
-
+    '''
 def extract_define_robot_form_data (request) :
     '''
     Description:
@@ -1062,6 +1068,7 @@ def get_list_of_requests():
         request_list
     '''
     request_list = {}
+    '''
     # get request for Station C protocols
     if RequestForStationC_Prot1.objects.all().exists():
         request_list['station_c'] = []
@@ -1089,6 +1096,18 @@ def get_list_of_requests():
         for request in a_prot1_requests:
             request_list['station_a_prot3'].append(request.get_request_info())
 
+
+    '''
+
+    if ProtocolRequest.objects.all().exists():
+        station_objs = Stations.objects.all().order_by('stationName')
+        for station_obj in station_objs:
+            if ProtocolRequest.objects.filter(protocolTemplate__station = station_obj).exists():
+                station_requests = ProtocolRequest.objects.filter(protocolTemplate__station = station_obj).order_by('requestedCodeID')
+                station_name = station_obj.get_station_name().lower().replace(' ','_')
+                request_list[station_name] = []
+                for request in station_requests:
+                    request_list[station_name].append(request.get_request_info())
 
     return request_list
 
@@ -1407,7 +1426,7 @@ def extract_data_from_request_protocol (request):
     Input:
         request     # contains the user form data
     Functions:
-        get_defined_parameters_protocol_template
+        get_defined_parameters_protocol_template # located at this file
     Constants:
 
     Return:
@@ -1428,7 +1447,7 @@ def get_template_file_name(template_id):
     Input:
         template_id     # id of the template
     Functions:
-        get_protocol_template_obj_from_id
+        get_protocol_template_obj_from_id  # located at this file
     Return:
         template_file_name
     '''
@@ -1445,8 +1464,6 @@ def store_protocol_request_parameter_values(protocol_request, parameters ):
         Input:
             protocol_request  # protocol request object
             paramters           # dictionary with the values used in protocol
-
-
         Functions:
             get_protocol_template_obj_from_id
         Return:
