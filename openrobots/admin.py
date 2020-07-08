@@ -11,7 +11,7 @@ class ProtocolTemplateFilesAdmin (admin.ModelAdmin):
     list_display =['station', 'typeOfProtocol', 'protocolTemplateFileName', 'protocolTemplateFileName',
                 'authors', 'source', 'apiLevel', 'protocolNameInForm', 'parametersDefined', 'protocolTemplateBeUsed']
 
-
+'''
 class ElutionHardwareAdmin (admin.ModelAdmin):
     list_display =['hardwareType']
 
@@ -26,6 +26,7 @@ class MasterMixTubeAdmin (admin.ModelAdmin):
 
 class PCR_plateLabwareAdmin (admin.ModelAdmin):
     list_display =['PCR_plateLabwareType', 'description', 'default']
+'''
 
 class InventoryLabwareAdmin (admin.ModelAdmin):
     list_display =['elution_LabwareType', 'brand', 'valueInCode']
@@ -39,7 +40,7 @@ class ModuleTypeAdmin (admin.ModelAdmin):
 class ModulesInLabAdmin (admin.ModelAdmin):
     list_display =('moduleType','moduleID', 'description')
 
-
+'''
 class Reagent_LabwareAdmin (admin.ModelAdmin):
     list_display =['reagentLabwareType', 'description', 'default']
 
@@ -80,11 +81,12 @@ class Tips300_LabwareAdmin(admin.ModelAdmin):
 
 class Tips1000_LabwareAdmin(admin.ModelAdmin):
     list_display= ['tips1000', 'description', 'default']
+'''
 
 class RobotsInventoryAdmin (admin.ModelAdmin):
     list_display =('userName', 'configuration',  'location','robots', 'serialNumber','IP_address','hostName',
             'computer_mac','rightPipette', 'leftPipette', 'rightPipetteID', 'leftPipetteID', 'neededPlugs','observations')
-
+'''
 class LanguageAdmin (admin.ModelAdmin):
     list_display =['languageCode','languageDescription','default']
 
@@ -118,7 +120,7 @@ class RequestForStationC_Prot2Admin (admin.ModelAdmin):
 
 class FileIDUserRequestMappingAdmin (admin.ModelAdmin):
     list_display = ['fileID', 'station', 'protocol']
-
+'''
 
 class RobotsActionPostAdmin(admin.ModelAdmin):
     list_display = ['RobotID', 'executedAction', 'ipaddress','ProtocolID', 'StartRunTime', 'FinishRunTime','modifiedParameters']
@@ -144,6 +146,7 @@ class ProtocolParameterValuesAdmin(admin.ModelAdmin):
 admin.site.register(Stations , StationsAdmin)
 admin.site.register(ProtocolsType , ProtocolsTypeAdmin)
 admin.site.register(ProtocolTemplateFiles , ProtocolTemplateFilesAdmin)
+'''
 admin.site.register(ElutionHardware , ElutionHardwareAdmin)
 
 admin.site.register(MagPlate_Labware , MagPlate_Labwaredmin)
@@ -158,9 +161,10 @@ admin.site.register(PCR_plateLabware , PCR_plateLabwareAdmin)
 
 admin.site.register(ElutionStationB_Labware , ElutionStationB_LabwareAdmin)
 admin.site.register(ElutionStationC_Labware , ElutionStationC_LabwareAdmin)
+'''
 admin.site.register(ModuleType , ModuleTypeAdmin)
 admin.site.register(ModulesInLab , ModulesInLabAdmin)
-
+'''
 admin.site.register(Buffer_Labware , Buffer_LabwareAdmin)
 admin.site.register(Destination_Labware , Destination_LabwareAdmin)
 admin.site.register(Destination_Tube_Labware , Destination_Tube_LabwareAdmin)
@@ -171,10 +175,10 @@ admin.site.register(Lysate_Tube , Lysate_TubeAdmin)
 
 admin.site.register(Reagent_Labware , Reagent_LabwareAdmin)
 admin.site.register(Waste_Labware , Waste_LabwareAdmin)
-
+'''
 admin.site.register(RobotsInventory , RobotsInventoryAdmin)
 admin.site.register(InventoryLabware , InventoryLabwareAdmin)
-
+'''
 admin.site.register(Language, LanguageAdmin)
 
 admin.site.register(RequestForStationA_Prot1 , RequestForStationA_Prot1Admin)
@@ -189,7 +193,7 @@ admin.site.register(FileIDUserRequestMapping, FileIDUserRequestMappingAdmin)
 
 admin.site.register(Tips300_Labware,Tips300_LabwareAdmin)
 admin.site.register(Tips1000_Labware,Tips1000_LabwareAdmin)
-
+'''
 admin.site.register(RobotsActionPost, RobotsActionPostAdmin)
 admin.site.register(ParametersRobotAction, ParametersRobotActionAdmin)
 

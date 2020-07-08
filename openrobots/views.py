@@ -12,7 +12,7 @@ def index(request):
     #return redirect ('/createProtocolFile')
     return render(request, 'openrobots/index.html')
 
-
+'''
 @login_required
 def create_pcr_protocol_file(request):
     # Get data to display in form
@@ -81,7 +81,7 @@ def create_extraction_protocol_file(request):
         return render(request, 'openrobots/createExtractionProtocolFile.html' ,{'display_result': display_result})
 
     return render(request, 'openrobots/createExtractionProtocolFile.html' ,{'form_data': form_data})
-
+'''
 @login_required
 def define_labware(request) :
     form_data = get_elution_hw_types()
