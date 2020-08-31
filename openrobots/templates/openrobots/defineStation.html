@@ -1,0 +1,97 @@
+{% extends 'openrobots/base.html' %}
+{% load static %}
+{% block content %}
+{% csrf_token %}
+
+{% if error_message %}
+    <div class="row row-space-2 margin-b-4">
+        <div class="col-sm-7 col-sm-offset-3">
+            <div class="panel panel-danger">
+                <div class="panel-heading"><h3 style="text-align:center">Error when definin a new Station</h3> </div>
+                <div class="panel-body">
+                    {% for values in error_message %}
+                        <h4>{{values}}</h4>
+                    {% endfor %}
+                </div> <!--  end of panel body -->
+            </div> <!--  end of panel  -->
+        </div> <!--  end of col-sm-7 -->
+    </div> <!--  end of row -->
+{% endif %}
+
+
+
+{% if created_new_station %}
+
+    <div class="row row-space-2 margin-b-4">
+        <div class="col-sm-5" >
+            <div class="panel panel-default">
+                <div class="panel-heading"><h3>New Station data has been added to your inventory</h3> </div>
+                <div class="panel-body">
+                    <table class="table ">
+                        <thead>
+                            <tr>
+                                <th>Station Name</th>
+                                <th>Description</th>
+                                <th>Image to Display</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{{ created_new_station.0 }}</td>
+                                <td>{{ created_new_station.1 }}</td>
+                                <td>{{ created_new_station.2 }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>  <!--  end of panel body  -->
+            </div> <!--// end panel -->
+        </div> <!--// end col-sm-6  -->
+    </div> <!--// end row -->
+
+{% else %}
+    <div class="row row-space-2 margin-b-4">
+        <div class="col-sm-12" >
+            <div class="panel panel-default">
+                <div class="panel-heading"><h3 style="text-align:center">Form to add a new Station to laboratory inventory </h3> </div>
+                <div class="panel-body">
+                    <form method="post" enctype="multipart/form-data" name="definestation" id="definestation" class="form-horizontal">
+                        {% csrf_token %}
+
+                        <div class="col-sm-6" >
+                            <div class="form-group required">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading"><h3 style="text-align:center">Station basic Information </h3> </div>
+                                    <div class="panel-body">
+                                        <input type="hidden" name="action" value="definestation"/>
+                                        <label class="col-sm-5  control-label" for="stations" >Station Name</label>
+                                        <div class="col-sm-5"><input class="form-control" type="text" required = "required" name="stations" id="stations" size="100" maxlength="100"></div>
+                                        <BR><br>
+                                        <label class="col-sm-5  control-label" for="description" >Description</label>
+                                        <div class="col-sm-5"><input class="form-control" type="text" required = "required" name="description" id="description" size="100" maxlength="100"></div>
+                                        <BR><br>
+                                        <label class="col-sm-5  control-label" for="serialNumber" >Image to Display</label>
+                                        <div class="col-sm-5"><input class="form-control" type="text" required = "required" name="image" id="image" size="100" maxlength="100"></div>
+                                        <BR><br>
+                                        </div>  <!-- end select input -->
+                                        <br><br>
+                                        <label class="col-sm-5  control-label" for="observations" >Observations</label>
+                                        <div class="col-sm-5"><input class="form-control" type="text" required = "required" name="observations" id="observations" size="100" maxlength="200"></div>
+                                        <BR><br>
+                                    </div>  <!--  end of panel body  -->
+                                </div> <!--// end panel -->
+                            </div>  <!-- end from-group   -->
+                        </div> <!--// end col-sm-6  -->
+
+                    <p> Fields marked with <FONT COLOR="Red">*</FONT> are mandatory</p>
+                </div>  <!--  end of panel body  -->
+
+
+            </div> <!--// end panel -->
+        </div> <!--// end col-sm-12  -->
+
+
+
+    </div><!--// end row -->
+{% endif %}
+{% endblock %}
