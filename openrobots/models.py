@@ -185,6 +185,29 @@ class ProtocolsType (models.Model):
     def get_name(self):
         return '%s' %(self.protocolTypeName)
 
+
+class ProtocolosInStation (models.Model):
+    station = models.ForeignKey(
+                        Stations,
+                        on_delete=models.CASCADE)
+    typeOfProtocol = models.ForeignKey(
+                        ProtocolsType,
+                        on_delete=models.CASCADE)
+    protocolNumber = models.CharField(max_length = 255)
+    generatedat = models.DateTimeField(auto_now_add=True)
+
+    def __str__ (self):
+        return '%s' %(self.protocolNumber)
+
+    def get_protocol_number(self):
+        return '%s' %(self.protocolNumber)
+
+    def get_station_and_protocol(self):
+        data = []
+        data.append(self.station.get_station_name())
+        data.append(self.protocolNumber)
+        return data
+
 class ProtocolTemplateFilesManager(models.Manager) :
     def create_protocol_template (self, protocol_data):
         protocol_obj = ProtocolsType.objects.get(protocolTypeName__exact = protocol_data['typeOfProtocol'])
@@ -206,6 +229,10 @@ class ProtocolTemplateFiles (models.Model):
     typeOfProtocol = models.ForeignKey(
                         ProtocolsType,
                         on_delete=models.CASCADE)
+    protocolNumber = models.ForeignKey(
+                        ProtocolosInStation,
+                        on_delete=models.CASCADE)
+
     protocolNameInForm = models.CharField(max_length = 80, null = True)
     protocolTemplateFileName = models.FileField(upload_to = openrobots_config.OPENROBOTS_TEMPLATE_DIRECTORY )
     protocolName = models.CharField(max_length = 255)
@@ -285,6 +312,7 @@ class ProtocolTemplateFiles (models.Model):
 
     objects = ProtocolTemplateFilesManager()
 
+### Comprobar que no se usa y borrarla #####
 class ElutionHardware (models.Model):
     hardwareType = models.CharField(max_length = 80)
 

@@ -149,18 +149,8 @@
                                     <label class="col-sm-5 control-label" for="prottype" >Protocol type to be displayed in Form</label>
                                     <div class="col-sm-7"><input class="form-control" type="text" id="prottype" name="prottype" size="80"></div>
                                     <br><br><br>
-                                    <label class="col-sm-6 control-label" for="mmtube" >Station using the protocol</label>
-                                    <div class="col-sm-5"><select class="form-control"  required = "required" name="station" id="station">
-                                               				<option value="">Choose a value</option>
-                                                            {% for value in template_data.stations %}
-                                                                <option value="{{value}}">{{value}}</option>
-                                                            {% endfor %}
-
-                                                      </select>
-                                    </div>  <!-- end select input -->
-                                    <br><br><br>
-                                    <label class="col-sm-6 control-label" for="mmtube" >Select Protocol type</label>
-                                    <div class="col-sm-5"><select class="form-control"  required = "required" name="protocoltype" id="protocoltype">
+                                    <label class="col-sm-5 control-label" for="mmtube" >Select Protocol type</label>
+                                    <div class="col-sm-6"><select class="form-control"  required = "required" name="protocoltype" id="protocoltype">
                                                				<option value="">Choose a value</option>
                                                             {% for value in template_data.protocol_types %}
                                                                 <option value="{{value}}">{{value}}</option>
@@ -168,6 +158,24 @@
 
                                                       </select>
                                     </div>  <!-- end select input -->
+                                    <br><br><br>
+                                    <div class="col-sm-8 col-sm-offset-3">
+                                        <h5>Define the Station, Protocol and Version for this script</h5>
+                                    </div>
+                                    <br><br>
+                                    <label class="col-sm-5 control-label" for="station" >Station and Protocol Number where the script runs</label>
+                                    <div class="col-sm-6"><select class="form-control"  required = "required" name="station" id="station">
+                                               				<option value="">Choose a value</option>
+                                                            {% for value in template_data.stations_protocols %}
+                                                                <option value="{{value}}">{{value}}</option>
+                                                            {% endfor %}
+
+                                                      </select>
+                                    </div>  <!-- end select input -->
+                                    <br><br><br>
+
+                                    <label class="col-sm-5 control-label" for="protversion" >Version of the Protocol script</label>
+                                    <div class="col-sm-5"><input class="form-control" type="text" id="protversion" name="protversion" size="80"></div>
                                 </div> <!-- end from group -->
                                 <br>
                                 <input class="btn pull-right btn-primary" type="submit" value="Submit" id="btnSubmit">

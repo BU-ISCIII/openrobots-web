@@ -7,6 +7,9 @@ class StationsAdmin (admin.ModelAdmin):
 class ProtocolsTypeAdmin (admin.ModelAdmin):
     list_display =['protocolTypeName', 'description']
 
+class ProtocolosInStationAdmin (admin.ModelAdmin):
+    list_display = ['protocolNumber', 'station', 'typeOfProtocol']
+
 class ProtocolTemplateFilesAdmin (admin.ModelAdmin):
     list_display =['station', 'typeOfProtocol', 'protocolTemplateFileName', 'protocolTemplateFileName',
                 'authors', 'source', 'apiLevel', 'protocolNameInForm', 'parametersDefined', 'protocolTemplateBeUsed']
@@ -55,6 +58,7 @@ class ProtocolParameterValuesAdmin(admin.ModelAdmin):
 
 admin.site.register(Stations , StationsAdmin)
 admin.site.register(ProtocolsType , ProtocolsTypeAdmin)
+admin.site.register(ProtocolosInStation, ProtocolosInStationAdmin)
 admin.site.register(ProtocolTemplateFiles , ProtocolTemplateFilesAdmin)
 admin.site.register(ElutionHardware , ElutionHardwareAdmin)
 

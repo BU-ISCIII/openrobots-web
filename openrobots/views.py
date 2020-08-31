@@ -319,7 +319,7 @@ def upload_protocol_templates(request):
     else:
         template_data = {}
         template_data['protocol_types'] = get_protocol_types()
-        template_data['stations'] = get_stations_names()
+        template_data['stations_protocols'] = get_protocol_and_station_defined()
         stored_protocol_file= get_stored_protocols_files()
         pending_protocols = get_pending_protocol_parameters()
         return render(request, 'openrobots/uploadProtocolTemplates.html' , {'template_data': template_data, 'stored_protocol_file': stored_protocol_file,

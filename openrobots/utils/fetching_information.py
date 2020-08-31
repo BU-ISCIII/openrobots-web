@@ -799,6 +799,20 @@ def get_robots_action_from_user_form(form_data ):
     else:
         return None
 
+def get_protocol_and_station_defined ():
+    '''
+    Description:
+        The function will fetch the protocol numbers for each station defined
+    Return:
+        station_protocol_number
+    '''
+    station_protocol_number =  []
+    if ProtocolosInStation.objects.all().exists():
+        #import pdb; pdb.set_trace()
+        p_nunbers = ProtocolosInStation.objects.all().order_by('station__stationName')
+        for p_nunber in p_nunbers :
+            station_protocol_number.append(STRING_TO_SEPARATE_STATION_AND_PROTOCOL_NUMBER.join(p_nunber.get_station_and_protocol()))
+    return station_protocol_number
 
 def get_protocol_types():
     '''
