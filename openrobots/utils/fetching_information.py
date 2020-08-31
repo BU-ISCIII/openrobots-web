@@ -841,7 +841,7 @@ def get_protocol_template_information(p_template_id):
         p_template = ProtocolTemplateFiles.objects.get(pk__exact = p_template_id)
         protocol_data['basic_data'] = [p_template.get_main_data()]
         protocol_data['metadata'] = p_template.get_metadata()
-        protocol_data['functions'] = p_template.get_functions()
+        #protocol_data['functions'] = p_template.get_functions()
     return protocol_data
 
 def get_protocol_type_from_template_id(template_id):
