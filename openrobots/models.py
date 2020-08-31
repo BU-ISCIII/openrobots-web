@@ -197,7 +197,7 @@ class ProtocolosInStation (models.Model):
     generatedat = models.DateTimeField(auto_now_add=True)
 
     def __str__ (self):
-        return '%s' %(self.protocolNumber)
+        return '%s__%s' %(self.station, self.protocolNumber)
 
     def get_protocol_number(self):
         return '%s' %(self.protocolNumber)
@@ -231,12 +231,12 @@ class ProtocolTemplateFiles (models.Model):
                         on_delete=models.CASCADE)
     protocolNumber = models.ForeignKey(
                         ProtocolosInStation,
-                        on_delete=models.CASCADE)
+                        on_delete=models.CASCADE, null = True, blank = True )
 
     protocolNameInForm = models.CharField(max_length = 80, null = True)
     protocolTemplateFileName = models.FileField(upload_to = openrobots_config.OPENROBOTS_TEMPLATE_DIRECTORY )
     protocolName = models.CharField(max_length = 255)
-    protocolNumber =  models.CharField(max_length = 10, null = True, blank = True)
+    # protocolNumber =  models.CharField(max_length = 10, null = True, blank = True)
     protocolVersion =  models.CharField(max_length = 10, null = True, blank = True)
     authors = models.CharField(max_length = 255)
     source = models.CharField(max_length = 255)
