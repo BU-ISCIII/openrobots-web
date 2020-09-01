@@ -495,7 +495,8 @@ def get_form_data_define_parameter(template_obj):
     protocol = template_obj.get_protocol_number()
     version = template_obj.get_protocol_version()
     station = template_obj.get_station()
-    if ProtocolTemplateFiles.objects.filter(protocolTemplateBeUsed = True, station__stationName__exact = station,  protocolNumber__exact = protocol, protocolVersion__exact = version).exists():
+    protocol_type_obj = template_obj.get_protocol_type_obj()
+    if ProtocolTemplateFiles.objects.filter(protocolTemplateBeUsed = True, station__stationName__exact = station,  typeOfProtocol = protocol_type_obj ,protocolNumber__exact = protocol, protocolVersion__exact = version).exists():
         reference_template = ProtocolTemplateFiles.objects.filter(protocolTemplateBeUsed = True, station__stationName__exact = station, protocolNumber__exact = protocol, protocolVersion__exact = version).last()
         define_parameter['parameter_values'] = get_parameters_values_from_template(reference_template)
 
@@ -841,7 +842,6 @@ def get_protocol_template_information(p_template_id):
         p_template = ProtocolTemplateFiles.objects.get(pk__exact = p_template_id)
         protocol_data['basic_data'] = [p_template.get_main_data()]
         protocol_data['metadata'] = p_template.get_metadata()
-        #protocol_data['functions'] = p_template.get_functions()
     return protocol_data
 
 def get_protocol_type_from_template_id(template_id):

@@ -60,7 +60,7 @@
             <div class="panel panel-default">
                 <div class="panel-heading"><h3 style="text-align:center">Define the Parameters used in Protocol</h3> </div>
                 <div class="panel-body">
-                    {% if define_parameter.reusing_data %}
+                    {% if define_parameter.parameter_values %}
                         <h5 style="text-align:center">Reusing parameter data from {{define_parameter.reusing_data}} </h5>
                     {% endif %}
                     <form method="post" enctype="multipart/form-data" name="defineParameter"  id="defineParameter" class="form-horizontal well" style="min-height: 500px;">
@@ -163,8 +163,8 @@
                                         <h5>Define the Station, Protocol and Version for this script</h5>
                                     </div>
                                     <br><br>
-                                    <label class="col-sm-5 control-label" for="station" >Station and Protocol Number where the script runs</label>
-                                    <div class="col-sm-6"><select class="form-control"  required = "required" name="station" id="station">
+                                    <label class="col-sm-5 control-label" for="stationProtocol" >Station and Protocol Number where the script runs</label>
+                                    <div class="col-sm-6"><select class="form-control"  required = "required" name="stationProtocol" id="stationProtocol">
                                                				<option value="">Choose a value</option>
                                                             {% for value in template_data.stations_protocols %}
                                                                 <option value="{{value}}">{{value}}</option>

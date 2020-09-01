@@ -197,7 +197,8 @@ class ProtocolosInStation (models.Model):
     generatedat = models.DateTimeField(auto_now_add=True)
 
     def __str__ (self):
-        return '%s__%s' %(self.station, self.protocolNumber)
+    #    return '%s__%s' %(self.station, self.protocolNumber)
+        return '%s' %(self.protocolNumber)
 
     def get_protocol_number(self):
         return '%s' %(self.protocolNumber)
@@ -212,10 +213,11 @@ class ProtocolTemplateFilesManager(models.Manager) :
     def create_protocol_template (self, protocol_data):
         protocol_obj = ProtocolsType.objects.get(protocolTypeName__exact = protocol_data['typeOfProtocol'])
         station_obj = Stations.objects.get(stationName__exact = protocol_data['station'])
+        protocolNumber = ProtocolosInStation.objects.get(station = station_obj, typeOfProtocol = protocol_obj , protocolNumber__exact = protocol_data['protocolNumber'])
         new_protocol_template = self.create(userName = protocol_data ['user'],station = station_obj,  typeOfProtocol = protocol_obj,
                     protocolTemplateFileName = protocol_data['file_name'], protocolName = protocol_data['protocolName'],
                     authors= protocol_data['author'], source = protocol_data['source'], apiLevel= protocol_data['apiLevel'],
-                    protocolNameInForm = protocol_data['prottype'] , protocolNumber = protocol_data['protocolNumber'],
+                    protocolNameInForm = protocol_data['prottype'] , protocolNumber = protocolNumber,
                     protocolVersion = protocol_data['protocolVersion'])
         return new_protocol_template
 ## vale en la nueva version
@@ -268,6 +270,9 @@ class ProtocolTemplateFiles (models.Model):
 
     def get_protocol_type(self):
         return '%s' %(self.typeOfProtocol.get_name())
+
+    def get_protocol_type_obj(self):
+        return self.typeOfProtocol
 
     def get_station(self):
         return '%s' %(self.station.get_station_name())

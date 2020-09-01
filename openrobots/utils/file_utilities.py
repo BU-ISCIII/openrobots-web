@@ -111,9 +111,9 @@ def get_metadata_from_file(in_file):
                 data = re.search(r'^\s*\'(.*)\'\s*:\s*\'(.*)\'', line)
                 metadata[data.group(1)] = data.group(2)
                 continue
-    prot_version = re.search(r'.*Protocol (\d+).*Version (\d+)', metadata['protocolName'])
-    metadata['protocolNumber'] = prot_version.group(1)
-    metadata['protocolVersion'] = prot_version.group(2)
+    #prot_version = re.search(r'.*Protocol (\d+).*Version (\d+)', metadata['protocolName'])
+    #metadata['protocolNumber'] = prot_version.group(1)
+    #metadata['protocolVersion'] = prot_version.group(2)
     return metadata
 
 
