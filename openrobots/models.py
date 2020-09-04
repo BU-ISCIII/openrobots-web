@@ -7,6 +7,7 @@ from distutils import util
 ## vale en la nueva version
 class Stations (models.Model):
     stationName = models.CharField(max_length = 80)
+    nameInForm = models.CharField(max_length = 255, null = True, blank = True )
     description = models.CharField(max_length = 255, null = True, blank = True )
 
     def __str__ (self):
@@ -14,6 +15,9 @@ class Stations (models.Model):
 
     def get_station_name(self):
         return '%s' %(self.stationName)
+
+    def get_name_in_form(self):
+        return '%s' %(self.nameInForm)
 
 ## vale en la nueva version
 class ModuleType (models.Model):
@@ -194,6 +198,7 @@ class ProtocolosInStation (models.Model):
                         ProtocolsType,
                         on_delete=models.CASCADE)
     protocolNumber = models.CharField(max_length = 255)
+    description = models.CharField(max_length = 255,  null = True, blank = True )
     generatedat = models.DateTimeField(auto_now_add=True)
 
     def __str__ (self):
@@ -205,7 +210,7 @@ class ProtocolosInStation (models.Model):
 
     def get_station_and_protocol(self):
         data = []
-        data.append(self.station.get_station_name())
+        data.append(self.station.get_station_name() + '---' + self.station.get_name_in_form())
         data.append(self.protocolNumber)
         return data
 
@@ -213,11 +218,11 @@ class ProtocolTemplateFilesManager(models.Manager) :
     def create_protocol_template (self, protocol_data):
         protocol_obj = ProtocolsType.objects.get(protocolTypeName__exact = protocol_data['typeOfProtocol'])
         station_obj = Stations.objects.get(stationName__exact = protocol_data['station'])
-        protocolNumber = ProtocolosInStation.objects.get(station = station_obj, typeOfProtocol = protocol_obj , protocolNumber__exact = protocol_data['protocolNumber'])
+        protocolStationNumber = ProtocolosInStation.objects.get(station = station_obj, typeOfProtocol = protocol_obj , protocolNumber__exact = protocol_data['protocolNumber'])
         new_protocol_template = self.create(userName = protocol_data ['user'],station = station_obj,  typeOfProtocol = protocol_obj,
                     protocolTemplateFileName = protocol_data['file_name'], protocolName = protocol_data['protocolName'],
                     authors= protocol_data['author'], source = protocol_data['source'], apiLevel= protocol_data['apiLevel'],
-                    protocolNameInForm = protocol_data['prottype'] , protocolNumber = protocolNumber,
+                    protocolNameInForm = protocol_data['prottype'] , protocolStationNumber = protocolStationNumber,
                     protocolVersion = protocol_data['protocolVersion'])
         return new_protocol_template
 ## vale en la nueva version
@@ -231,7 +236,7 @@ class ProtocolTemplateFiles (models.Model):
     typeOfProtocol = models.ForeignKey(
                         ProtocolsType,
                         on_delete=models.CASCADE)
-    protocolNumber = models.ForeignKey(
+    protocolStationNumber = models.ForeignKey(
                         ProtocolosInStation,
                         on_delete=models.CASCADE, null = True, blank = True )
 
@@ -260,7 +265,7 @@ class ProtocolTemplateFiles (models.Model):
         return '%s' %(self.protocolName)
 
     def get_protocol_number(self):
-        return '%s'  %(self.protocolNumber)
+        return '%s'  %(self.protocolStationNumber.get_protocol_number())
 
     def get_protocol_version(self):
         return '%s' %(self.protocolVersion)
@@ -282,9 +287,12 @@ class ProtocolTemplateFiles (models.Model):
         data.append(self.id)
         data.append(self.typeOfProtocol.get_name())
         data.append(self.station.get_station_name())
+        data.append(self.get_protocol_number())
         data.append(self.userName)
         data.append(self.protocolName)
         data.append(self.protocolTemplateFileName)
+        data.append(self.generatedat.strftime("%Y-%b-%d"))
+        data.append(self.protocolTemplateBeUsed)
         return data
 
     def get_metadata(self):
@@ -294,6 +302,7 @@ class ProtocolTemplateFiles (models.Model):
         data.append(self.source)
         data.append(self.apiLevel)
         return data
+
     def get_name_in_form(self):
         return '%s' %(self.protocolNameInForm)
 

@@ -125,6 +125,43 @@
             </div> <!--// end panel -->
         </div> <!--// end col-sm-6  -->
     </div> <!--// end row -->
+{% elif changed_active %}
+    <div class="row row-space-2 margin-b-4">
+        <BR>
+            <div class="col-sm-12" >
+                <div class="panel panel-default">
+                    <div class="panel-heading"><h3 style="text-align:center">Successful change for active protocol template </h3> </div>
+                    <div class="panel-body">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Protocol name</th>
+                                    <th>Protocol Project</th>
+                                    <th>Station</th>
+
+                                    <th>User</th>
+                                    <th>Upload date</th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for  id, protocol, station, prot_number, user, prot_name, file, date, active in changed_active %}
+                                    <tr>
+                                        <td><a href="/displayTemplateFile={{ id }}">{{ prot_name }}</a></td>
+                                        <td>{{ protocol }}</td>
+                                        <td>{{ station }}</td>
+
+                                        <td>{{ user }}</td>
+                                        <td>{{ date }}</td>
+
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>  <!--  end of panel body  -->
+                </div> <!--// end panel -->
+            </div> <!--// end col-sm-6  -->
+        </div> <!--// end row -->
 {% else %}
     <div class="row row-space-2 margin-b-4">
         <BR>
@@ -134,160 +171,213 @@
                 <button class="tablinks" onclick="summaryBin(event, 'protocol_defined')">List of Protocol templates defined</button>
             </div> <!--  end tabs -->
 
-            <div class="col-sm-9 col-sm-offset-1">
+            <div class="col-sm-11 col-sm-offset-1">
                 <div id="add_template" class="tabcontent">
-                    <div class="panel panel-default">
-                        <div class="panel-heading"><h3 style="text-align:center">Form to add a new template file for OT-2 </h3> </div>
-                        <div class="panel-body">
-                            <form method="post" enctype="multipart/form-data" name="addtemplatefile" id="addtemplatefile" class="form-horizontal">
-                                {% csrf_token %}
-                                <div class="form-group required">
-                                    <input type="hidden" name="action" value="addtemplatefile"/>
-                                    <label class="col-sm-5 control-label">Upload Template file</label>
-                                    <div class="col-sm-7"><input class="form-control" required = "required" type="file" id="upfile" name="newtemplatefile" size="80"></div>
-                                    <BR> <BR> <BR>
-                                    <label class="col-sm-5 control-label" for="prottype" >Protocol type to be displayed in Form</label>
-                                    <div class="col-sm-7"><input class="form-control" type="text" id="prottype" name="prottype" size="80"></div>
-                                    <br><br><br>
-                                    <label class="col-sm-5 control-label" for="mmtube" >Select Protocol type</label>
-                                    <div class="col-sm-6"><select class="form-control"  required = "required" name="protocoltype" id="protocoltype">
-                                               				<option value="">Choose a value</option>
-                                                            {% for value in template_data.protocol_types %}
-                                                                <option value="{{value}}">{{value}}</option>
-                                                            {% endfor %}
+                    <div class="col-sm-10">
+                        <div class="panel panel-default">
+                            <div class="panel-heading"><h3 style="text-align:center">Form to add a new template file for OT-2 </h3> </div>
+                            <div class="panel-body">
+                                <form method="post" enctype="multipart/form-data" name="addtemplatefile" id="addtemplatefile" class="form-horizontal">
+                                    {% csrf_token %}
+                                    <div class="form-group required">
+                                        <input type="hidden" name="action" value="addtemplatefile"/>
+                                        <label class="col-sm-5 control-label">Upload Template file</label>
+                                        <div class="col-sm-7"><input class="form-control" required = "required" type="file" id="upfile" name="newtemplatefile" size="80"></div>
+                                        <BR> <BR> <BR>
+                                        <label class="col-sm-5 control-label" for="prottype" >Protocol description to be displayed in Form</label>
+                                        <div class="col-sm-7"><input class="form-control" type="text" id="prottype" name="prottype" size="80"></div>
+                                        <br><br><br>
+                                        <label class="col-sm-5 control-label" for="mmtube" >Select Protocol Project</label>
+                                        <div class="col-sm-6"><select class="form-control"  required = "required" name="protocoltype" id="protocoltype">
+                                                   				<option value="">Choose a value</option>
+                                                                {% for value in template_data.protocol_types %}
+                                                                    <option value="{{value}}">{{value}}</option>
+                                                                {% endfor %}
 
-                                                      </select>
-                                    </div>  <!-- end select input -->
-                                    <br><br><br>
-                                    <div class="col-sm-8 col-sm-offset-3">
-                                        <h5>Define the Station, Protocol and Version for this script</h5>
-                                    </div>
-                                    <br><br>
-                                    <label class="col-sm-5 control-label" for="stationProtocol" >Station and Protocol Number where the script runs</label>
-                                    <div class="col-sm-6"><select class="form-control"  required = "required" name="stationProtocol" id="stationProtocol">
-                                               				<option value="">Choose a value</option>
-                                                            {% for value in template_data.stations_protocols %}
-                                                                <option value="{{value}}">{{value}}</option>
-                                                            {% endfor %}
+                                                          </select>
+                                        </div>  <!-- end select input -->
+                                        <br><br><br>
+                                        <div class="col-sm-8 col-sm-offset-3">
+                                            <h5>Define the Station, Protocol and Version for this script</h5>
+                                        </div>
+                                        <br><br>
+                                        <label class="col-sm-5 control-label" for="stationProtocol" >Select Station and Protocol</label>
+                                        <div class="col-sm-6"><select class="form-control"  required = "required" name="stationProtocol" id="stationProtocol">
+                                                   				<option value="">Choose a value</option>
+                                                                {% for value in template_data.stations_protocols %}
+                                                                    <option value="{{value}}">{{value}}</option>
+                                                                {% endfor %}
 
-                                                      </select>
-                                    </div>  <!-- end select input -->
-                                    <br><br><br>
+                                                          </select>
+                                        </div>  <!-- end select input -->
+                                        <br><br><br>
 
-                                    <label class="col-sm-5 control-label" for="protversion" >Version of the Protocol script</label>
-                                    <div class="col-sm-5"><input class="form-control" type="text" id="protversion" name="protversion" size="80"></div>
-                                </div> <!-- end from group -->
-                                <br>
-                                <input class="btn pull-right btn-primary" type="submit" value="Submit" id="btnSubmit">
-                            </form>
-                        </div>  <!--  end of panel body  -->
-                        <p> Fields marked with <FONT COLOR="Red">*</FONT> are mandatory</p>
+                                        <label class="col-sm-5 control-label" for="protversion" >Protocol Version</label>
+                                        <div class="col-sm-5"><input class="form-control" type="text" id="protversion" name="protversion" size="80"></div>
+                                    </div> <!-- end from group -->
+                                    <br>
 
-                    </div> <!--// end panel -->
+
+                                    <input class="btn pull-right btn-primary" type="submit" value="Submit" id="btnSubmit">
+                                </form>
+                                {% include 'openrobots/helpUploadTemplate.html' %}
+                            </div>  <!--  end of panel body  -->
+                            <p> Fields marked with <FONT COLOR="Red">*</FONT> are mandatory</p>
+
+
+                        </div> <!--// end panel -->
+                    </div> <!--// end col-sm-10  -->
+                    <div class="col-sm-2">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">Need Help?</div>
+                            <div class="panel-body">
+                                <br><p>Click on the HELP bottom below to get the information to fill down the form</p><br>
+                                <button type="button" class="btn btn-basic pull-right" data-toggle="modal" data-target="#myModal">HELP</button>
+                            </div>  <!--  end of panel body  -->
+                        </div> <!--// end panel -->
+                    </div> <!--// end col-sm-1  -->
                 </div><!-- // end of tab add_template -->
-            </div> <!--// end col-sm-8  -->
 
-            <div id="protocol_defined" class="tabcontent">
-                <div class="col-sm-9 col-sm-offse-2" >
-                    <div class="panel panel-default">
-                        <div class="panel-heading"><h3 style="text-align:center">Protocols template defined</h3></div>
-                        <div class="panel-body">
-                            {% if stored_protocol_file %}
-                                <div class="scrolling-wrapper">
-                                    <table class="table table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th>Protocol name</th>
-                                                <th>Protocol</th>
-                                                <th>Station</th>
-                                                <th>User</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {% for  id, protocol, station, user, prot_name, file in stored_protocol_file %}
-                                                <tr>
-                                                    <td><a href="/displayTemplateFile={{ id }}">{{ prot_name }}</a></td>
-                                                    <td>{{ protocol }}</td>
-                                                    <td>{{ station }}</td>
-                                                    <td>{{ user }}</td>
-                                                </tr>
+
+                <div id="protocol_defined" class="tabcontent">
+                    <div class="col-sm-10 col-sm-offset-1" >
+                        <div class="panel panel-default">
+                            <div class="panel-heading"><h3 style="text-align:center">Protocols template defined</h3></div>
+                            <div class="panel-body">
+                                {% if stored_protocol_file %}
+                                    <div class="scrolling-wrapper">
+                                        {% for station, protocols in stored_protocol_file.items %}
+
+                                            {% for prot_num , values in protocols.items %}
+                                                <h4 style="text-align:center"> {{station}} Protocol {{prot_num}}</h4>
+                                                <br>
+                                                <form method="post" enctype="multipart/form-data" name="activeVersion" id="activeVersion" class="form-horizontal">
+                                                    {% csrf_token %}
+                                                    <table class="table table-hover">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Protocol name</th>
+                                                                <th>Protocol Project</th>
+                                                                <th>Station</th>
+
+                                                                <th>User</th>
+                                                                <th>Upload date</th>
+                                                                <th>Modify Active version</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {% for  id, protocol, station, prot_number, user, prot_name, file, date, active in values %}
+                                                                <tr>
+                                                                    <td><a href="/displayTemplateFile={{ id }}">{{ prot_name }}</a></td>
+                                                                    <td>{{ protocol }}</td>
+                                                                    <td>{{ station }}</td>
+
+                                                                    <td>{{ user }}</td>
+                                                                    <td>{{ date }}</td>
+                                                                    {% if active %}
+                                                                        <td>Active</td>
+                                                                    {% else %}
+                                                                        <td><input type="radio" name="protocol_template_id" value ="{{id}}" </input></td>
+                                                                    {% endif %}
+                                                                </tr>
+                                                            {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                    {% if values|length > 1 %}
+                                                        <input class="btn pull-right btn-primary" type="submit" value="Submit" id="btnSubmit">
+                                                    {% endif %}
+
+                                                </form>
+                                                <br><br>
                                             {% endfor %}
-                                        </tbody>
-                                    </table>
-                                </div> <!--  end of scrolling  -->
-                            {% else %}
-                                <p>No Protocols template files have been defined </p>
-                            {% endif %}
-                        </div>  <!--  end of panel body  -->
-                    </div> <!--// end panel -->
-                </div> <!--// end col-sm-6  -->
-            </div><!-- // end of tab protocol_defined -->
-            <script>
-                //gets the element by its id
-                var myFile = document.getElementById('upfile');
-                //binds to onchange event of the input field
-                myFile.addEventListener('change', function() {
-                 var max_size = 204800 // 20 KB
+                                        {% endfor %}
 
-               //this.files[0].size gets the size of your file.
-               if (this.files[0].size > max_size) {
-                 alert("Maximun size of the file is 200 KB ");
-                 document.getElementById("btnSubmit").disabled = true;
-                 }
-                else if (this.files[0].name.split('.').pop().toLowerCase() != 'py'){
-                    alert("File name does not have python extension ");
-                    document.getElementById("btnSubmit").disabled = true;
-                }
-               else {
-                   document.getElementById("btnSubmit").disabled = false;}
-               });
 
-            </script>
-            <script>
-                // Get the element with id="defaultOpen" and click on it
-                document.getElementById("defaultOpen").click();
-            </script>
-        </div> <!--// end row -->
-    {% if pending_protocols %}
-        <div class="row row-space-2 margin-b-4">
-            <div class="col-sm-12" >
-                <div class="panel panel-default">
-                    <div class="panel-heading"><h3 style="text-align:center">Protocol Templates which are pending to set the parameters</h3> </div>
-                    <div class="panel-body">
-                        <form method="post" enctype="multipart/form-data" name="defineParameter" id="defineParameter" class="form-horizontal">
-                            {% csrf_token %}
-                            <input type="hidden" name="action" value="addParameter"/>
-                            <table class="table ">
-            					<thead>
-            						<tr>
-            							<th>Protocol Type Name</th>
-            							<th>Station Name</th>
-            							<th>User Name</th>
-            							<th>Protocol Template File Name</th>
-                                        <th>Select Protocol Template</th>
-            						</tr>
-            					</thead>
-            					<tbody>
-                                    {% for  id, protocol, station, user, protocolTemplateFileName, file in pending_protocols %}
-            						    <tr>
 
-                                            <td>{{ protocol }}</td>
-                                            <td>{{ station }}</td>
-                                            <td>{{ user }}</td>
-                                            <td>{{protocolTemplateFileName}}</td>
-                                            <td><input type="radio" name="protocol_template_id" value ="{{id}}" </input></td>
+                                    </div> <!--  end of scrolling  -->
+                                {% else %}
+                                    <p>No Protocols template files have been defined </p>
+                                {% endif %}
+                            </div>  <!--  end of panel body  -->
+                        </div> <!--// end panel -->
+                    </div> <!--// end col-sm-9  -->
 
-            						    </tr>
-                                    {% endfor %}
-            					</tbody>
-            				</table>
-                            <br><br>
-                            <input class="btn pull-right btn-primary" type="submit" value="Submit" id="btnSubmit">
-                        </form>
-                    </div>  <!--  end of panel body  -->
-                </div> <!--// end panel -->
-            </div> <!--// end col-sm-6  -->
-        </div> <!--// end row -->
-    {% endif %}
+
+                    {% if pending_protocols %}
+                        <div class="row row-space-2 margin-b-4">
+                            <div class="col-sm-12" >
+                                <div class="panel panel-default">
+                                    <div class="panel-heading"><h3 style="text-align:center">Protocol Templates which are pending to set the parameters</h3> </div>
+                                    <div class="panel-body">
+                                        <form method="post" enctype="multipart/form-data" name="defineParameter" id="defineParameter" class="form-horizontal">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="action" value="addParameter"/>
+                                            <table class="table ">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Protocol Type Name</th>
+                                                        <th>Station Name</th>
+                                                        <th>Protocol Number</th>
+                                                        <th>User Name</th>
+                                                        <th>Protocol Template File Name</th>
+                                                        <th>Upload date</th>
+                                                        <th>Select Protocol Template</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for  id, protocol, station, prot_number, user, protocolTemplateFileName, file, date , active in pending_protocols %}
+                                                        <tr>
+
+                                                            <td>{{ protocol }}</td>
+                                                            <td>{{ station }}</td>
+                                                            <td>{{prot_number}}</td>
+                                                            <td>{{ user }}</td>
+                                                            <td>{{protocolTemplateFileName}}</td>
+                                                            <td>{{date}}</td>
+                                                            <td><input type="radio" name="protocol_template_id" value ="{{id}}" </input></td>
+
+                                                        </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                            <br><br>
+                                            <input class="btn pull-right btn-primary" type="submit" value="Submit" id="btnSubmit">
+                                        </form>
+                                    </div>  <!--  end of panel body  -->
+                                </div> <!--// end panel -->
+                            </div> <!--// end col-sm-6  -->
+                        </div> <!--// end row -->
+                    {% endif %}
+
+                </div><!-- // end of tab protocol_defined -->
+                <script>
+                    //gets the element by its id
+                    var myFile = document.getElementById('upfile');
+                    //binds to onchange event of the input field
+                    myFile.addEventListener('change', function() {
+                     var max_size = 204800 // 20 KB
+
+                   //this.files[0].size gets the size of your file.
+                   if (this.files[0].size > max_size) {
+                     alert("Maximun size of the file is 200 KB ");
+                     document.getElementById("btnSubmit").disabled = true;
+                     }
+                    else if (this.files[0].name.split('.').pop().toLowerCase() != 'py'){
+                        alert("File name does not have python extension ");
+                        document.getElementById("btnSubmit").disabled = true;
+                    }
+                   else {
+                       document.getElementById("btnSubmit").disabled = false;}
+                   });
+
+                </script>
+                <script>
+                    // Get the element with id="defaultOpen" and click on it
+                    document.getElementById("defaultOpen").click();
+                </script>
+            </div> <!--// end col-sm-11  -->
+        </div> <!--// end col-sm-12  -->
+    </div> <!--// end row -->
+
 {% endif %}
 {% endblock %}

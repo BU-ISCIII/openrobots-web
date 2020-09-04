@@ -144,6 +144,7 @@ def build_request_codeID (user, protocol_type, station, protocol ) :
     num_times += 1
     return user.username + protocol_type + station + str(num_times)
 
+
 def check_valid_date_format (date):
     '''
     Description:
@@ -496,8 +497,8 @@ def get_form_data_define_parameter(template_obj):
     version = template_obj.get_protocol_version()
     station = template_obj.get_station()
     protocol_type_obj = template_obj.get_protocol_type_obj()
-    if ProtocolTemplateFiles.objects.filter(protocolTemplateBeUsed = True, station__stationName__exact = station,  typeOfProtocol = protocol_type_obj ,protocolNumber__exact = protocol, protocolVersion__exact = version).exists():
-        reference_template = ProtocolTemplateFiles.objects.filter(protocolTemplateBeUsed = True, station__stationName__exact = station, protocolNumber__exact = protocol, protocolVersion__exact = version).last()
+    if ProtocolTemplateFiles.objects.filter(protocolTemplateBeUsed = True, station__stationName__exact = station,  typeOfProtocol = protocol_type_obj , protocolStationNumber__exact = protocol, protocolVersion__exact = version).exists():
+        reference_template = ProtocolTemplateFiles.objects.filter(protocolTemplateBeUsed = True, station__stationName__exact = station, protocolStationNumber__exact = protocol, protocolVersion__exact = version).last()
         define_parameter['parameter_values'] = get_parameters_values_from_template(reference_template)
 
     return  define_parameter
@@ -531,7 +532,7 @@ def get_form_data_robots_usage():
 def get_input_define_parameter(form_data):
     '''
     Description:
-        The function get the parameter defined bu user for the protocol
+        The function get the parameter defined by user for the protocol
     Constans:
         PARAMETER_DEFINE_IN_DDBB
     Functions:
@@ -572,6 +573,7 @@ def get_input_define_parameter(form_data):
             option_parameter = True
             continue
         parameter_data.append(row_data)
+    import pdb; pdb.set_trace()
     return parameter_data, valid_form
 
 
@@ -842,6 +844,12 @@ def get_protocol_template_information(p_template_id):
         p_template = ProtocolTemplateFiles.objects.get(pk__exact = p_template_id)
         protocol_data['basic_data'] = [p_template.get_main_data()]
         protocol_data['metadata'] = p_template.get_metadata()
+
+        if ProtocolParameter.objects.filter(usedTemplateFile =  p_template).exists():
+            protocol_data['parameters'] = []
+            protocol_parameter_objs = ProtocolParameter.objects.filter(usedTemplateFile =  p_template)
+        for protocol_parameter_obj in protocol_parameter_objs:
+            protocol_data['parameters'].append(protocol_parameter_obj.get_parameter_info())
     return protocol_data
 
 def get_protocol_type_from_template_id(template_id):
@@ -987,12 +995,18 @@ def get_stored_protocols_files():
     Return:
         protocol_file_data
     '''
-    protocol_file_data = []
+    protocol_file_data = {}
 
     if ProtocolTemplateFiles.objects.all().exists():
-        p_templates = ProtocolTemplateFiles.objects.all().order_by('station')
+        p_templates = ProtocolTemplateFiles.objects.all().order_by('station').order_by('protocolStationNumber')
         for p_template in p_templates :
-            protocol_file_data.append(p_template.get_main_data())
+            station_name = p_template.get_station()
+            prot_ver_number = p_template.get_protocol_number()
+            if station_name not in protocol_file_data :
+                protocol_file_data[station_name] = {}
+            if not prot_ver_number in protocol_file_data[station_name]:
+                protocol_file_data[station_name][prot_ver_number] = []
+            protocol_file_data[station_name][prot_ver_number].append(p_template.get_main_data())
     return protocol_file_data
 
 
@@ -1216,8 +1230,8 @@ def set_protocol_parameters_defined(protocol_template_id):
     type_of_protocol = protocol_template_obj.get_protocol_type()
     protocol_number = protocol_template_obj.get_protocol_number()
 
-    if ProtocolTemplateFiles.objects.filter(protocolTemplateBeUsed = True, station__stationName__exact = station, typeOfProtocol__protocolTypeName__exact = type_of_protocol, protocolNumber__exact = protocol_number).exists():
-        old_protocol_template = ProtocolTemplateFiles.objects.filter(protocolTemplateBeUsed = True, station__stationName__exact = station, typeOfProtocol__protocolTypeName__exact = type_of_protocol, protocolNumber__exact = protocol_number).last()
+    if ProtocolTemplateFiles.objects.filter(protocolTemplateBeUsed = True, station__stationName__exact = station, typeOfProtocol__protocolTypeName__exact = type_of_protocol, protocolStationNumber__protocolNumber__exact = protocol_number).exists():
+        old_protocol_template = ProtocolTemplateFiles.objects.filter(protocolTemplateBeUsed = True, station__stationName__exact = station, typeOfProtocol__protocolTypeName__exact = type_of_protocol, protocolStationNumber__protocolNumber__exact = protocol_number).last()
         old_protocol_template.set_template_do_not_use()
 
     protocol_template_obj.set_parameters_defined()
@@ -1393,7 +1407,7 @@ def get_form_data_station_A():
     '''
     data_form_station_a = []
     if ProtocolTemplateFiles.objects.filter(station__stationName__exact = 'Station A', protocolTemplateBeUsed__exact = True).exists():
-        protocols = ProtocolTemplateFiles.objects.filter(station__stationName__exact = 'Station A', protocolTemplateBeUsed__exact = True).order_by('protocolNumber')
+        protocols = ProtocolTemplateFiles.objects.filter(station__stationName__exact = 'Station A', protocolTemplateBeUsed__exact = True).order_by('protocolStationNumber')
         for protocol in protocols:
             data_form_station_a.append(get_protocol_data_for_form(protocol))
 
@@ -1410,7 +1424,7 @@ def get_form_data_station_B():
     '''
     data_form_station_b = []
     if ProtocolTemplateFiles.objects.filter(station__stationName__exact = 'Station B', protocolTemplateBeUsed__exact = True).exists():
-        protocols = ProtocolTemplateFiles.objects.filter(station__stationName__exact = 'Station B', protocolTemplateBeUsed__exact = True).order_by('protocolNumber')
+        protocols = ProtocolTemplateFiles.objects.filter(station__stationName__exact = 'Station B', protocolTemplateBeUsed__exact = True).order_by('protocolStationNumber')
         for protocol in protocols:
             data_form_station_b.append(get_protocol_data_for_form(protocol))
 
@@ -1428,7 +1442,7 @@ def get_form_data_station_C():
     '''
     data_form_station_c = []
     if ProtocolTemplateFiles.objects.filter(station__stationName__exact = 'Station C', protocolTemplateBeUsed__exact = True).exists():
-        protocols = ProtocolTemplateFiles.objects.filter(station__stationName__exact = 'Station C', protocolTemplateBeUsed__exact = True).order_by('protocolNumber')
+        protocols = ProtocolTemplateFiles.objects.filter(station__stationName__exact = 'Station C', protocolTemplateBeUsed__exact = True).order_by('protocolStationNumber')
         for protocol in protocols:
             data_form_station_c.append(get_protocol_data_for_form(protocol))
     return data_form_station_c

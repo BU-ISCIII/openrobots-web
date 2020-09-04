@@ -287,7 +287,8 @@ def upload_protocol_templates(request):
                         'template_data': template_data , 'stored_protocol_file': stored_protocol_file,'pending_protocols': pending_protocols} )
         protocol_file_data = {}
         protocol_file_data = get_metadata_from_file(saved_file)
-        protocol_file_data['station'] , protocol_file_data['protocolNumber']= request.POST['stationProtocol'].split(STRING_TO_SEPARATE_STATION_AND_PROTOCOL_NUMBER)
+        station_and_form_name , protocol_file_data['protocolNumber']= request.POST['stationProtocol'].split(STRING_TO_SEPARATE_STATION_AND_PROTOCOL_NUMBER)
+        protocol_file_data['station'] = station_and_form_name.split('---')[0]
         protocol_file_data['prottype'] = request.POST['prottype']
         protocol_file_data['typeOfProtocol'] = request.POST['protocoltype']
         protocol_file_data['protocolVersion'] = request.POST['protversion']
@@ -321,6 +322,13 @@ def upload_protocol_templates(request):
         define_parameter = get_form_data_define_parameter(protocol_template_obj)
         define_parameter['protocol_template_id'] = request.POST['protocol_template_id']
         return render(request, 'openrobots/uploadProtocolTemplates.html' , {'define_parameter': define_parameter  })
+
+    elif request.method == 'POST' and request.POST['action'] == 'activeVersion':
+        new_active_protocol_id  = request.POST['protocol_template_id']
+        set_protocol_parameters_defined(new_active_protocol_id)
+        protocol_template_obj = get_protocol_template_obj_from_id(new_active_protocol_id)
+        changed_active = protocol_template_obj.get_main_data()
+        return render(request, 'openrobots/uploadProtocolTemplates.html' , {'changed_active': changed_active  })
     else:
         template_data = {}
         template_data['protocol_types'] = get_protocol_types()

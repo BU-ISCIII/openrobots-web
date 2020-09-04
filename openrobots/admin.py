@@ -11,8 +11,7 @@ class ProtocolosInStationAdmin (admin.ModelAdmin):
     list_display = ['protocolNumber', 'station', 'typeOfProtocol']
 
 class ProtocolTemplateFilesAdmin (admin.ModelAdmin):
-    list_display =['station', 'typeOfProtocol', 'protocolTemplateFileName', 'protocolTemplateFileName',
-                'authors', 'source', 'apiLevel', 'protocolNameInForm', 'parametersDefined', 'protocolTemplateBeUsed']
+    list_display =['station', 'typeOfProtocol', 'protocolStationNumber', 'protocolTemplateFileName', 'protocolVersion', 'generatedat','protocolTemplateBeUsed',  'protocolNameInForm', 'parametersDefined', ]
 
 class ElutionHardwareAdmin (admin.ModelAdmin):
     list_display =['hardwareType']
