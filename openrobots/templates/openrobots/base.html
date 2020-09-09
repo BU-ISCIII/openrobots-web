@@ -48,8 +48,9 @@
                           				</li>
                                         <li class=" js_nav-item nav-item dropdown"><a class=" nav-item-child nav-item-hover dropdown-toggle" data-toggle="dropdown" href="#">Request<span class="caret"></span></a>
                     				        <ul class="dropdown-menu">
-                                                <li><a href="/createExtractionProtocolFile">Create Extraction Protocol File</a></li>
-                                                <li><a href="/createPCRProtocolFile">Create PCR Protocol File</a></li>
+                                                <li><a href="/requestProtocolStationA">Station A Protocol File</a></li>
+                                                <li><a href="/requestProtocolStationB">Station B Protocol File</a></li>
+                                                <li><a href="/requestProtocolStationC">Station C Protocol File</a></li>
                                             </ul>
                           				</li>
                                         {% if user.username == "admin" %}
@@ -60,14 +61,12 @@
                                                 </ul>
                                                 </li>
                                         {% endif %}
-                                        {% if user.username == "admin" %}
                                             <li class=" js_nav-item nav-item dropdown"><a class=" nav-item-child nav-item-hover dropdown-toggle" data-toggle="dropdown" href="#">Robot Usage<span class="caret"></span></a>
                                                 <ul class="dropdown-menu">
                                                     <li><a href="/robotsJobs">Robots Jobs</a></li>
                                                     <li><a href="#">Robot statistics</a></li>
                                                 </ul>
                                                 </li>
-                                        {% endif %}
       				                {% endif%}
 
 

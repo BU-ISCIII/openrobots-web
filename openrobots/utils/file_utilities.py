@@ -111,35 +111,10 @@ def get_metadata_from_file(in_file):
                 data = re.search(r'^\s*\'(.*)\'\s*:\s*\'(.*)\'', line)
                 metadata[data.group(1)] = data.group(2)
                 continue
+    #prot_version = re.search(r'.*Protocol (\d+).*Version (\d+)', metadata['protocolName'])
+    #metadata['protocolNumber'] = prot_version.group(1)
+    #metadata['protocolVersion'] = prot_version.group(2)
     return metadata
-
-def get_steps_used_in_protocol(in_file):
-    '''
-    Description:
-        The function gets the the steps that are in protocol file
-    Input:
-        in_file     # input file name
-    Constants:
-        PROTOCOL_STEPS_IN_TEMPLATE_FILE
-    Return:
-        steps_in_file
-    '''
-    steps_in_file ={}
-    # Initialice the steps to false
-    for step in PROTOCOL_STEPS_IN_TEMPLATE_FILE :
-        steps_in_file[step] = False
-
-    with open (in_file, 'r') as fh:
-        for line in fh :
-            funtions_definition = re.search (r'^def\s+\w', line)
-            if funtions_definition:
-                for step in PROTOCOL_STEPS_IN_TEMPLATE_FILE :
-                    if step in line:
-                        steps_in_file[step] = True
-                        break
-
-    return steps_in_file
-
 
 
 def json_file_valid_format(in_file):

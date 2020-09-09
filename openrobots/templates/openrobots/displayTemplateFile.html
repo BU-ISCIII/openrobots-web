@@ -4,27 +4,36 @@
 {% csrf_token %}
 
 <div class="row row-space-2 margin-b-4">
-	<div class="col-sm-8 col-sm-offset-2">
+	<div class="col-sm-10 col-sm-offset-1">
 		<div class="panel panel-default">
 			<div class="panel-heading"><h3 style="text-align:center">Protocol Template Basic Information</h3> </div>
 			<div class="panel-body">
 				<table class="table ">
 					<thead>
 						<tr>
-							<th>Protocol Type Name</th>
+							<th>Protocol Project Name</th>
 							<th>Station Name</th>
+							<th>Protocol Number</th>
 							<th>User Name</th>
 							<th>Protocol Template File Name</th>
+							<th>Upload date</th>
+							<th>Active</th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr>
-							{% for  id, protocol, station, user, protocolTemplateFileName, file in protocol_template_data.basic_data %}
+							{% for  id, protocol, station, prot_number, user, protocolTemplateFileName, file , date , active in protocol_template_data.basic_data %}
                                 <td>{{ protocol }}</td>
                                 <td>{{ station }}</td>
+								<td>{{prot_number}}</td>
                                 <td>{{ user }}</td>
 								<td><a href="documents/{{file}}" download>{{protocolTemplateFileName}}<span class="glyphicon glyphicon-download-alt"></span></a></td>
-
+								<td>{{date}}</td>
+								{% if date %}
+									<td>True</td>
+								{% else %}
+									<td>False</td>
+								{% endif %}
                             {% endfor %}
 						</tr>
 					</tbody>
@@ -60,29 +69,35 @@
 		</div> <!--  end of panel  -->
 	</div> <!--  end of col-sm-6 -->
 </div> <!--  end of row -->
-<div class="row row-space-2 margin-b-4">
-	<div class="col-sm-12">
-		<div class="panel panel-default">
-			<div class="panel-heading"><h3 style="text-align:center">Functions in the protocol</h3> </div>
-			<div class="panel-body">
-				<table class="table ">
-					<thead>
-						<tr>
-							<th>Prepare MasterMix</th>
-							<th>Transfer MasterMix</th>
-							<th>Transfer Samples</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							{% for  value in protocol_template_data.functions %}
-                                <td>{{ value }}</td>
-                            {% endfor %}
-						</tr>
-					</tbody>
-				</table>
-			</div> <!--  end of panel body -->
-		</div> <!--  end of panel  -->
-	</div> <!--  end of col-sm-6 -->
-</div> <!--  end of row -->
+{% if protocol_template_data.parameters %}
+	<div class="row row-space-2 margin-b-4">
+		<div class="col-sm-8 col-sm-offset-2">
+			<div class="panel panel-default">
+				<div class="panel-heading"><h3 style="text-align:center">Parameter Information</h3> </div>
+				<div class="panel-body">
+					<table class="table table-hover">
+						<thead>
+							<tr>
+								<th>Parameter Name</th>
+								<th>Name in form</th>
+								<th>Default Value</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for  p_name, f_name, default in protocol_template_data.parameters%}
+								<tr>
+	                                <td>{{ p_name }}</td>
+									<td>{{ f_name }}</td>
+									<td>{{ default }}</td>
+								</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div> <!--  end of panel body -->
+			</div> <!--  end of panel  -->
+		</div> <!--  end of col-sm-6 -->
+	</div> <!--  end of row -->
+{% else %}
+
+{% endif %}
 {% endblock %}

@@ -4,8 +4,10 @@ from django.contrib.auth.models import User
 from . import openrobots_config #OPENROBOTS_TEMPLATE_DIRECTORY, OPENROBOTS_OUTPUT_DIRECTORY
 from distutils import util
 
+## vale en la nueva version
 class Stations (models.Model):
     stationName = models.CharField(max_length = 80)
+    nameInForm = models.CharField(max_length = 255, null = True, blank = True )
     description = models.CharField(max_length = 255, null = True, blank = True )
 
     def __str__ (self):
@@ -14,7 +16,10 @@ class Stations (models.Model):
     def get_station_name(self):
         return '%s' %(self.stationName)
 
+    def get_name_in_form(self):
+        return '%s' %(self.nameInForm)
 
+## vale en la nueva version
 class ModuleType (models.Model):
     moduleType = models.CharField(max_length = 30)
     vendor = models.CharField(max_length = 30)
@@ -54,7 +59,7 @@ class ModuleType (models.Model):
         data.append(self.witePapers)
         data.append(self.manualGuide)
         return data
-
+## vale en la nueva version
 class ModulesInLab (models.Model):
     moduleType = models.ForeignKey(
                         ModuleType,
@@ -89,6 +94,8 @@ class RobotsInventoryManager (models.Manager):
                 neededPlugs = robot_data['neededPlugs'], observations = robot_data['observations'] )
         return new_robot
 
+
+## vale en la nueva version
 class RobotsInventory (models.Model):
     userName = models.ForeignKey (
                         User,
@@ -171,6 +178,7 @@ class RobotsInventory (models.Model):
 
     objects = RobotsInventoryManager()
 
+## vale en la nueva version
 class ProtocolsType (models.Model):
     protocolTypeName = models.CharField(max_length = 255)
     description = models.CharField(max_length = 255, null = True, blank = True )
@@ -181,17 +189,43 @@ class ProtocolsType (models.Model):
     def get_name(self):
         return '%s' %(self.protocolTypeName)
 
+
+class ProtocolosInStation (models.Model):
+    station = models.ForeignKey(
+                        Stations,
+                        on_delete=models.CASCADE)
+    typeOfProtocol = models.ForeignKey(
+                        ProtocolsType,
+                        on_delete=models.CASCADE)
+    protocolNumber = models.CharField(max_length = 255)
+    description = models.CharField(max_length = 255,  null = True, blank = True )
+    generatedat = models.DateTimeField(auto_now_add=True)
+
+    def __str__ (self):
+    #    return '%s__%s' %(self.station, self.protocolNumber)
+        return '%s' %(self.protocolNumber)
+
+    def get_protocol_number(self):
+        return '%s' %(self.protocolNumber)
+
+    def get_station_and_protocol(self):
+        data = []
+        data.append(self.station.get_station_name() + '---' + self.station.get_name_in_form())
+        data.append(self.protocolNumber)
+        return data
+
 class ProtocolTemplateFilesManager(models.Manager) :
     def create_protocol_template (self, protocol_data):
         protocol_obj = ProtocolsType.objects.get(protocolTypeName__exact = protocol_data['typeOfProtocol'])
         station_obj = Stations.objects.get(stationName__exact = protocol_data['station'])
+        protocolStationNumber = ProtocolosInStation.objects.get(station = station_obj, typeOfProtocol = protocol_obj , protocolNumber__exact = protocol_data['protocolNumber'])
         new_protocol_template = self.create(userName = protocol_data ['user'],station = station_obj,  typeOfProtocol = protocol_obj,
                     protocolTemplateFileName = protocol_data['file_name'], protocolName = protocol_data['protocolName'],
                     authors= protocol_data['author'], source = protocol_data['source'], apiLevel= protocol_data['apiLevel'],
-                    prepareMasterMix = protocol_data['prepare_mastermix'],transferMasterMix= protocol_data['transfer_mastermix'],
-                    transferSamples= protocol_data['transfer_samples'])
+                    protocolNameInForm = protocol_data['prottype'] , protocolStationNumber = protocolStationNumber,
+                    protocolVersion = protocol_data['protocolVersion'])
         return new_protocol_template
-
+## vale en la nueva version
 class ProtocolTemplateFiles (models.Model):
     userName = models.ForeignKey (
                         User,
@@ -202,18 +236,27 @@ class ProtocolTemplateFiles (models.Model):
     typeOfProtocol = models.ForeignKey(
                         ProtocolsType,
                         on_delete=models.CASCADE)
+    protocolStationNumber = models.ForeignKey(
+                        ProtocolosInStation,
+                        on_delete=models.CASCADE, null = True, blank = True )
+
+    protocolNameInForm = models.CharField(max_length = 80, null = True)
     protocolTemplateFileName = models.FileField(upload_to = openrobots_config.OPENROBOTS_TEMPLATE_DIRECTORY )
     protocolName = models.CharField(max_length = 255)
+    # protocolNumber =  models.CharField(max_length = 10, null = True, blank = True)
+    protocolVersion =  models.CharField(max_length = 10, null = True, blank = True)
     authors = models.CharField(max_length = 255)
     source = models.CharField(max_length = 255)
     apiLevel = models.CharField(max_length = 50)
-    prepareMasterMix = models.BooleanField(default = False)
-    transferMasterMix = models.BooleanField(default = False)
-    transferSamples = models.BooleanField(default = False)
+    #prepareMasterMix = models.BooleanField(default = False)
+    #transferMasterMix = models.BooleanField(default = False)
+    #transferSamples = models.BooleanField(default = False)
+    parametersDefined = models.BooleanField(default = False, null = True)
+    protocolTemplateBeUsed = models.BooleanField(default = False, null = True)
     generatedat = models.DateTimeField(auto_now_add=True)
 
     def __str__ (self):
-        return '%s' %(self.protocolTemplateFileName)
+        return '%s' %(self.protocolNameInForm)
 
     def get_protocol_file_name(self):
         return '%s' %(self.protocolTemplateFileName)
@@ -221,8 +264,20 @@ class ProtocolTemplateFiles (models.Model):
     def get_protocol_name(self):
         return '%s' %(self.protocolName)
 
+    def get_protocol_number(self):
+        return '%s'  %(self.protocolStationNumber.get_protocol_number())
+
+    def get_protocol_version(self):
+        return '%s' %(self.protocolVersion)
+
+    def get_protocol_file(self):
+        return '%s' %(self.protocolTemplateFileName)
+
     def get_protocol_type(self):
         return '%s' %(self.typeOfProtocol.get_name())
+
+    def get_protocol_type_obj(self):
+        return self.typeOfProtocol
 
     def get_station(self):
         return '%s' %(self.station.get_station_name())
@@ -232,9 +287,12 @@ class ProtocolTemplateFiles (models.Model):
         data.append(self.id)
         data.append(self.typeOfProtocol.get_name())
         data.append(self.station.get_station_name())
+        data.append(self.get_protocol_number())
         data.append(self.userName)
         data.append(self.protocolName)
         data.append(self.protocolTemplateFileName)
+        data.append(self.generatedat.strftime("%Y-%b-%d"))
+        data.append(self.protocolTemplateBeUsed)
         return data
 
     def get_metadata(self):
@@ -245,15 +303,30 @@ class ProtocolTemplateFiles (models.Model):
         data.append(self.apiLevel)
         return data
 
-    def get_functions(self):
-        data = []
-        data.append(self.prepareMasterMix)
-        data.append(self.transferMasterMix)
-        data.append(self.transferSamples)
-        return data
+    def get_name_in_form(self):
+        return '%s' %(self.protocolNameInForm)
+
+    def get_protocol_template_id (self):
+        return '%s'  %(self.pk)
+
+    def set_parameters_defined (self):
+        self.parametersDefined = True
+        self.save()
+        return self
+
+    def set_template_do_not_use(self):
+        self.protocolTemplateBeUsed = False
+        self.save()
+        return self
+
+    def set_template_to_be_used(self):
+        self.protocolTemplateBeUsed = True
+        self.save()
+        return self
 
     objects = ProtocolTemplateFilesManager()
 
+### Comprobar que no se usa y borrarla #####
 class ElutionHardware (models.Model):
     hardwareType = models.CharField(max_length = 80)
 
@@ -263,172 +336,6 @@ class ElutionHardware (models.Model):
     def get_hardware_type(self):
         return '%s' %(self.hardwareType)
 
-class MasterMixType (models.Model):
-    MasterMixType = models.CharField(max_length = 255)
-    description = models.CharField(max_length = 255, null = True, blank = True )
-    default = models.BooleanField(default=None)
-
-    def __str__ (self):
-        return '%s' %(self.MasterMixType)
-
-    def get_master_mix_type (self):
-        return '%s' %(self.MasterMixType)
-
-class MasterMixLabware (models.Model):
-    MasterMixLabwareType = models.CharField(max_length = 80)
-    description = models.CharField(max_length = 255)
-    default = models.BooleanField(default=None)
-
-    def __str__ (self):
-        return '%s' %(self.MasterMixLabwareType)
-
-    def get_mastermix_labware_type (self):
-        return '%s' %(self.MasterMixLabwareType)
-
-class MasterMixTube (models.Model):
-    MasterMixTube = models.CharField(max_length = 80)
-    MasterMixRadius = models.CharField(max_length = 80)
-    default = models.BooleanField(default=None)
-
-    def __str__ (self):
-        return '%s' %(self.MasterMixTube)
-    def get_mastermix_tube (self):
-        return '%s' %(self.MasterMixTube)
-
-class PCR_plateLabware (models.Model):
-    PCR_plateLabwareType = models.CharField(max_length = 80)
-    description = models.CharField(max_length = 255)
-    default = models.BooleanField(default=None)
-
-    def __str__ (self):
-        return '%s' %(self.PCR_plateLabwareType)
-
-    def get_pcr_plate_labware_type (self):
-        return '%s' %(self.PCR_plateLabwareType)
-
-
-class MagPlate_Labware(models.Model):
-    mag_plateLabwareType = models.CharField(max_length = 80)
-    description = models.CharField(max_length = 255)
-    default = models.BooleanField(default=None)
-
-    def __str__ (self):
-        return '%s' %(self.mag_plateLabwareType)
-    def get_mag_plate_name (self):
-        return '%s' %(self.mag_plateLabwareType)
-
-
-class Buffer_Labware(models.Model):
-    bufferLabwareType = models.CharField(max_length = 80)
-    description = models.CharField(max_length = 255)
-    default = models.BooleanField(default=None)
-
-    def __str__ (self):
-        return '%s' %(self.bufferLabwareType)
-    def get_buffer_name (self):
-        return '%s' %(self.bufferLabwareType)
-
-
-class Destination_Labware(models.Model):
-    destinationLabwareType = models.CharField(max_length = 80)
-    description = models.CharField(max_length = 255)
-    default = models.BooleanField(default=None)
-
-    def __str__ (self):
-        return '%s' %(self.destinationLabwareType)
-    def get_destination_labware_name (self):
-        return '%s' %(self.destinationLabwareType)
-
-
-class Destination_Tube_Labware(models.Model):
-    destinationTube = models.CharField(max_length = 80)
-    description = models.CharField(max_length = 255)
-    default = models.BooleanField(default=None)
-
-    def __str__ (self):
-        return '%s' %(self.destinationTube)
-    def get_destination_tube_name (self):
-        return '%s' %(self.destinationTube)
-
-class Beads_Labware(models.Model):
-    beadsLabwareType = models.CharField(max_length = 80)
-    description = models.CharField(max_length = 255)
-    default = models.BooleanField(default=None)
-
-    def __str__ (self):
-        return '%s' %(self.beadsLabwareType)
-    def get_beads_labware_name (self):
-        return '%s' %(self.beadsLabwareType)
-
-class Plate_Labware(models.Model):
-    plateLabwareType = models.CharField(max_length = 80)
-    description = models.CharField(max_length = 255)
-    default = models.BooleanField(default=None)
-
-    def __str__ (self):
-        return '%s' %(self.plateLabwareType)
-    def get_plate_labware_name (self):
-        return '%s' %(self.plateLabwareType)
-
-class Lysate_Labware(models.Model):
-    lysateLabwareType = models.CharField(max_length = 80)
-    description = models.CharField(max_length = 255)
-    default = models.BooleanField(default=None)
-
-    def __str__ (self):
-        return '%s' %(self.lysateLabwareType)
-    def get_lysate_labware_name (self):
-        return '%s' %(self.lysateLabwareType)
-
-class Lysate_Tube (models.Model):
-    lysateTube = models.CharField(max_length = 80)
-    description = models.CharField(max_length = 255)
-    default = models.BooleanField(default=None)
-
-    def __str__ (self):
-        return '%s' %(self.lysateTube)
-    def get_lysate_tube (self):
-        return '%s' %(self.lysateTube)
-
-class ElutionStationB_Labware(models.Model):
-    elutionStationB = models.CharField(max_length = 80)
-    description = models.CharField(max_length = 255)
-    default = models.BooleanField(default=None)
-
-    def __str__ (self):
-        return '%s' %(self.elutionStationB)
-    def get_elution_station_b (self):
-        return '%s' %(self.elutionStationB)
-
-class ElutionStationC_Labware(models.Model):
-    elutionStationC = models.CharField(max_length = 80)
-    description = models.CharField(max_length = 255)
-    default = models.BooleanField(default=None)
-
-    def __str__ (self):
-        return '%s' %(self.elutionStationC)
-    def get_elution_station_c (self):
-        return '%s' %(self.elutionStationC)
-
-class Tips300_Labware(models.Model):
-    tips300 = models.CharField(max_length = 80)
-    description = models.CharField(max_length = 255)
-    default = models.BooleanField(default=None)
-
-    def __str__ (self):
-        return '%s' %(self.tips300)
-    def get_tips300_labware (self):
-        return '%s' %(self.tips300)
-
-class Tips1000_Labware(models.Model):
-    tips1000 = models.CharField(max_length = 80)
-    description = models.CharField(max_length = 255)
-    default = models.BooleanField(default=None)
-
-    def __str__ (self):
-        return '%s' %(self.tips1000)
-    def get_tips1000_labware (self):
-        return '%s' %(self.tips1000)
 
 class InventoryLabwareManager(models.Manager):
     def create_inventory_labware(self,data):
@@ -444,9 +351,6 @@ class InventoryLabwareManager(models.Manager):
         return new_inventory_labware
 
 class InventoryLabware (models.Model):
-    #elutionHW_type =  models.ForeignKey (
-    #                   ElutionHardware,
-    #                    on_delete=models.CASCADE, max_length = 80, null = True, blank = True )
     elution_LabwareType = models.CharField(max_length = 80)
     valueInCode = models.CharField(max_length = 255)
     brand = models.CharField(max_length = 80)
@@ -523,89 +427,104 @@ class InventoryLabware (models.Model):
     objects = InventoryLabwareManager()
 
 
-
-class Reagent_Labware(models.Model):
-    reagentLabwareType = models.CharField(max_length = 80)
-    description = models.CharField(max_length = 255)
-    default = models.BooleanField(default=None)
-
-    def __str__ (self):
-        return '%s' %(self.reagentLabwareType)
-    def get_reagent_labware_name (self):
-        return '%s' %(self.reagentLabwareType)
-
-class Waste_Labware(models.Model):
-    wasteLabwareType = models.CharField(max_length = 80)
-    description = models.CharField(max_length = 255)
-    default = models.BooleanField(default=None)
-
-    def __str__ (self):
-        return '%s' %(self.wasteLabwareType)
-
-    def get_waste_labware_name (self):
-        return '%s' %(self.wasteLabwareType)
+class ProtocolParameterManager(models.Manager):
+    def create_parameter(self, parameter_data,template_file_id):
+        usedTemplateFile = ProtocolTemplateFiles.objects.get(pk__exact = template_file_id)
+        new_parameter = self.create(usedTemplateFile = usedTemplateFile, parameterType = parameter_data['parameterType'],
+                        parameterName = parameter_data['parameterName'], nameInForm = parameter_data['nameInForm'],
+                        defaultValue = parameter_data['defaultValue'])
+        return new_parameter
 
 
-class Language(models.Model):
-    languageCode = models.CharField(max_length = 10)
-    languageDescription = models.CharField(max_length = 80)
-    default = models.BooleanField(default=None)
-
-    def __str__ (self):
-        return '%s' %(self.languageCode)
-
-    def get_language_code (self):
-        return '%s' %(self.languageCode)
-
-class RequestForStationA_Prot1Manager(models.Manager):
-
-    def create_new_request (self, request_data):
-        bufferLabware =  Buffer_Labware.objects.get(bufferLabwareType__exact = request_data['bufferLabware'])
-        destinationLabware =  Destination_Labware.objects.get(destinationLabwareType__exact = request_data['destinationLabware'])
-        destinationTube =  Destination_Tube_Labware.objects.get(destinationTube__exact = request_data['destinationTube'])
-        usedTemplateFile = ProtocolTemplateFiles.objects.get(protocolTemplateFileName__exact = request_data['usedTemplateFile'])
-        languageCode = Language.objects.filter(languageCode__exact = request_data['languageCode']).last()
-        tips1000 = Tips1000_Labware.objects.filter(tips1000 = request_data['tips1000']).last()
-        new_request = self.create(userRequestedBy = request_data['userRequestedBy'], bufferLabware = bufferLabware,
-                    destinationLabware = destinationLabware, destinationTube = destinationTube, languageCode = languageCode,
-                    usedTemplateFile = usedTemplateFile, requestedCodeID = request_data['requestedCodeID'],
-                    numberOfSamples = request_data['numberOfSamples'],  protocolID = request_data['protocolID'],
-                    volumeBuffer = request_data['volumeBuffer'], generatedFile = request_data['generatedFile'] ,
-                    resetTipcount = util.strtobool(request_data['resetTipcount']), userNotes = request_data['userNotes'],
-                    tips1000 = tips1000)
-
-        return new_request
-
-class RequestForStationA_Prot1 (models.Model):
-    userRequestedBy = models.ForeignKey (
-                        User,
-                        on_delete=models.CASCADE, null = True, blank = True )
-    bufferLabware = models.ForeignKey (
-                        Buffer_Labware,
-                        on_delete=models.CASCADE, null = True, blank = True )
-
-    destinationLabware = models.ForeignKey (
-                        Destination_Labware,
-                        on_delete=models.CASCADE, null = True, blank = True )
-    destinationTube = models.ForeignKey (
-                        Destination_Tube_Labware,
-                        on_delete=models.CASCADE, null = True, blank = True )
-
+class ProtocolParameter (models.Model):
     usedTemplateFile = models.ForeignKey(
                         ProtocolTemplateFiles,
                         on_delete=models.CASCADE)
-    languageCode = models.ForeignKey(
-                        Language,
-                        on_delete=models.CASCADE, null = True)
-    tips1000 = models.ForeignKey(
-                        Tips1000_Labware,
-                        on_delete=models.CASCADE, null = True)
+    parameterType = models.CharField(max_length = 20)
+    parameterName = models.CharField(max_length = 50)
+    nameInForm = models.CharField(max_length = 50)
+    defaultValue = models.CharField(max_length = 50, null = True, blank = True)
+
+    def __str__ (self):
+        return '%s__%s' %(self.usedTemplateFile, self.parameterName)
+
+    def get_parameter_name (self):
+        return '%s' %(self.parameterName)
+
+    def get_default_value(self):
+        return '%s' %(self.defaultValue)
+    def get_parameter_info(self):
+        data = []
+        data.append(self.parameterName)
+        data.append(self.nameInForm)
+        data.append(self.defaultValue)
+        return data
+
+    def get_parameter_type(self):
+        return '%s' %(self.parameterType)
+
+    objects = ProtocolParameterManager()
+
+
+class ParameterOptionManager(models.Manager):
+    def create_parameter_option(self, option_data):
+        if option_data['optionDescription'] == '':
+            optionDescription = None
+        else:
+            optionDescription = option_data['optionDescription']
+        new_parameter_option = self.create( parameter = option_data['parameter'],
+                    optionValue = option_data['optionValue'],  default = option_data['default'],
+                    optionDescription = optionDescription )
+
+
+class ParameterOption (models.Model):
+    parameter = models.ForeignKey(
+                        ProtocolParameter,
+                        on_delete=models.CASCADE)
+    optionValue = models.CharField(max_length = 80)
+    optionDescription = models.CharField(max_length = 80, null = True)
+    default = models.CharField(max_length = 5, null = True, blank = True)
+
+    def __str__ (self):
+        return '%s' %(self.optionValue)
+
+    def get_option_value (self):
+        return '%s' %(self.optionValue)
+
+    def get_option_description(self):
+        if self.optionDescription == None:
+            description = ''
+        else:
+            description = self.optionDescription
+        return  description
+
+    objects = ParameterOptionManager()
+
+
+class ProtocolRequestManager(models.Manager):
+    def create_protocol_request(self,request_data):
+        protocolTemplate = ProtocolTemplateFiles.objects.get(pk__exact = request_data['template_id'])
+        new_protocol_request = self.create( protocolTemplate = protocolTemplate,
+                            userRequestedBy = request_data['user'], requestedCodeID = request_data['requestedCodeID'],
+                            generatedFile = request_data['generatedFile'], protocolID = request_data['protocolID'],
+                            stationName = request_data['station'], templateProtocolNumber = request_data['templateProtocolNumber'],
+                            userNotes = request_data['usernotes'])
+        return new_protocol_request
+
+
+class ProtocolRequest(models.Model):
+    protocolTemplate = models.ForeignKey(
+                        ProtocolTemplateFiles,
+                        on_delete=models.CASCADE)
+    userRequestedBy = models.ForeignKey (
+                        User,
+                        on_delete=models.CASCADE, null = True, blank = True )
     requestedCodeID = models.CharField(max_length = 50)
-    protocolID = models.CharField(max_length = 50, default = None)
-    numberOfSamples = models.CharField(max_length = 10)
-    volumeBuffer = models.CharField(max_length = 10)
-    resetTipcount = models.BooleanField(default=None)
+    protocolID = models.CharField(max_length = 50)
     generatedFile = models.FileField(upload_to = openrobots_config.OPENROBOTS_OUTPUT_DIRECTORY )
+    stationName = models.CharField(max_length = 25)
+    templateProtocolNumber = models.CharField(max_length = 10)
+
     userNotes = models.CharField(max_length = 255)
     generatedat = models.DateTimeField(auto_now_add=True)
 
@@ -615,9 +534,12 @@ class RequestForStationA_Prot1 (models.Model):
     def get_result_data(self):
         data = []
         data.append(self.requestedCodeID)
-        data.append(self.usedTemplateFile.get_protocol_type())
+        data.append(self.protocolTemplate.get_protocol_type())
         data.append(self.generatedFile)
         return data
+
+    def get_user_requested(self):
+        return '%s' %(self.userRequestedBy.username)
 
     def get_request_info(self):
         data = []
@@ -627,456 +549,29 @@ class RequestForStationA_Prot1 (models.Model):
         data.append(self.generatedFile)
         return data
 
-    def get_user_file(self):
-        return '%s' %(self.userRequestedBy.username)
+    objects = ProtocolRequestManager()
 
-    def get_user_file_obj(self):
-        return self.userRequestedBy
+class ProtocolParameterValuesManager(models.Manager):
+    def create_parameter_value (self, param_value):
+        new_parameter_value = self.create(protocolRequest = param_value['protocolRequest'],
+                        parameterName = param_value['parameterName'],  parameterValue = param_value['parameterValue'])
+        return new_parameter_value
 
-    objects = RequestForStationA_Prot1Manager()
-
-
-class RequestForStationA_Prot2Manager(models.Manager):
-
-    def create_new_request (self, request_data):
-        beadsLabware =  Beads_Labware.objects.get(beadsLabwareType__exact = request_data['beadsLabware'])
-        plateLabware =  Plate_Labware.objects.get(plateLabwareType__exact = request_data['plateLabware'])
-        usedTemplateFile = ProtocolTemplateFiles.objects.get(protocolTemplateFileName__exact = request_data['usedTemplateFile'])
-        languageCode = Language.objects.filter(languageCode__exact = request_data['languageCode']).last()
-        tips1000 = Tips1000_Labware.objects.filter(tips1000 = request_data['tips1000']).last()
-        new_request = self.create(userRequestedBy = request_data['userRequestedBy'], beadsLabware = beadsLabware,
-                    plateLabware = plateLabware, usedTemplateFile = usedTemplateFile, languageCode = languageCode,
-                    requestedCodeID = request_data['requestedCodeID'], numberOfSamples = request_data['numberOfSamples'],
-                    volumeBeads = request_data['volumeBeads'],  protocolID = request_data['protocolID'],
-                    resetTipcount = util.strtobool(request_data['resetTipcount']), diluteBeads = util.strtobool(request_data['diluteBeads']),
-                    generatedFile = request_data['generatedFile'] , userNotes = request_data['userNotes'],
-                    tips1000 = tips1000)
-
-        return new_request
-
-class RequestForStationA_Prot2 (models.Model):
-    userRequestedBy = models.ForeignKey (
-                        User,
-                        on_delete=models.CASCADE, null = True, blank = True )
-    beadsLabware = models.ForeignKey (
-                        Beads_Labware,
-                        on_delete=models.CASCADE, null = True, blank = True )
-    plateLabware = models.ForeignKey (
-                        Plate_Labware,
-                        on_delete=models.CASCADE, null = True, blank = True )
-    usedTemplateFile = models.ForeignKey(
-                        ProtocolTemplateFiles,
+class ProtocolParameterValues(models.Model):
+    protocolRequest = models.ForeignKey(
+                        ProtocolRequest,
                         on_delete=models.CASCADE)
-    languageCode = models.ForeignKey(
-                        Language,
-                        on_delete=models.CASCADE, null = True)
-    tips1000 = models.ForeignKey(
-                        Tips1000_Labware,
-                        on_delete=models.CASCADE, null = True)
-    requestedCodeID = models.CharField(max_length = 50)
-    protocolID = models.CharField(max_length = 50, default = None)
-    numberOfSamples = models.CharField(max_length = 10)
-    volumeBeads = models.CharField(max_length = 10)
-    diluteBeads = models.BooleanField(default=None)
-    resetTipcount = models.BooleanField(default=None)
-    generatedFile = models.FileField(upload_to = openrobots_config.OPENROBOTS_OUTPUT_DIRECTORY )
-    userNotes = models.CharField(max_length = 255)
-    generatedat = models.DateTimeField(auto_now_add=True)
+    parameterName = models.CharField(max_length = 60)
+    parameterValue = models.CharField(max_length = 60)
 
     def __str__ (self):
-        return '%s' %(self.requestedCodeID)
+        return '%s' %(self.protocolRequest)
 
-    def get_result_data(self):
-        data = []
-        data.append(self.requestedCodeID)
-        data.append(self.usedTemplateFile.get_protocol_type())
-        data.append(self.generatedFile)
-        return data
+    def get_name_and_value(self):
+        return (self.parameterName, self.parameterValue)
 
-    def get_request_info(self):
-        data = []
-        data.append(self.userRequestedBy.username)
-        data.append(self.requestedCodeID)
-        data.append(self.generatedat.strftime("%Y-%b-%d"))
-        data.append(self.generatedFile)
-        return data
+    objects = ProtocolParameterValuesManager()
 
-    def get_user_file(self):
-        return '%s' %(self.userRequestedBy.username)
-
-    def get_user_file_obj(self):
-        return self.userRequestedBy
-
-    objects = RequestForStationA_Prot2Manager()
-
-
-class RequestForStationA_Prot3Manager(models.Manager):
-
-    def create_new_request (self, request_data):
-        lysateLabware =  Lysate_Labware.objects.get(lysateLabwareType__exact = request_data['lysateLabware'])
-        plateLabware =  Plate_Labware.objects.get(plateLabwareType__exact = request_data['plateLabware'])
-        usedTemplateFile = ProtocolTemplateFiles.objects.get(protocolTemplateFileName__exact = request_data['usedTemplateFile'])
-        languageCode = Language.objects.filter(languageCode__exact = request_data['languageCode']).last()
-        tips1000 = Tips1000_Labware.objects.filter(tips1000 = request_data['tips1000']).last()
-        new_request = self.create(userRequestedBy = request_data['userRequestedBy'], lysateLabware = lysateLabware,
-                    plateLabware = plateLabware, usedTemplateFile = usedTemplateFile, languageCode = languageCode,
-                    requestedCodeID = request_data['requestedCodeID'], numberOfSamples = request_data['numberOfSamples'],
-                    volumeLysate = request_data['volumeLysate'], beads = util.strtobool(request_data['beads']),
-                    protocolID = request_data['protocolID'] , generatedFile = request_data['generatedFile'] ,
-                    resetTipcount =  util.strtobool(request_data['resetTipcount']), userNotes = request_data['userNotes'],
-                    tips1000 = tips1000)
-
-        return new_request
-
-class RequestForStationA_Prot3 (models.Model):
-    userRequestedBy = models.ForeignKey (
-                        User,
-                        on_delete=models.CASCADE, null = True, blank = True )
-    lysateLabware = models.ForeignKey (
-                        Lysate_Labware,
-                        on_delete=models.CASCADE, null = True, blank = True )
-    plateLabware = models.ForeignKey (
-                        Plate_Labware,
-                        on_delete=models.CASCADE, null = True, blank = True )
-    usedTemplateFile = models.ForeignKey(
-                        ProtocolTemplateFiles,
-                        on_delete=models.CASCADE)
-    languageCode = models.ForeignKey(
-                        Language,
-                        on_delete=models.CASCADE, null = True)
-    tips1000 = models.ForeignKey(
-                        Tips1000_Labware,
-                        on_delete=models.CASCADE, null = True)
-    requestedCodeID = models.CharField(max_length = 50)
-    protocolID = models.CharField(max_length = 50, default = None)
-    numberOfSamples = models.CharField(max_length = 10)
-    volumeLysate = models.CharField(max_length = 10)
-    beads = models.BooleanField()
-    resetTipcount = models.BooleanField(default=None)
-    generatedFile = models.FileField(upload_to = openrobots_config.OPENROBOTS_OUTPUT_DIRECTORY )
-    userNotes = models.CharField(max_length = 255)
-    generatedat = models.DateTimeField(auto_now_add=True)
-
-    def __str__ (self):
-        return '%s' %(self.requestedCodeID)
-
-    def get_result_data(self):
-        data = []
-        data.append(self.requestedCodeID)
-        data.append(self.usedTemplateFile.get_protocol_type())
-        data.append(self.generatedFile)
-        return data
-
-    def get_request_info(self):
-        data = []
-        data.append(self.userRequestedBy.username)
-        data.append(self.requestedCodeID)
-        data.append(self.generatedat.strftime("%Y-%b-%d"))
-        data.append(self.generatedFile)
-        return data
-
-    def get_user_file(self):
-        return '%s' %(self.userRequestedBy.username)
-
-    def get_user_file_obj(self):
-        return self.userRequestedBy
-
-    objects = RequestForStationA_Prot3Manager()
-
-class RequestForStationBManager(models.Manager):
-
-    def create_new_request (self, request_data):
-        magPlateLabware =  MagPlate_Labware.objects.get(mag_plateLabwareType__exact = request_data['magPlateLabware'])
-        reagentLabware =  Reagent_Labware.objects.get(reagentLabwareType__exact = request_data['reagentLabware'])
-        wasteLabware =  Waste_Labware.objects.get(wasteLabwareType__exact = request_data['wasteLabware'])
-        b_elution_Labware = ElutionStationB_Labware.objects.get(elutionStationB__exact = request_data['elutionLabware'])
-        usedTemplateFile = ProtocolTemplateFiles.objects.get(protocolTemplateFileName__exact = request_data['usedTemplateFile'])
-        languageCode = Language.objects.filter(languageCode__exact = request_data['languageCode']).last()
-        tips300 = Tips300_Labware.objects.filter(tips300 = request_data['tips300']).last()
-        tips1000 = Tips1000_Labware.objects.filter(tips1000 = request_data['tips1000']).last()
-
-        new_request = self.create(userRequestedBy = request_data['userRequestedBy'], magPlateLabware = magPlateLabware,
-                    reagentLabware = reagentLabware, b_elution_Labware = b_elution_Labware, wasteLabware = wasteLabware,
-                    usedTemplateFile = usedTemplateFile, requestedCodeID = request_data['requestedCodeID'], numberOfSamples = request_data['numberOfSamples'],
-                    dispenseBeads = util.strtobool(request_data['dispenseBeads']), languageCode = languageCode,
-                    protocolID = request_data['protocolID'], resetTipcount = util.strtobool(request_data['resetTipcount']),
-                    reuseTips = util.strtobool(request_data['reuseTips']),
-                    generatedFile = request_data['generatedFile'] , userNotes = request_data['userNotes'],
-                    tips300 = tips300, tips1000 = tips1000)
-
-        return new_request
-
-class RequestForStationB (models.Model):
-    userRequestedBy = models.ForeignKey (
-                        User,
-                        on_delete=models.CASCADE, null = True, blank = True )
-    b_elution_Labware = models.ForeignKey (
-                        ElutionStationB_Labware,
-                        on_delete=models.CASCADE, null = True)
-    magPlateLabware = models.ForeignKey (
-                        MagPlate_Labware,
-                        on_delete=models.CASCADE)
-    reagentLabware = models.ForeignKey (
-                        Reagent_Labware,
-                        on_delete=models.CASCADE)
-    wasteLabware = models.ForeignKey (
-                        Waste_Labware,
-                        on_delete=models.CASCADE)
-    usedTemplateFile = models.ForeignKey(
-                        ProtocolTemplateFiles,
-                        on_delete=models.CASCADE)
-    languageCode = models.ForeignKey(
-                        Language,
-                        on_delete=models.CASCADE, null = True)
-    tips300 = models.ForeignKey(
-                        Tips300_Labware,
-                        on_delete=models.CASCADE, null = True)
-    tips1000 = models.ForeignKey(
-                        Tips1000_Labware,
-                        on_delete=models.CASCADE, null = True)
-    requestedCodeID = models.CharField(max_length = 50)
-    protocolID = models.CharField(max_length = 50, default = None)
-    numberOfSamples = models.CharField(max_length = 10)
-    dispenseBeads = models.BooleanField()
-    resetTipcount = models.BooleanField(default=None)
-    reuseTips = models.BooleanField(default=None, null = True)
-    generatedFile = models.FileField(upload_to = openrobots_config.OPENROBOTS_OUTPUT_DIRECTORY )
-    userNotes = models.CharField(max_length = 255)
-    generatedat = models.DateTimeField(auto_now_add=True)
-
-    def __str__ (self):
-        return '%s' %(self.requestedCodeID)
-
-    def get_result_data(self):
-        data = []
-        data.append(self.requestedCodeID)
-        data.append(self.usedTemplateFile.get_protocol_type())
-
-        data.append(self.generatedFile)
-        return data
-    def get_request_info(self):
-        data = []
-        data.append(self.userRequestedBy.username)
-        data.append(self.requestedCodeID)
-        data.append(self.generatedat.strftime("%Y-%b-%d"))
-        data.append(self.generatedFile)
-        return data
-
-    def get_user_file(self):
-        return '%s' %(self.userRequestedBy.username)
-
-    def get_user_file_obj(self):
-        return self.userRequestedBy
-
-    objects = RequestForStationBManager()
-
-
-
-class RequestForStationC_Prot1Manager(models.Manager):
-
-    def create_new_request (self, request_data):
-
-        masterMixLabware = MasterMixLabware.objects.get(MasterMixLabwareType__exact = request_data['masterMixLabware'])
-        masterMixTubeLabware = MasterMixTube.objects.get(MasterMixTube__exact = request_data['masterMixTubeLabware'])
-        pcrPlateLabware = PCR_plateLabware.objects.get(PCR_plateLabwareType__exact = request_data['pcrPlateLabware'])
-        masterMixType = MasterMixType.objects.get(MasterMixType__exact = request_data['masterMixType'])
-        c_elution_Labware = ElutionStationC_Labware.objects.get(elutionStationC__exact = request_data['c_elution_Labware'])
-        station = Stations.objects.get(stationName__exact = request_data['station'])
-        usedTemplateFile = ProtocolTemplateFiles.objects.get(protocolTemplateFileName__exact = request_data['usedTemplateFile'])
-        languageCode = Language.objects.filter(languageCode__exact = request_data['languageCode']).last()
-        tips300 = Tips300_Labware.objects.filter(tips300 = request_data['tips300']).last()
-
-        new_request = self.create(userRequestedBy = request_data['userRequestedBy'], masterMixLabware = masterMixLabware , masterMixTubeLabware = masterMixTubeLabware,
-                    pcrPlateLabware = pcrPlateLabware, c_elution_Labware = c_elution_Labware, masterMixType = masterMixType, station = station,
-                    usedTemplateFile = usedTemplateFile, requestedCodeID = request_data['requestedCodeID'], numberOfSamples = request_data['numberOfSamples'],
-                    prepareMastermix = util.strtobool(request_data['prepareMastermix']), languageCode = languageCode,
-                    volumeElution = request_data ['volumeElution'], transferMastermix = util.strtobool(request_data['transferMastermix']),
-                    protocolID = request_data['protocolID'], transferSamples = util.strtobool(request_data['transferSamples']),
-                    resetTipcount =  util.strtobool(request_data['resetTipcount']),
-                    generatedFile = request_data['generatedFile'] , userNotes = request_data['userNotes'],
-                    tips300 = tips300)
-
-        return new_request
-
-
-
-class RequestForStationC_Prot1 (models.Model):
-    userRequestedBy = models.ForeignKey (
-                        User,
-                        on_delete=models.CASCADE, null = True, blank = True )
-    masterMixLabware = models.ForeignKey (
-                        MasterMixLabware,
-                        on_delete=models.CASCADE)
-    masterMixTubeLabware = models.ForeignKey (
-                        MasterMixTube,
-                        on_delete=models.CASCADE)
-    pcrPlateLabware = models.ForeignKey (
-                        PCR_plateLabware,
-                        on_delete=models.CASCADE)
-    c_elution_Labware = models.ForeignKey (
-                        ElutionStationC_Labware,
-                        on_delete=models.CASCADE, null = True)
-    masterMixType = models.ForeignKey (
-                        MasterMixType,
-                        on_delete=models.CASCADE)
-    station = models.ForeignKey(
-                        Stations,
-                        on_delete=models.CASCADE)
-    usedTemplateFile = models.ForeignKey(
-                        ProtocolTemplateFiles,
-                        on_delete=models.CASCADE)
-    languageCode = models.ForeignKey(
-                        Language,
-                        on_delete=models.CASCADE, null = True)
-    tips300 = models.ForeignKey(
-                        Tips300_Labware,
-                        on_delete=models.CASCADE, null = True)
-    requestedCodeID = models.CharField(max_length = 50)
-    protocolID = models.CharField(max_length = 50, default = None)
-    numberOfSamples = models.CharField(max_length = 10)
-    prepareMastermix = models.BooleanField()
-    transferMastermix = models.BooleanField()
-    transferSamples = models.BooleanField()
-    resetTipcount = models.BooleanField(default=None)
-    volumeElution = models.CharField(max_length = 10,  null = True)
-    generatedFile = models.FileField(upload_to = openrobots_config.OPENROBOTS_OUTPUT_DIRECTORY )
-    userNotes = models.CharField(max_length = 255)
-    generatedat = models.DateTimeField(auto_now_add=True)
-
-    def __str__ (self):
-        return '%s' %(self.requestedCodeID)
-
-    def get_result_data(self):
-        data = []
-        data.append(self.requestedCodeID)
-        data.append(self.usedTemplateFile.get_protocol_type())
-
-        data.append(self.generatedFile)
-        return data
-
-    def get_request_info(self):
-        data = []
-        data.append(self.userRequestedBy.username)
-        data.append(self.requestedCodeID)
-        data.append(self.generatedat.strftime("%Y-%b-%d"))
-        data.append(self.generatedFile)
-        return data
-
-    def get_user_file(self):
-        return '%s' %(self.userRequestedBy.username)
-
-    def get_user_file_obj(self):
-        return self.userRequestedBy
-
-    objects = RequestForStationC_Prot1Manager()
-'''
-class FileIDUserRequestMapping(models.Model):
-    fileID = models.CharField(max_length = 50)
-    station = models.CharField(max_length = 20)
-    protocol = models.CharField(max_length = 50)
-    generatedat = models.DateTimeField(auto_now_add=True)
-'''
-
-class RequestForStationC_Prot2Manager(models.Manager):
-
-    def create_new_request (self, request_data):
-
-        masterMixLabware = MasterMixLabware.objects.get(MasterMixLabwareType__exact = request_data['masterMixLabware'])
-        #masterMixTubeLabware = MasterMixTube.objects.get(MasterMixTube__exact = request_data['masterMixTubeLabware'])
-        pcrPlateLabware = PCR_plateLabware.objects.get(PCR_plateLabwareType__exact = request_data['pcrPlateLabware'])
-        #masterMixType = MasterMixType.objects.get(MasterMixType__exact = request_data['masterMixType'])
-        c_elution_Labware = ElutionStationC_Labware.objects.get(elutionStationC__exact = request_data['c_elution_Labware'])
-
-        usedTemplateFile = ProtocolTemplateFiles.objects.get(protocolTemplateFileName__exact = request_data['usedTemplateFile'])
-        languageCode = Language.objects.filter(languageCode__exact = request_data['languageCode']).last()
-
-        new_request = self.create(userRequestedBy = request_data['userRequestedBy'], masterMixLabware = masterMixLabware ,
-                    # masterMixTubeLabware = masterMixTubeLabware,
-                    pcrPlateLabware = pcrPlateLabware, c_elution_Labware = c_elution_Labware,
-                    # masterMixType = masterMixType, station = station,
-                    usedTemplateFile = usedTemplateFile, requestedCodeID = request_data['requestedCodeID'], numberOfSamples = request_data['numberOfSamples'],
-                    # prepareMastermix = util.strtobool(request_data['prepareMastermix']),
-                    languageCode = languageCode, volumeElution = request_data ['volumeElution'],
-                    #transferMastermix = util.strtobool(request_data['transferMastermix']),
-                    protocolID = request_data['protocolID'],
-                    #transferSamples = util.strtobool(request_data['transferSamples']),
-                    resetTipcount =  util.strtobool(request_data['resetTipcount']),
-                    generatedFile = request_data['generatedFile'] , userNotes = request_data['userNotes'])
-
-        return new_request
-
-
-
-class RequestForStationC_Prot2 (models.Model):
-    userRequestedBy = models.ForeignKey (
-                        User,
-                        on_delete=models.CASCADE, null = True, blank = True )
-    masterMixLabware = models.ForeignKey (
-                        MasterMixLabware,
-                        on_delete=models.CASCADE)
-    '''
-    masterMixTubeLabware = models.ForeignKey (
-                        MasterMixTube,
-                        on_delete=models.CASCADE)
-    '''
-    pcrPlateLabware = models.ForeignKey (
-                        PCR_plateLabware,
-                        on_delete=models.CASCADE)
-    c_elution_Labware = models.ForeignKey (
-                        ElutionStationC_Labware,
-                        on_delete=models.CASCADE, null = True)
-    '''
-    masterMixType = models.ForeignKey (
-                        MasterMixType,
-                        on_delete=models.CASCADE)
-    station = models.ForeignKey(
-                        Stations,
-                        on_delete=models.CASCADE)
-    '''
-    usedTemplateFile = models.ForeignKey(
-                        ProtocolTemplateFiles,
-                        on_delete=models.CASCADE)
-    languageCode = models.ForeignKey(
-                        Language,
-                        on_delete=models.CASCADE, null = True)
-    requestedCodeID = models.CharField(max_length = 50)
-    protocolID = models.CharField(max_length = 50, default = None)
-    numberOfSamples = models.CharField(max_length = 10)
-    #prepareMastermix = models.BooleanField()
-    #transferMastermix = models.BooleanField()
-    #transferSamples = models.BooleanField()
-    resetTipcount = models.BooleanField(default=None)
-    volumeElution = models.CharField(max_length = 10,  null = True)
-    generatedFile = models.FileField(upload_to = openrobots_config.OPENROBOTS_OUTPUT_DIRECTORY )
-    userNotes = models.CharField(max_length = 255)
-    generatedat = models.DateTimeField(auto_now_add=True)
-
-    def __str__ (self):
-        return '%s' %(self.requestedCodeID)
-
-    def get_result_data(self):
-        data = []
-        data.append(self.requestedCodeID)
-        data.append(self.usedTemplateFile.get_protocol_type())
-
-        data.append(self.generatedFile)
-        return data
-
-    def get_request_info(self):
-        data = []
-        data.append(self.userRequestedBy.username)
-        data.append(self.requestedCodeID)
-        data.append(self.generatedat.strftime("%Y-%b-%d"))
-        data.append(self.generatedFile)
-        return data
-
-    def get_user_file(self):
-        return '%s' %(self.userRequestedBy.username)
-
-    def get_user_file_obj(self):
-        return self.userRequestedBy
-
-    objects = RequestForStationC_Prot2Manager()
 
 
 class FileIDUserRequestMappingManager(models.Manager):
@@ -1173,9 +668,9 @@ class RobotsActionPost(models.Model):
 
 class ParametersRobotActionManager(models.Manager):
     def create_parameter(self, request_data):
-        new_parameter = self.create( robotActionPost = request_data['robotActionPost'],  protocolFileID= request_data['protocolFileID'],
+        new_parameter = self.create( robotActionPost = request_data['robotActionPost'],  ProtocolRequest= request_data['ProtocolRequest'],
                     parameterName = request_data['parameterName'], parameterValue = request_data['parameterValue'],
-                    modified = request_data['modified'])
+                    protocolID = request_data['protocolID'],  modified = request_data['modified'])
 
         return new_parameter
 
@@ -1184,9 +679,13 @@ class ParametersRobotAction (models.Model):
     robotActionPost = models.ForeignKey (
                         RobotsActionPost,
                         on_delete=models.CASCADE )
+    ProtocolRequest = models.ForeignKey (
+                        ProtocolRequest,
+                        on_delete=models.CASCADE, null = True, blank = True )
     protocolFileID = models.ForeignKey (
                         FileIDUserRequestMapping,
-                        on_delete=models.CASCADE )
+                        on_delete=models.CASCADE , null = True)
+    protocolID = models.CharField(max_length = 20, null = True)
     parameterName = models.CharField(max_length = 80)
     parameterValue = models.CharField(max_length = 80)
     modified = models.BooleanField(default = False)
@@ -1197,5 +696,8 @@ class ParametersRobotAction (models.Model):
 
     def get_parameter_name_and_value(self):
         return (self.parameterName, self.parameterValue )
+
+    def get_modified_field(self):
+        return self.modified
 
     objects = ParametersRobotActionManager()

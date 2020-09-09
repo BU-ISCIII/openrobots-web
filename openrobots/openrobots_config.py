@@ -85,3 +85,11 @@ ERROR_UNABLE_TO_SAVE_CONFIGURATION_FILE = ['Unable to save the configuration fil
 
 ####### URL for Rest Api ######################################
 URL_FOR_REST_API_ROBOT_USAGE = '/api/robots/createUsage'
+
+
+############# NEW WEB  #######################
+PARAMETERS_TYPE = ['String', 'Boolean','Option']
+PARAMETER_DEFINE_HEADING = ['Name in protocol file', 'Name in the Form', 'Type', 'Option values', 'Option Description', 'Default']
+PARAMETER_DEFINE_IN_DDBB = ['parameterName', 'nameInForm', 'parameterType', 'optionValue', 'optionDescription', 'defaultValue']
+
+STRING_TO_SEPARATE_STATION_AND_PROTOCOL_NUMBER = '-- Protocol '

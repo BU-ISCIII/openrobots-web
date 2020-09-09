@@ -5,13 +5,14 @@ from django.conf import settings
 from openrobots.utils.fetching_information import  *
 from openrobots.utils.file_utilities import  *
 from openrobots.openrobots_config import *
+import json
 
 def index(request):
     #
     #return redirect ('/createProtocolFile')
     return render(request, 'openrobots/index.html')
 
-
+'''
 @login_required
 def create_pcr_protocol_file(request):
     # Get data to display in form
@@ -80,7 +81,7 @@ def create_extraction_protocol_file(request):
         return render(request, 'openrobots/createExtractionProtocolFile.html' ,{'display_result': display_result})
 
     return render(request, 'openrobots/createExtractionProtocolFile.html' ,{'form_data': form_data})
-
+'''
 @login_required
 def define_labware(request) :
     form_data = get_elution_hw_types()
@@ -177,6 +178,54 @@ def list_of_requests(request):
 
 
 @login_required
+def request_protocol_station_A (request):
+    if request.method =='POST' and request.POST['action'] == 'createprotocolfile':
+        result, new_create_protocol_request = extract_protocol_request_form_data_and_save_to_file (request)
+
+        if result != 'True':
+            data_form_station_a = get_form_data_station_A ()
+            return render(request, 'openrobots/requestProtocolStationA.html' ,{'data_form_station_a': data_form_station_a, 'error': add_result})
+
+        display_result = new_create_protocol_request.get_result_data()
+        return render(request, 'openrobots/requestProtocolStationA.html' ,{'display_result': display_result} )
+
+    else:
+        data_form_station_a = get_form_data_station_A ()
+        return render(request, 'openrobots/requestProtocolStationA.html' ,{'data_form_station_a': data_form_station_a} )
+
+@login_required
+def request_protocol_station_B (request):
+    if request.method =='POST' and request.POST['action'] == 'createprotocolfile':
+        result, new_create_protocol_request = extract_protocol_request_form_data_and_save_to_file (request)
+
+        if result != 'True':
+            data_form_station_b = get_form_data_station_B ()
+            return render(request, 'openrobots/requestProtocolStationB.html' ,{'data_form_station_b': data_form_station_b, 'error': add_result})
+
+        display_result = new_create_protocol_request.get_result_data()
+        return render(request, 'openrobots/requestProtocolStationB.html' ,{'display_result': display_result} )
+
+    else:
+        data_form_station_b = get_form_data_station_B ()
+        return render(request, 'openrobots/requestProtocolStationB.html' ,{'data_form_station_b': data_form_station_b} )
+
+
+
+@login_required
+def request_protocol_station_C (request):
+    if request.method =='POST' and request.POST['action'] == 'createprotocolfile':
+        result, new_create_protocol_request = extract_protocol_request_form_data_and_save_to_file (request)
+        if result != 'True':
+            data_form_station_c = get_form_data_station_C ()
+            return render(request, 'openrobots/requestProtocolStationC.html' ,{'data_form_station_c': data_form_station_c, 'error': result})
+        display_result = new_create_protocol_request.get_result_data()
+        return render(request, 'openrobots/requestProtocolStationC.html' ,{'display_result': display_result} )
+
+    else:
+        data_form_station_c = get_form_data_station_C ()
+        return render(request, 'openrobots/requestProtocolStationC.html' ,{'data_form_station_c': data_form_station_c} )
+
+@login_required
 def robots_jobs (request):
     form_data = get_form_data_robots_usage()
 
@@ -199,7 +248,7 @@ def robots_jobs (request):
             return render (request, 'openrobots/robotsJobs.html', {'error_message':error_message, 'form_data': form_data})
 
         display_robot_utilization = get_robots_information_utilization (robots_action_objs)
-        #import pdb; pdb.set_trace()
+
         return render (request, 'openrobots/robotsJobs.html',{'display_robot_utilization': display_robot_utilization})
 
     return render (request, 'openrobots/robotsJobs.html',{'form_data': form_data})
@@ -210,42 +259,81 @@ def detail_action_robot(request, action_id):
         detail_data = get_action_robot_detail(action_id)
         return render (request, 'openrobots/detailActionRobot.html',{'detail_data':detail_data})
 
-
     return redirect ('/')
 
 @login_required
 def upload_protocol_templates(request):
     if request.user.username not in ADMIN_USERS :
         return render(request, 'openrobots/index.html')
-    template_data = {}
-    template_data['protocol_types'] = get_protocol_types()
-    template_data['stations'] = get_stations_names()
-    stored_protocol_file= get_stored_protocols_files()
+
     if request.method == 'POST' and request.POST['action'] == 'addtemplatefile':
         ## fetch the file from user form and  build the file name  including
         ## the date and time on now to store in database
+
         file_name = request.FILES['newtemplatefile'].name
         saved_file , file_name = store_user_file(request.FILES['newtemplatefile'],OPENROBOTS_TEMPLATE_DIRECTORY )
 
         ## get the libary name to check if it is already defined
+
         if not template_file_valid_format(saved_file):
             error_message = INVALID_TEMPLATE_FILE
             os.remove(saved_file)
+            template_data = {}
+            template_data['protocol_types'] = get_protocol_types()
+            template_data['stations_protocols'] = get_protocol_and_station_defined()
+            stored_protocol_file= get_stored_protocols_files()
+            pending_protocols = get_pending_protocol_parameters()
             return render(request, 'openrobots/uploadProtocolTemplates.html', {'error_message': error_message ,
-                        'stored_protocol_file': stored_protocol_file, 'template_data': template_data} )
+                        'template_data': template_data , 'stored_protocol_file': stored_protocol_file,'pending_protocols': pending_protocols} )
         protocol_file_data = {}
         protocol_file_data = get_metadata_from_file(saved_file)
-        protocol_file_data.update(get_steps_used_in_protocol(saved_file))
-        protocol_file_data['station'] = request.POST['station']
+        station_and_form_name , protocol_file_data['protocolNumber']= request.POST['stationProtocol'].split(STRING_TO_SEPARATE_STATION_AND_PROTOCOL_NUMBER)
+        protocol_file_data['station'] = station_and_form_name.split('---')[0]
+        protocol_file_data['prottype'] = request.POST['prottype']
         protocol_file_data['typeOfProtocol'] = request.POST['protocoltype']
+        protocol_file_data['protocolVersion'] = request.POST['protversion']
         protocol_file_data['file_name'] = file_name
         protocol_file_data['user'] = request.user
         new_protocol_template = ProtocolTemplateFiles.objects.create_protocol_template(protocol_file_data)
-        created_new_file = {}
-        created_new_file['protocol_name'] = request.POST['protocoltype']
-        created_new_file['file_name'] = request.FILES['newtemplatefile'].name
 
-        return render(request, 'openrobots/uploadProtocolTemplates.html' , {'template_data': template_data ,'stored_protocol_file': stored_protocol_file,
-                                'created_new_file': created_new_file  })
+        define_parameter = get_form_data_define_parameter(new_protocol_template)
+        define_parameter['protocol_template_id'] = new_protocol_template.get_protocol_template_id()
+
+        return render(request, 'openrobots/uploadProtocolTemplates.html' , {'define_parameter': define_parameter  })
+
+    elif request.method == 'POST' and request.POST['action'] == 'defineParameter':
+
+        define_parameter_data, valid_parameters = get_input_define_parameter(request.POST)
+        if not valid_parameters:
+            define_parameter = get_form_data_define_parameter(None)
+            define_parameter['parameter_values'] = json.loads(request.POST['parameter_data'])
+            define_parameter['protocol_template_id'] = request.POST['protocol_template_id']
+            return render(request, 'openrobots/uploadProtocolTemplates.html' , {'define_parameter': define_parameter})
+        protocol_template_id = request.POST['protocol_template_id']
+        store_define_parameter(define_parameter_data, protocol_template_id )
+        # Update template file with paramteres defined
+        set_protocol_parameters_defined(protocol_template_id)
+        created_new_file = get_recorded_protocol_template(protocol_template_id)
+
+        return render(request, 'openrobots/uploadProtocolTemplates.html' , {'created_new_file': created_new_file  })
+
+    elif request.method == 'POST' and request.POST['action'] == 'addParameter':
+        protocol_template_obj = get_protocol_template_obj_from_id(request.POST['protocol_template_id'])
+        define_parameter = get_form_data_define_parameter(protocol_template_obj)
+        define_parameter['protocol_template_id'] = request.POST['protocol_template_id']
+        return render(request, 'openrobots/uploadProtocolTemplates.html' , {'define_parameter': define_parameter  })
+
+    elif request.method == 'POST' and request.POST['action'] == 'activeVersion':
+        new_active_protocol_id  = request.POST['protocol_template_id']
+        set_protocol_parameters_defined(new_active_protocol_id)
+        protocol_template_obj = get_protocol_template_obj_from_id(new_active_protocol_id)
+        changed_active = protocol_template_obj.get_main_data()
+        return render(request, 'openrobots/uploadProtocolTemplates.html' , {'changed_active': changed_active  })
     else:
-        return render(request, 'openrobots/uploadProtocolTemplates.html' , {'template_data': template_data, 'stored_protocol_file': stored_protocol_file})
+        template_data = {}
+        template_data['protocol_types'] = get_protocol_types()
+        template_data['stations_protocols'] = get_protocol_and_station_defined()
+        stored_protocol_file= get_stored_protocols_files()
+        pending_protocols = get_pending_protocol_parameters()
+        return render(request, 'openrobots/uploadProtocolTemplates.html' , {'template_data': template_data, 'stored_protocol_file': stored_protocol_file,
+                                'pending_protocols': pending_protocols})

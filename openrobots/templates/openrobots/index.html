@@ -3,39 +3,50 @@
 {% block content %}
 <div class="row row-space-4 margin-b-4">
     <div class="col-sm-12" >
-        <div class="col-sm-8" >
+        <div class="col-sm-10" >
             <div class="panel panel-default">
                 <div class="panel-heading"><h3 class="text-center" >OpenRobotsWeb</h3></div>
                 <div class="panel-body">
                     <h5 class="text-center">Customize your script for Opentrons</h5>
-                    <div class="col-sm-6">
+                    <div class="col-sm-4">
                         <div class="panel panel-default">
-                        <div class="panel-heading"><h3 class="text-center" >Extraction</h3></div>
+                        <div class="panel-heading"><h3 class="text-center" >Station A</h3></div>
                             <div class="panel-body">
-                                <a href="createExtractionProtocolFile">
+                                <a href="requestProtocolStationA">
                                     <img class="promo-block-img img-responsive" style = "height:225px;width:max-content;" src="{% static "img/tubes_preparation.jpg" %}" align="Avatar">
                                 </a>
                             </div>  <!--  end of panel body  -->
                         </div> <!--// end panel -->
-                    </div><!--// end col-sm-6  -->
-                    <div class="col-sm-6">
+                    </div><!--// end col-sm-4  -->
+                    <div class="col-sm-4">
                         <div class="panel panel-default">
-                        <div class="panel-heading"><h3 class="text-center" >PCR</h3></div>
+                        <div class="panel-heading"><h3 class="text-center" >Station B</h3></div>
                             <div class="panel-body">
-                                <a href="createPCRProtocolFile">
+                                <a href="requestProtocolStationB">
+                                    <img class="promo-block-img img-responsive" style = "height:225px;width:max-content;" src="{% static "img/extraction_tubes.jpg" %}" align="Avatar">
+                                </a>
+                            </div>  <!--  end of panel body  -->
+                        </div> <!--// end panel -->
+                    </div><!--// end col-sm-4  -->
+                    <div class="col-sm-4">
+                        <div class="panel panel-default">
+                        <div class="panel-heading"><h3 class="text-center" >Station C</h3></div>
+                            <div class="panel-body">
+                                <a href="requestProtocolStationC">
                                     <img class="promo-block-img img-responsive" style = "height:225px;width:max-content;" src="{% static "img/PCR_machine_2.jpg" %}" align="Avatar">
                                 </a>
                             </div>  <!--  end of panel body  -->
                         </div> <!--// end panel -->
-                    </div><!--// end col-sm-6  -->
+                    </div><!--// end col-sm-4  -->
 
                 </div>  <!--  end of panel body  -->
             </div> <!--// end panel -->
         </div> <!--// end col-sm-8  -->
-        <div class="col-sm-4" >
+        <div class="col-sm-2" >
             <div class="panel panel-default">
                 <div class="panel-heading"><h3 class="text-center">Opentrons OT-2</h3></div>
                 <div class="panel-body">
+                    <br><br><br>
                     <img class="promo-block-img img-responsive" src="{% static "img/openrobots/ot2_image.jpg" %}" align="Avatar">
 
                 </div>  <!--  end of panel body  -->
