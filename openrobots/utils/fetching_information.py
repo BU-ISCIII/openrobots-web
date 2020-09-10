@@ -573,7 +573,7 @@ def get_input_define_parameter(form_data):
             option_parameter = True
             continue
         parameter_data.append(row_data)
-    import pdb; pdb.set_trace()
+
     return parameter_data, valid_form
 
 
@@ -811,7 +811,7 @@ def get_protocol_and_station_defined ():
     '''
     station_protocol_number =  []
     if ProtocolosInStation.objects.all().exists():
-        #import pdb; pdb.set_trace()
+        
         p_nunbers = ProtocolosInStation.objects.all().order_by('station__stationName')
         for p_nunber in p_nunbers :
             station_protocol_number.append(STRING_TO_SEPARATE_STATION_AND_PROTOCOL_NUMBER.join(p_nunber.get_station_and_protocol()))
