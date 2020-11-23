@@ -61,7 +61,7 @@ def get_owner_of_protocol(protocol_id) :
         usr_obj. None if not match
     '''
 
-    if ProtocolRequest.objects.filter(protocolID__exact = protocol_id).exits():
+    if ProtocolRequest.objects.filter(protocolID__exact = protocol_id).exists():
         return ProtocolRequest.objects.filter(protocolID__exact = protocol_id).last().get_user_requested()
     return None
     '''
