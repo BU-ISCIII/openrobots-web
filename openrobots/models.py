@@ -541,6 +541,9 @@ class ProtocolRequest(models.Model):
     def get_user_requested(self):
         return '%s' %(self.userRequestedBy.username)
 
+    def get_user_requested_obj(self):
+        return self.userRequestedBy
+
     def get_request_info(self):
         data = []
         data.append(self.userRequestedBy.username)
